@@ -3,14 +3,17 @@ connection: &connection
   encoding: utf8mb4
   socket: /tmp/mysql.sock
 
+main_db: &main_db
+  <<: *connection
+  username: <%= Rails.application.credentials.dig(:db, :primary, :username) %>
+  password: <%= Rails.application.credentials.dig(:db, :primary, :password) %>
+  host: <%= Rails.application.credentials.dig(:db, :primary, :host) %>
+  port: <%= Rails.application.credentials.dig(:db, :primary, :port) %>
+
 config: &config
   primary:
-    <<: *connection
+    <<: *main_db
     database: <%= Rails.application.credentials.dig(:db, :primary, :database) %>
-    username: <%= Rails.application.credentials.dig(:db, :primary, :username) %>
-    password: <%= Rails.application.credentials.dig(:db, :primary, :password) %>
-    host: <%= Rails.application.credentials.dig(:db, :primary, :host) %>
-    port: <%= Rails.application.credentials.dig(:db, :primary, :port) %>
   legacy:
     <<: *connection
     database_tasks: false
@@ -31,3 +34,18 @@ staging:
 
 production:
   <<: *config
+
+  cache:
+    <<: *main_db
+    database: oho_production_cache
+    migrations_paths: db/cache_migrate
+
+  queue:
+    <<: *main_db
+    database: oho_production_queue
+    migrations_paths: db/queue_migrate
+
+  cable:
+    <<: *main_db
+    database: oho_production_cable
+    migrations_paths: db/cable_migrate
