@@ -1,7 +1,8 @@
 
-class Creators::CreatorsBaseController < OhoApplicationBase
+class Creators::CreatorsBaseController < ApplicationController
 
-  layout 'application'
+  # layout 'application'
+  helper_method :menu_name
 
   before_action do
     @app_title = "Pragmatic Creators"
@@ -17,6 +18,12 @@ class Creators::CreatorsBaseController < OhoApplicationBase
     else
       @effective_user = Current.user
     end
+  end
+
+  protected
+
+  def menu_name
+    "creators/creators_base/top_menu"
   end
 end
 

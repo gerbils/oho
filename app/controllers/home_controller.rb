@@ -1,4 +1,4 @@
-class HomeController < OhoApplicationBase
+class HomeController < ApplicationController
   def index
     case
     when Current.user.admin?

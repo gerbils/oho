@@ -1,7 +1,7 @@
-<% 
+<%
     def maybe_link(title, path)
 
-      if url_for() == path 
+      if url_for() == path
         tag.p(title, class: "p-2 active")
       else
         link_to(title, path, class: "nav-link")
@@ -9,20 +9,19 @@
     end
   %>
 
-
 <div class="d-flex flex-column align-items-center">
   <div class="display-5 mb-3" style="color: #FFF7DE"><%= @app_title %></div>
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <%= render partial: "local_application/top_menu" %>
+    <%= render partial: menu_name %>
   </div>
 </div>
 
 
-<div class="d-flex flex-column items-center"> 
+<div class="d-flex flex-column items-center">
   <div class="mb-2 fs-5 align-self-center"><%= Current.user.email %></div>
   <div class="d-flex">
-    <%= link_to "Change password", edit_password_path, class: "btn btn-sm btn-secondary p-2 mr-2" %>  
-    <%= button_to "Log out", Current.session, method: :delete, class: "btn btn-sm btn-warning p-2"%>
-  </div> 
+    <%= link_to "Change password", edit_password_url(Current.user.password_reset_token), class: "btn btn-sm btn-secondary p-2 mr-2" %>
+    <%= button_to "Log out", session_path, method: :delete, class: "btn btn-sm btn-warning p-2"%>
+  </div>
 </div>
 

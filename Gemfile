@@ -9,7 +9,7 @@ gem "turbo-rails"
 gem "stimulus-rails"
 gem "cssbundling-rails"
 gem "jbuilder"
-
+gem "bcrypt", "~> 3.1"
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
 # Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
@@ -18,9 +18,7 @@ gem "solid_queue"
 gem "solid_cable"
 
 gem "bootsnap", require: false
-
 gem "kamal", require: false
-
 gem "thruster", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
@@ -35,8 +33,9 @@ group :development do
   gem "web-console"
 end
 
-gem "bcrypt", "~> 3.1"
+# app gems
+gem "aws-sdk-s3", "~> 1.158"
 gem "pagy", "~> 9.3"
 gem "groupdate", "~> 6.6"
-
+gem "bootstrap_form", "~> 5.4"
 gem "chartkick", "~> 5.1"

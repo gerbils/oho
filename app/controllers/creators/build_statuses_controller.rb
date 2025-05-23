@@ -13,11 +13,11 @@ class Creators::BuildStatusesController < Creators::CreatorsBaseController
     @build_status = BuildStatus.find(params[:id])
     @log_text = @build_status.log_text
     respond_to do |format|
-      format.html { redirect_to build_statuses_url }
+      format.html { redirect_to creators_build_statuses_url }
       format.turbo_stream do
         render turbo_stream: [
-          turbo_stream.replace("log_#{@build_status.id}", partial: 'build_statuses/log'),
-          turbo_stream.replace("toggle_log_#{@build_status.id}", partial: 'build_statuses/hide_log_button'),
+          turbo_stream.replace("log_#{@build_status.id}", partial: 'creators/build_statuses/log'),
+          turbo_stream.replace("toggle_log_#{@build_status.id}", partial: 'creators/build_statuses/hide_log_button'),
         ]
       end
     end
@@ -26,11 +26,11 @@ class Creators::BuildStatusesController < Creators::CreatorsBaseController
   def hide_log
     @build_status = BuildStatus.find(params[:id])
     respond_to do |format|
-      format.html { redirect_to build_statuses_url }
+      format.html { redirect_to creators_build_statuses_url }
       format.turbo_stream do
         render turbo_stream: [
           turbo_stream.remove("log_#{@build_status.id}"),
-          turbo_stream.replace("toggle_log_#{@build_status.id}", partial: 'build_statuses/view_log_button'),
+          turbo_stream.replace("toggle_log_#{@build_status.id}", partial: 'creators/build_statuses/view_log_button'),
         ]
       end
     end

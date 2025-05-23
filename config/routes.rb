@@ -1,10 +1,10 @@
-load "config/shared_routes.rb"
 
 Rails.application.routes.draw do
   # mount Sidekiq::Web => "/sidekiq" # mount Sidekiq::Web in your Rails app
 
+  resources :passwords, param: :token
+  resource :session
 
-  resources :wombats
   resources :upload_channels
   resources :royalty_sources
   root "home#index"
