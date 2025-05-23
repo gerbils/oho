@@ -1,6 +1,6 @@
 <h1 class="mt-5 mb-3">Become an author or editor</h1>
 
-<%= form_with(url: impersonate_path, method: :get) do |form| %>
+<%= bootstrap_form_with(url: creators_impersonate_path, method: :get) do |form| %>
   <%= form.search_field :search, class: 'form-control', placeholder: "Search for Name" %>
 <% end %>
 
@@ -8,7 +8,7 @@
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
     <% @creators.each do |creator| %>
       <div class="col">
-        <%= button_to creator.name, become_path(creator.id), class: "w-100 mb-1 btn btn-dark" %>
+        <%= button_to creator.name, creators_become_path(creator.id), class: "w-100 mb-1 btn btn-dark" %>
       </div>
     <% end %>
   </div>

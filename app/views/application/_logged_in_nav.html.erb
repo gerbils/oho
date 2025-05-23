@@ -12,7 +12,7 @@
 <div class="d-flex flex-column align-items-center">
   <div class="display-5 mb-3" style="color: #FFF7DE"><%= @app_title %></div>
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <%= render partial: @oho_top_menu || false %>
+    <%= render(partial: @oho_top_menu || "top_menu" ) %>
   </div>
 </div>
 

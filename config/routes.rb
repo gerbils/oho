@@ -30,6 +30,9 @@ Rails.application.routes.draw do
     get "sales(.format)",                   to: "sales#index",     as: :sales
     get "sales/chart/:id/:title",           to: "sales#chart",     as: :sales_chart
 
+    get  'impersonate/index'
+    get  "impersonate(/:search)" => "impersonate#index",  as: :impersonate
+    post "impersonate/:id"       => "impersonate#become", as: :become
   end
 
   get "/royalties", to: "royalty#index"
