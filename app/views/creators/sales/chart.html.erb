@@ -1,0 +1,27 @@
+<%= turbo_frame_tag "chart-modal" do %>
+  <div class="chart-modal card">
+    <div class="card-header d-flex justify-content-between w-100 mb-4">
+      <div>Sales Summary</div>
+      <div>
+        <h5><%= @title %></h5>
+      </div>
+
+      <div>
+        <%= link_to "✕", "#",
+          class: "btn btn-dark ms-auto",
+          data: {
+            controller: "charts",
+            action: "charts#close",
+          }
+        %>
+      </div>
+    </div>
+    <div class="card-body">
+      <%= line_chart(
+        @chart_data,
+        width: "90%",
+        height: "90%",
+      ) %>
+    </div>
+  </div>
+<% end %>

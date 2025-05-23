@@ -1,0 +1,29 @@
+<section class="card" style="width: auto; height: 80%; max-height: 80%; ">
+  <div class="card-body">
+    <table class="table table-sm" style="max-height: 200px;" >
+      <thead>
+        <tr>
+        <th style="width: 8em">Date</th>
+        <th class="text-end pe-4" style="width: 9em">Amount</th>
+        <th style="width: auto">Paid using</th>
+        </tr>
+      </thead>
+      <tbody style="max-height: 200px; overflow: auto; background: red;">
+      <% for payment in payments %>
+        <tr>
+          <td>
+            <%= payment.paid_on %>
+          </td>
+          <td class="w-auto pe-4 text-end">
+              <%= money(payment.amount) %>
+          </td>
+          <td>
+            <%= payment_reference_number(payment) %>
+          </td>
+          </tr>    
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</section>
+

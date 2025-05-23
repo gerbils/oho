@@ -1,0 +1,185 @@
+<%
+    def huh(target, prompt="?")
+      button_tag(
+        type: "button",
+        class: "btn btn-primary p-1",
+        "data-bs-toggle" => "modal", 
+        "data-bs-target" => "##{target}",
+        style: "line-height: 80%"
+      ) do
+          prompt
+        end
+    end
+ %>
+
+<section class="mt-4 card">
+  <div class="card-body">
+    <div class="card-title d-flex justify-content-between pb-0 mb-3 border-bottom border-light">
+      <div>
+        <h4 class="pb-0 mb-0"><%= name_from_author(@author) %></h4>
+      <pre class="flex-fill"><%= h @author.rest_of_address %></pre>
+      </div>
+      <div class="text-center" style="font-size: 80%">
+        <p class="fs-5 mb-1">
+www         As of <%= item.end_of_month.strftime("%B, %Y") %>
+        </p>
+        <p class="m-0 text-muted">
+          Page <%= page %> of <%= @max_page %>
+        </p>
+      </div>
+
+      <h4 class="pb-0 mb-0">  Royalty Statement</h4>
+    </div>
+
+    <div class="d-flex justify-content-between">
+      <div class="flex-fill">&nbsp;</div>
+      <h4 class="flex-fill text-center mb-3"><%= item.title_name %></h4>
+       <% if summary %>
+         <div class="flex-fill">&nbsp;</div>
+       <% else %>
+         <table class="">
+          <tr>
+            <th>SKU:</th>
+            <td><%= item.sku.sku %></td>
+          </tr>
+          <tr>
+            <th>Format:</th>
+            <td><%= item.sku.media.name %></td>
+          </tr>
+          <% unless item.sku.product.isbn13.blank? %>
+            <tr>
+              <th>ISBN:</th>
+              <td><%= item.sku.product.isbn13 %></td>
+            </tr>
+          <% end %>
+         </table>
+       <% end %>
+    </div>
+
+    <div class="modal fade" id="netsalesModal" tabindex="-1" aria-labelledby="netsalesModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="netsalesModalLabel">Net sales</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Calculated as lifetime sales of
+            <%= money(item.paid_amount) %>
+            minus returns of
+           <%= money(-item.return_amount) %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="rateModal" tabindex="-1" aria-labelledby="rateModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="rateModalLabel">Net sales</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            This is the total of the royalties earned for all of your projects.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex flex-wrap gap-4 justify-content-center">
+    <table class="table" style="min-width: 20em; max-width: 26em;">
+         <tr>
+           <td class="text-muted" >Net sales:</td>
+           <td class="text-end" ><%= money(item.net_sales) %></td>
+           <td>
+             <%= huh("netsalesModal") %>
+           </td>
+         </tr>
+         <tr>
+           <td class="text-muted">Less per-book cost:</td>
+           <td class="text-end"><%= money(-item.total_per_book_cost) %></td>
+           <td></td>
+         </tr>
+         <tr>
+           <td  class="text-muted">Less fixed costs:</td>
+           <td class="text-end" style="border-bottom: 2px solid #aaa"><%= money(-item.total_fixed_cost) %></td>
+           <td></td>
+         </tr>
+         <tr>
+           <td>Net receipts:</td>
+           <td  class="text-end" style="border-bottom: 4px solid #999"><%= money(item.net_royalty) %></td>
+           <td></td>
+         </tr>
+    </table>
+    <table class="table" style="min-width: 20em; max-width: 26em;">
+         <% if item.is_summary? %>
+         <tr>
+           <td class="text-muted" >Lifetime royalties earned:</td>
+           <td class="text-end"><%= money(item.royalty_due) %></td>
+           <td><%= huh("rateModal") %></td>
+         </tr>
+         <tr>
+           <td  class="text-muted">Less royalties paid to you:</td>
+           <td class="text-end" style="border-bottom: 2px solid #aaa"><%= money(-item.royalty_paid_to_date) %></td>
+           <td><%= huh("alreadyPaidModal", "see") %></td>
+         </tr>
+         <tr>
+           <td >Current royalty balance:</td>
+           <td  class="text-end" style="border-bottom: 4px solid #aaa"><b><%= money(item.balance)%></b></td>
+           <td></td>
+         </tr>
+         <% else %>
+         <tr>
+           <td >Total royalty earned</td>
+           <td  class="text-end"><b><%= money(item.royalty_due) %></b></td>
+         </tr>
+         <% end %>
+    </table>
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <div class="card-header">
+    Details
+  </div>
+  <div class="card-body">
+    <div class="accordion" id="accordionExample">
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingOne">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+            <span class="text-success">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-piggy-bank" viewBox="0 0 16 16">
+                <path d="M5 6.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m1.138-1.496A6.6 6.6 0 0 1 7.964 4.5c.666 0 1.303.097 1.893.273a.5.5 0 0 0 .286-.958A7.6 7.6 0 0 0 7.964 3.5c-.734 0-1.441.103-2.102.292a.5.5 0 1 0 .276.962"/>
+                <path fill-rule="evenodd" d="M7.964 1.527c-2.977 0-5.571 1.704-6.32 4.125h-.55A1 1 0 0 0 .11 6.824l.254 1.46a1.5 1.5 0 0 0 1.478 1.243h.263c.3.513.688.978 1.145 1.382l-.729 2.477a.5.5 0 0 0 .48.641h2a.5.5 0 0 0 .471-.332l.482-1.351c.635.173 1.31.267 2.011.267.707 0 1.388-.095 2.028-.272l.543 1.372a.5.5 0 0 0 .465.316h2a.5.5 0 0 0 .478-.645l-.761-2.506C13.81 9.895 14.5 8.559 14.5 7.069q0-.218-.02-.431c.261-.11.508-.266.705-.444.315.306.815.306.815-.417 0 .223-.5.223-.461-.026a1 1 0 0 0 .09-.255.7.7 0 0 0-.202-.645.58.58 0 0 0-.707-.098.74.74 0 0 0-.375.562c-.024.243.082.48.32.654a2 2 0 0 1-.259.153c-.534-2.664-3.284-4.595-6.442-4.595M2.516 6.26c.455-2.066 2.667-3.733 5.448-3.733 3.146 0 5.536 2.114 5.536 4.542 0 1.254-.624 2.41-1.67 3.248a.5.5 0 0 0-.165.535l.66 2.175h-.985l-.59-1.487a.5.5 0 0 0-.629-.288c-.661.23-1.39.359-2.157.359a6.6 6.6 0 0 1-2.157-.359.5.5 0 0 0-.635.304l-.525 1.471h-.979l.633-2.15a.5.5 0 0 0-.17-.534 4.65 4.65 0 0 1-1.284-1.541.5.5 0 0 0-.446-.275h-.56a.5.5 0 0 1-.492-.414l-.254-1.46h.933a.5.5 0 0 0 .488-.393m12.621-.857a.6.6 0 0 1-.098.21l-.044-.025c-.146-.09-.157-.175-.152-.223a.24.24 0 0 1 .117-.173c.049-.027.08-.021.113.012a.2.2 0 0 1 .064.199"/>
+              </svg>
+            </span>
+            <span class="ps-2">
+              Royalty payments sent to you through <%= @summary.end_of_month %>
+            </span>
+          </button>
+        </h2>
+        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+          <div class="accordion-body">
+            <%= render partial: "paid_to_date", locals: { paid_to_date: @paid_to_date } %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ul class="list-group">
+      <% @pages.each do |page| %>
+        <li class="list-group-item">
+          <span class="text-warning">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-book" viewBox="0 0 16 16">
+            <path d="M1 2.828c.885-.37 2.154-.769 3.388-.893 1.33-.134 2.458.063 3.112.752v9.746c-.935-.53-2.12-.603-3.213-.493-1.18.12-2.37.461-3.287.811zm7.5-.141c.654-.689 1.782-.886 3.112-.752 1.234.124 2.503.523 3.388.893v9.923c-.918-.35-2.107-.692-3.287-.81-1.094-.111-2.278-.039-3.213.492zM8 1.783C7.015.936 5.587.81 4.287.94c-1.514.153-3.042.672-3.994 1.105A.5.5 0 0 0 0 2.5v11a.5.5 0 0 0 .707.455c.882-.4 2.303-.881 3.68-1.02 1.409-.142 2.59.087 3.223.877a.5.5 0 0 0 .78 0c.633-.79 1.814-1.019 3.222-.877 1.378.139 2.8.62 3.681 1.02A.5.5 0 0 0 16 13.5v-11a.5.5 0 0 0-.293-.455c-.952-.433-2.48-.952-3.994-1.105C10.413.809 8.985.936 8 1.783"/>
+            </svg>
+          </span>
+          <span  class="ps-2">
+            <%= page.title_name %>
+          </span>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</section>

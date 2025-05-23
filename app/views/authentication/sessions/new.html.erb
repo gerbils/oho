@@ -1,0 +1,57 @@
+
+<div class="row justify-content-around">
+
+  <div class="row mt-5">
+    <div class="col-lg-4 ms-auto me-auto">
+
+      <% unless Rails.configuration.x.oho.admin_only %>
+        <p class="text-center">
+        If you're a gerbil, or if you work with our gerbils as an author or editor, then...
+        <p>
+      <% end %>
+
+      <h1 class="text-center text-secondary">Sign in</h1>
+
+      <%= form_with(url: sign_in_path, data: { turbo: false }, class: "mt-4") do |form| %>
+        <div class="mb-3">
+          <%= form.label :email, class: "w-100 text-center form-label" %>
+          <%= form.email_field :email, value: params[:email_hint], required: true, autofocus: true, autocomplete: "email", class: "form-control text-center" %>
+        </div>
+
+        <div class="mb-3">
+          <%= form.label :password, class: "w-100 text-center form-label" %>
+          <%= form.password_field :password, required: true, autocomplete: "current-password", class: "text-center form-control" %>
+        </div>
+
+        <div class="mt-5">
+          <%= form.submit "Sign in", class: "btn btn-primary w-100" %>
+        </div>
+      <% end %>
+
+      <div class="text-center mt-4 pb-2 mb-2 border-bottom">
+        <%= link_to "Forgot your password?", new_identity_password_reset_path %>
+      </div>
+    </div>
+  </div>
+
+  <% unless Rails.configuration.x.oho.admin_only %>
+
+    <div class="row mt-5">
+
+      <div class="col-lg-4 ms-auto me-auto">
+        <p class="text-center">
+        Otherwise you might be looking for our <%= link_to "regular site",
+          "https://pragprog.com" %>, where we have lots of cool things that help
+          developers develop.
+        </p>
+
+        <p class="text-center">
+        And if you want to work with our gerbils, perhaps writing a book, or as a technical reviewer, 
+        subject expert, or editor, please <%= link_to "get in touch", "https://pragprog.com/write-for-us" %>.
+        </p>
+      </div>
+
+    </div>
+  <% end %>
+
+</div>

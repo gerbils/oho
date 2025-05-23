@@ -1,0 +1,4 @@
+  <%= link_to("View log", log_build_status_path(build_status),
+              data: { turbo_frame: "log_#{build_status.id}" },
+              class: "btn btn-secondary w-100") %>
+

@@ -1,0 +1,17 @@
+<table class="sku-summary">
+  <tr>
+    <th>SKU:</th>
+    <td><%= item.sku.sku %></td>
+  </tr>
+  <tr>
+    <th>Format:</th>
+    <td><%= item.sku.media.name %></td>
+  </tr>
+  <% unless item.sku.product.isbn13.blank? %>
+    <tr>
+      <th>ISBN:</th>
+      <td><%= item.sku.product.isbn13 %></td>
+    </tr>
+  <% end %>
+</table>
+

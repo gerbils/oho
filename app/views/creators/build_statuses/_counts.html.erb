@@ -1,0 +1,17 @@
+
+<div class="d-flex justify-content-end" style="font-size: 80%">
+  <% map_build_errors(counts) do | name, format, count | %>
+    <% if count > 0 %>
+      <div class="ms-3 px-2 border rounded-start"
+           style="background-color: <%= format.label_color %>; border-color: <%= format.number_color %> !important">
+           <%= format.name %>
+      </div>
+
+      <div class="px-2 border rounded-end"
+           style="color: <%= format.number_color %>; border-color: <%= format.number_color %>">
+           <%= count %>
+      </div>
+
+    <% end %>
+  <% end %>
+</div>

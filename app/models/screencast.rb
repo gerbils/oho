@@ -1,0 +1,2 @@
+class Screencast < Product
+end

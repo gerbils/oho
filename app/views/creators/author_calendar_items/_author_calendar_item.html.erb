@@ -1,0 +1,54 @@
+<div class="mb-4" id="<%= dom_id author_calendar_item %>">
+  <div class="card w-<%= defined? width ? width : 50 %>">
+    <div class="card-header d-flex justify-content-between">
+      <div>
+        <%= author_calendar_item.start_date %>
+      </div>
+      <% if defined? show_show_link %>
+        <div>
+          <%= link_to "Show", [:creators, author_calendar_item ] %>
+        </div>
+      <% end %>
+      <% if defined? show_edit_link %>
+        <div>
+          <%= link_to "Edit", edit_creators_author_calendar_item_path(@author_calendar_item) %>
+        </div>
+      <% end %>
+    </div>
+
+
+
+    <div class="card-body">
+      <h5>
+        <%= author_calendar_item.what %>
+      </h5>
+
+      <h6>
+        <%= author_calendar_item.where %>
+      </h6>
+
+      <div>
+        <%= author_calendar_item.event_url %>
+      </div>
+    </div>
+
+      <% if defined? show_back_link || defined? show_delete_link %>
+        <footer class="card-footer d-flex justify-content-between">
+          <div>
+            <% if defined? show_back_link %>
+              <%= link_to "Back to list", creators_author_calendar_items_path %>
+            <% end %>
+          </div>
+          <div>
+            <% if defined? show_delete_link %>
+              <%= button_to "Delete this entry",
+                [ :creators, @author_calendar_item ],
+                method: :delete,
+                class: "btn btn-warning"
+              %>
+            <% end %>
+          </div>
+        </footer>
+      <% end %>
+  </div>
+</div>

@@ -1,0 +1,106 @@
+<%= turbo_frame_tag "chart-modal" %>
+<div style="display: none">
+<svg id="graph-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-graph-up" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm14.817 3.113a.5.5 0 0 1 .07.704l-4.5 5.5a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61 4.15-5.073a.5.5 0 0 1 .704-.07"/>
+</svg>
+</div>
+
+<meta name="turbo-prefetch" content="false">
+<div class="d-flex gap-5">
+<div>
+<fieldset>
+  <legend>Estimated Units Shipped</legend>
+  <table class="w-auto table">
+    <thead>
+    <tr>
+      <th>SKU</th>
+      <th class="text-end">Direct</th>
+      <th class="text-end">Channel</th>
+      <th class="text-end">Returns</th>
+      <th class="text-end">TOTAL</th>
+    </tr>
+    </thead>
+    <% for sale in @sales -%>
+      <tr>
+        <td>
+          <%= sale.sku.sku %>
+        </td>
+        <td class="text-end">
+          <%= number_with_delimiter(sale.direct_units) %>
+        </td>
+        <td class="text-end">
+          <%= number_with_delimiter(sale.channel_units) %>
+        </td>
+        <td class="text-end">
+          <%= number_with_delimiter(sale.return_units) %>
+        </td>
+        <td class="text-end">
+          <%= number_with_delimiter(sale.total_units) %>
+        </td>
+        <td>
+          <%=
+            link_to(creators_sales_chart_path(id: sale.sku.id, title: sale.sku.sku), class: "icon-link", data: { turbo_frame: "chart-modal" }) do
+              tag.svg(class: "bi", aria_hidden: true) do
+                tag.use('xlink:href' => "#graph-icon")
+              end
+            end
+          %>
+        </td>
+      </tr>
+    <% end -%>
+  </table>
+
+  <%# <p> %>
+  <%#  The <%= link_to "author sales chart", author_sales_path  (inspired by Jim Wilson) %>
+  <%# </p> %>
+
+</fieldset>
+ </div>
+
+ <div class="text-white-50" style="font-size: 80%; margin-top: 4em; padding-left: 4em; max-width: min(40%, 30em);">
+   <h6>Definitions</h6>
+  <p>
+    Sales from our web site are <em>direct</em>. Sales through
+    bookstores, Amazon, and so on are <em>channel</em> sales. Returns are
+    unsold books sent back by the channel. <em>Unit</em> referes to a single copy of a
+    title, such as an eBook or a paper book.
+  </p>
+
+  <h6>Why "Estimated?"</h6>
+  <p>
+    We know the number of units we ship directly–there may be a delay between a sale and
+    an update to this table, but the numbers will eventually be correct.
+  </p>
+
+  <p>
+    For channel sales in the US, the numbers are mostly accurate. Although they give us accurate
+    dollar amounts, sometimes their count of units can be off, particularly when it comes to returns.
+  </p>
+
+  <p>
+    For sales outside the US, we're at the mercy of our distributors. Again, the unit counts are mostly
+    correct, but we've seen occasions where they were off.
+  </p>
+
+  <p>
+    Finally, for titles we've licensed for translation, we will sometimes agree a flat fee, and sometimes take an upfront payment and
+    a royalty. In both cases, the amount we receive will be associated with your title, but
+    in the first case we have no unit count, and in the second we're unlikely to start seeing one for a long time.
+  </p>
+
+  <h6>Caution</h6>
+  <p>
+    All these numbers are raw and
+    unaudited, and are provided simply to give you an “order of magnitude”
+    idea of what's going on. There is a delay of roughly three months
+    between us getting the raw channel numbers and those numbers appearing
+    on your royalty statements. During this time, the numbers themselves may
+    change. This reflects the accounting cycles of the channel. Don't go
+    buying a new yacht based on these figures.
+  </p>
+  <p>
+    The chart display stuff is in beta.
+  </p>
+</div>
+
+</div>

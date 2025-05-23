@@ -1,0 +1,3 @@
+class Title < Product
+end
+

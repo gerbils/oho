@@ -1,0 +1,253 @@
+<style>
+.bl {
+  border-left: 0.5px solid #9aa;
+}
+
+.br {
+  border-right: 0.5px solid #9aa;
+}
+
+.bb {
+  border-bottom: 0.5px solid #9aa;
+}
+
+.bt {
+  border-top: 0.5px solid #9aa;
+}
+
+.bm {
+  border-right: 0.5px solid #466;
+}
+
+.sku-summary td, .sku-summary th {
+  padding-left: 1.5em;
+  padding-right: 1.5em;
+}
+
+.sku-summary thead th {
+  background-color: var(--bs-primary);
+  border-bottom: none;
+}
+.sku-summary thead tr:nth-child(2) th {
+  padding-top: 0;
+}
+
+.sku-summary tfoot * {
+  background-color: var(--bs-secondary);
+}
+</style>
+
+<%
+
+tt_gross_lifetime_sales = %{
+  This is the money we've received from selling your title. It includes direct sales from our website,
+  domestic and international sales through our distributors, and any more from licensing your title's foreign rights.
+}
+
+tt_returns = %{
+Every publisher expects some books to be returned, both from buyers and also from
+distributors who are clearing out inventory. Although it would be nice to imagine
+that these could be resold, or at least donated, they typically come back in bad shape and are destryoyed.
+}
+
+tt_production_costs = %{
+There are two types of cost associated with your title; we call them production and fixed. A production cost 
+is a cost we incur when we sell a book. For example, every time we sell a paper book we pay to have it printed.
+A fixed cost is a one time expense. Typically this will include things such as copy editing and layout.
+}
+
+ %>
+
+     <div class="d-flex justify-content-center">
+      <h4 class="flex-fill text-center mb-3"><%= item.title %></h4>
+     </div>
+
+     
+
+    <div class="d-flex flex-column align-items-center">
+      <div class="mb-3">
+        <%= render partial: "single_sku_metadata", locals: { item: item } %>
+      </div>
+
+      <table class="table sku-summary">
+        <thead>
+          <tr>
+            <th scope="row"></th>
+            <th scope="row"></th>
+            <th scope="row" colspan="2" class="text-end">Prior to <%= @rs.start_of_month.strftime("%Y-%m") %></th>
+            <th scope="row" colspan="2" class="text-end">Changes in <%= @rs.start_of_month.strftime("%B, %Y") %></th>
+            <th scope="row" colspan="2" class="text-end">Total as of <%= @rs.end_of_month %></th>
+          </tr>
+        </thead>
+
+        <tr>
+          <th colspan="2" <%= tooltip(tt_gross_lifetime_sales) %> scope="col"><%= icon("info") %> Gross lifetime sales</th>
+          <td class="text-end" ><%= number_with_delimiter(item.prior_totals.paid_units) %></td>
+          <td class="text-end" ><%= money(item.prior_totals.paid_amount) %></td>
+
+          <td class="text-end" ><%= number_with_delimiter(item.month_totals.paid_units) %></td>
+          <td class="text-end" ><%= money(item.month_totals.paid_amount) %></td>
+          
+          <td class="text-end" ><%= number_with_delimiter(item.grand_totals.paid_units) %></td>
+          <td class="text-end" ><%= money(item.grand_totals.paid_amount) %></td>
+        </tr>
+
+        <tr>
+          <th colspan="2" <%= tooltip(tt_returns) %> scope="col"><%= icon("info") %> Less returns</th>
+          <td class="text-end" ><%= number_with_delimiter(item.prior_totals.return_units) %></td>
+          <td class="text-end" ><%= money(item.prior_totals.return_amount) %></td>
+
+          <td class="text-end" ><%= number_with_delimiter(item.month_totals.return_units) %></td>
+          <td class="text-end" ><%= money(item.month_totals.return_amount) %></td>
+
+          <td class="text-end" ><%= number_with_delimiter(item.grand_totals.return_units) %></td>
+          <td class="text-end" ><%= money(item.grand_totals.return_amount) %></td>
+        </tr>
+        <tr>
+          <th colspan="2" <%= tooltip(tt_production_costs) %> scope="col"><%= icon("info") %> Less production costs</th>
+          <td></td>
+          <td class="text-end" ><%= money(-item.prior_totals.production_cost) %></td>
+          <td></td>
+          <td class="text-end" ><%= money(-item.month_totals.production_cost) %></td>
+          <td></td>
+          <td class="text-end" ><%= money(-item.grand_totals.production_cost) %></td>
+        </tr>
+
+        <tr>
+          <th colspan="2" <%= tooltip(tt_production_costs) %> scope="col"><%= icon("info") %> Less fixed costs</th>
+          <td></td>
+          <td class="text-end" ><%= money(-item.prior_totals.total_fixed_costs) %></td>
+          <td></td>
+          <td class="text-end" ><%= money(-item.month_totals.total_fixed_costs) %></td>
+          <td></td>
+          <td class="text-end" ><%= money(-item.grand_totals.total_fixed_costs) %></td>
+        </tr>
+
+
+
+        <tr>
+          <th colspan="2" scope="col">Net lifetime sales</th>
+          <td colspan="5"></td>
+          <td class="text-end" style="border-top: 1.5px solid #888; border-bottom: 2.5px solid #666" ><%= money(item.grand_totals.net_royalty_based_on) %></td>
+        </tr>
+
+        <tr>
+            <th scope="col" colspan="7" class="text-end">Royalty rate</th>
+            <td class="text-end"><%= number_to_percentage(item.royalty_rate*100, strip_insignificant_zeros: true) %></td>
+        </tr>
+
+        <tfoot>
+          <tr class="bg-info">
+            <th colspan="7" scope="col" class="text-end">Total royalty earned</th>
+            <td class="text-end"><%= money(item.royalty_rate * item.grand_totals.net_royalty_based_on) %></td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <% mt = item.month_totals %>
+      <% if mt.royalty_items.length.zero? && mt.fixed_costs.length == 0 %>
+        <div class="alert w-100 alert-info">
+          <h5>No activity this month</h5>
+        </div>
+      <% else %>
+        <h5 class="mt-4">Activity This Month</h5>
+        <table class="table sku-summary">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col"></th>
+              <th scope="col" class="text-end bl">Free</th>
+              <th scope="col" colspan="2" class="text-center bl">━━━ Paid ━━━</th>
+              <th scope="col" colspan="2" class="text-center bl">━━━ Return ━━━</th>
+              <th scope="col" class="text-end br bl">Other</th>
+            </tr>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col"></th>
+              <th scope="col" class="text-end bl bb">Units</th>
+              <th scope="col" class="text-end bl bb">Units</th>
+              <th scope="col" class="text-end bb">Amount</th>
+              <th scope="col" class="text-end bl bb">Units</th>
+              <th scope="col" class="text-end bl bb">Amount</th>
+              <th scope="col" class="text-end br bl bb">Costs</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% mt.royalty_items.each do |rl| %>
+                <tr>
+                  <td><%= rl.date.strftime("%F") %></td>
+                  <td>
+                    <%= rl.description %>
+                  </td>
+                  <td class="text-end bl">
+                    <%= rl.free_units %>
+                  </td>
+                  <td class="text-end bl bm">
+                    <%= rl.paid_units %>
+                  </td>
+                  <td class="text-end">
+                    <%= money(rl.paid_amount) %>
+                  </td>
+                  <td class="text-end bl bm">
+                    <%= rl.return_units %>
+                  </td>
+                  <td class="text-end br">
+                    <%= money(rl.return_amount) %>
+                  </td>
+                  <td class="br bl">
+                  </td>
+                </tr>
+            <%end%>
+            <% mt.fixed_costs.each do |fc| %>
+                <tr>
+                  <td><%= fc.created_on.strftime("%F") %></td>
+                  <td>
+                    <%= fc.description %>
+                  </td>
+                  <td class="text-end bl">
+                  </td>
+                  <td class="text-end bl bm">
+                  </td>
+                  <td class="text-end">
+                  </td>
+                  <td class="text-end bl bm">
+                  </td>
+                  <td class="bl">
+                  </td>
+                  <td class="text-end bl br">
+                    <%= money(-fc.amount) %>
+                  </td>
+                </tr>
+              <%end%>
+          </tbody>
+              <tfoot>
+              <tr>
+                <tr>
+                  <td></td>
+                  <th scope="row bt">
+                    Totals for the month
+                  </th>
+                  <td class="text-end bt">
+                    <%= mt.free_units %>
+                  </td>
+                  <td class="text-end bt bl bm">
+                    <%= mt.paid_units %>
+                  </td>
+                  <td class="text-end bt">
+                    <%= money(mt.paid_amount) %>
+                  </td>
+                  <td class="text-end bt bl bm">
+                    <%= mt.return_units %>
+                  </td>
+                  <td class="text-end br bt">
+                    <%= money(mt.return_amount) %>
+                  </td>
+                  <td class="text-end br bt">
+                    <%= money(-mt.total_fixed_costs) %>
+                  </td>
+                </tr>
+              </tfoot>
+        </table>
+      <% end %>
+    </div>
+

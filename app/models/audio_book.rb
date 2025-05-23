@@ -1,0 +1,2 @@
+class AudioBook < Product
+end

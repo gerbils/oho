@@ -1,0 +1,40 @@
+<p style="color: green"><%= notice %></p>
+
+<h1 class="fs-2 mb-5 text-center">Your Events</h1>
+
+<% length = @current_acis.length + @past_acis.length %>
+<div class="container">
+  <div class="row">
+    <div class="d-flex justify-content-between align-items-baseline">
+
+        <div>
+          <%= link_to "Create new item", new_creators_author_calendar_item_path, class: "btn btn-primary" %>
+        </div>
+
+        <div>
+          <%= pluralize(length, "item") %>
+          <% unless @past_acis.length.zero? %>
+            (<%= @past_acis.length %> in the past)
+          <% end %>
+        </div>
+
+        <div>
+          <% if @past_acis.length > 0 %>
+            <%= button_to("Delete #{pluralize(@past_acis.length, 'old item')}", delete_old_creators_author_calendar_items_path, method: "delete", data: { "turbo-method": :delete },  class: "btn btn-danger") %>
+          <% end %>
+        </div>
+    </div>
+  </div>
+  <div class="row mt-5">
+    <div  style="max-height: 75vh; overflow-y: auto;">
+      <% @current_acis.each do |author_calendar_item| %>
+        <%= render author_calendar_item, show_show_link: true, width: 100 %>
+      <% end %>
+      <div class="aci-historic">
+        <% @past_acis.each do |author_calendar_item| %>
+          <%= render author_calendar_item, show_show_link: true, width: 100 %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

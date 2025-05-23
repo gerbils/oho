@@ -1,0 +1,32 @@
+<ul class="navbar-nav me-auto mb-2 mb-lg-0 fs-4" data-turbo-prefetch="false">
+  <li class="nav-item me-3">
+    <%= maybe_link("Home", root_path) %>
+  </li>
+  <li class="nav-item me-3">
+    <%= link_to("Book builds", creators_build_statuses_path, class: "nav-link") %>
+  </li>
+
+  <li class="nav-item me-3">
+    <%= link_to("Wiki", "https://wiki.creators.pragprog.com", class: "nav-link") %>
+  </li>
+
+  <% if @effective_user.author? || @effective_user.editor? %>
+    <li class="nav-item me-3">
+      <%= maybe_link("Royalties", creators_royalties_path) %>
+    </li>
+    <li class="nav-item me-3">
+      <%= maybe_link("Sales", creators_sales_path) %>
+    </li>
+  <% end %>
+
+  <% if Current.user.admin? %>
+    <li class="nav-item">
+      <% if @effective_user != Current.user %>
+        <%= button_to "Stop being #{@effective_user.name}",  creators_become_path("stop") %>
+      <% else %>
+        <%= maybe_link("Impersonate", creators_impersonate_path) %>
+      <% end %>
+    </li>
+  <% end %>
+</ul>
+

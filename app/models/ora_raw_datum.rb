@@ -1,0 +1,2 @@
+class OraRawDatum < LegacyRecord
+end

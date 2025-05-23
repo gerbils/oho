@@ -1,0 +1,18 @@
+  <div class="card-body">
+    <div class="card-title d-flex justify-content-between pb-0 mb-3 border-bottom border-light">
+      <div>
+        <h4 class="pb-0 mb-2"><%= name_from_author(@author) %></h4>
+      <pre class="flex-fill"><%= h @author.rest_of_address %></pre>
+      </div>
+      <div class="text-center" style="font-size: 80%">
+        <p class="fs-5 mb-1">
+          <%= item.end_of_month.strftime("%B, %Y") %>
+        </p>
+        <p class="m-0 text-muted">
+          Page <%= page %> of <%= @max_page %>
+        </p>
+      </div>
+
+      <h4 class="pb-0 mb-0">  Royalty Statement</h4>
+    </div>
+

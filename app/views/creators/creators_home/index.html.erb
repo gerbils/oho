@@ -1,0 +1,147 @@
+
+<%
+    @p = @summary[:pip]
+@titles = @summary[:titles]
+
+card_hdr = %{style="min-width: max(10%, 300px)" class="card col d-flex flex-wrap flex-column justify-content-between gap-8"}.html_safe
+%>
+<div class="card mt-3">
+  <h3 class="card-header"><%= name_from_author(@p) %></h3>
+  <div class="card-body flex-wrap container">
+    <div class="row gap-3">
+
+      <div <%= card_hdr %>>
+        <h5 class="card-header">Contact details</h5>
+
+        <div class="card-body">
+          <h6 class="mt-4 mb-1">Email:</h6>
+          <p class="mb-4 ms-4"><%= @summary[:user][:email] %></p>
+
+          <% if @p %>
+            <% unless @p.company_name.empty? %>
+              <h6 class="mt-3 mb-1 text-gray-50">Company:</h6>
+              <p class="mb-4 ms-4"> <%= @p[:company_name] %></p>
+            <% end %>
+
+            <h6 class="mt-3 mb-1 text-gray-50">Mailing address:</h6>
+            <% @p.rest_of_address.split(/\r?\n/).each do |line| %>
+              <p class="m-0 ms-4"><%= line %></p>
+            <% end %>
+          <% else %>
+            <p>
+            Use the Impersonate button to become an author or editor.
+            </p>
+          <% end %>
+        </div>
+
+        <% if @p %>
+          <div>
+            <a href="#" class="btn btn-secondary not-yet">Update</a>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- ---------------------------------------------------------------------- -->
+
+
+
+      <% if @p %>
+
+        <div <%= card_hdr %>>
+          <h5 class="card-header">How We Pay You</h5>
+
+          <div class="card-body">
+            <% if @p.provider_code %>
+              <h6 class="mt-4 mb-1"> Service:</h6>
+              <p class="mb-4 ms-4">
+              <%= provider = @p.provider_code;
+              provider
+            %>
+              </p>
+
+              <h6 class="mb-1 mt-3 text-gray-50">Your account on <%= provider %>:</h6>
+              <p class="ms-4 mb-4">
+              <%= case provider
+                  when 'Dwolla'
+                    @p.dwolla_id_email
+                  when 'Paypal'
+                    @p.paypal_id_email
+                  else
+                    "Not yet set up"
+                  end
+                %>
+              </p>
+              <% if @p.payment_destination_verified %>
+                <p class="mt-2 text-success"><strong>✓ Account is verified</strong></p>
+              <% else %>
+                <p class="mt-2 text-failure"><strong>❌ Please verify this account</strong></p>
+              <% end %>
+            <% else %>
+              <p class="mt-2 text-warning"><strong>You haven't yet set up a way for us to pay you.</strong></p>
+            <% end %>
+          </div>
+
+          <div>
+            <a href="#" class="btn btn-secondary not-yet" onclick=not-yet >Update</a>
+          </div>
+        </div>
+
+        <!-- ---------------------------------------------------------------------- -->
+
+        <div <%= card_hdr %>>
+          <h5 class="card-header">Upcoming Appearances</h5>
+
+          <div class="card-body">
+            <% @cal = @summary[:calendar] %>
+            <% if @cal.empty? %>
+              <p>
+              We don't know about any events you're attending. If you're planning
+              on attending or speaking at a conference, or if you're running a workshop,
+              mash the <span>update</span> button and let the world know.
+              </p>
+            <% else %>
+              <%= render partial: "cal_item", collection: @cal %>
+            <% end %>
+          </div>
+
+          <div>
+            <%= link_to "Manage calendar", creators_author_calendar_items_path,  class: "btn btn-primary" %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- ---------------------------------------------------------------------- -->
+
+    </div>
+  </div>
+</div>
+
+<% if @titles &&  !@titles.empty? %>
+
+  <div class="card mt-3">
+    <h3 class="card-header">Your Titles</h3>
+
+    <div class="mt-2 d-flex flex-wrap align-items-start gap-4">
+      <% @titles.each do |code| %>
+        <div class="card" style="width: max(16%, 200px)">
+          <%= cover_with_default(code) %>
+          <footer class="card-footer"><%= code %></footer>
+        </div>
+      <% end %>
+    </div>
+
+  </div>
+<% end %>
+
+<script>
+  function not_yet(ev) {
+    ev.preventDefault();
+    alert("This feature is not yet implemented.");
+  }
+  document.querySelectorAll('.not-yet').forEach(function (el) {
+    el.addEventListener('click', not_yet);
+  });
+
+</script>
+
+

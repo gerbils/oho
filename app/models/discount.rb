@@ -1,0 +1,3 @@
+class Discount < LegacyRecord
+
+end

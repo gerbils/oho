@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <title><%= Rails.configuration.x.oho.external_name %> : PragProg </title>
+    <%= render partial: "html_head" %>
+  </head>
+
+  <body>
+    <%= turbo_frame_tag "modal" %>
+
+    <main class="container">
+    <%= render partial: "header" %>
+    <%= yield %>
+    </main>
+  </body>
+</html>

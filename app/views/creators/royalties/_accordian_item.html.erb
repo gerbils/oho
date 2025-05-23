@@ -1,0 +1,30 @@
+<div class="accordion-item">
+  <h2 class="accordion-header" id="ah-<%= id %>">
+    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#ab-<%= id %>" aria-expanded="true" aria-controls="ab-<%= id %>">
+      <div class="w-100 d-flex justify-content-between">
+        <div>
+          <%= icon(icon_name) %>
+          <span class="ps-2"><%= title %></span>
+        </div>
+        <div class="pe-5 d-flex gap-5">
+          <div>
+            <% if money_amount %>
+              <span <%= tooltip("The total royalty earned for this SKU (click for details)") %>><%= money(money_amount) %></span>
+            <% end %>
+          </div>
+          <div <%= tooltip("Start and end months of activity") %>>
+            <% if start_date && end_date %>
+              <%= start_date.strftime("%Y-%m") %> – <%= end_date.strftime("%Y-%m") %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </button>
+  </h2>
+  <div id="ab-<%= id %>" class="collapse" aria-labelledby="ah-<%= id %>" data-bs-parent="#<%= parent %>">
+    <div class="accordion-body">
+      <%= yield %>
+    </div>
+  </div>
+</div>
+

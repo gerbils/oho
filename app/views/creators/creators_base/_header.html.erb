@@ -1,0 +1,14 @@
+    <header>
+      <%= render partial: "navbar" %>
+      <% if notice.present? %>
+        <div role="alert" class="alert alert-success" id="notice">
+          <%= notice %>
+        </div>
+      <% end %>
+      <% if alert.present? %>
+        <div role="alert" class="alert alert-danger" id="notice">
+          <%= alert %>
+        </div>
+      <% end %>
+    </header>
+

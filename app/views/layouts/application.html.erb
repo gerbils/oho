@@ -8,7 +8,7 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= yield :head %>
+    <%= yield :html_head %>
 
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
     <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
@@ -23,6 +23,11 @@
   </head>
 
   <body>
-    <%= yield %>
+    <%= turbo_frame_tag "modal" %>
+
+    <main class="container">
+      <%= render partial: "header" %>
+      <%= yield %>
+    </main>
   </body>
 </html>

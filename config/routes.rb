@@ -1,14 +1,43 @@
+load "config/shared_routes.rb"
+
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  # mount Sidekiq::Web => "/sidekiq" # mount Sidekiq::Web in your Rails app
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
 
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+  resources :wombats
+  resources :upload_channels
+  resources :royalty_sources
+  root "home#index"
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  namespace :creators do
+    resources :build_statuses do
+      member do
+        get :pdf
+        get :log
+        get :hide_log
+      end
+    end
+
+    resources :author_calendar_items do
+      delete 'delete_old', on: :collection
+    end
+
+    get "royalties(.:format)",              to: "royalties#index", as: :royalties
+    get "royalties/:year/:month(.:format)", to: "royalties#show",  as: :royalty
+    # get "creators(.:format)",               to: "creators_home#index",  as: :creators
+    root "creators_home#index"
+
+    get "sales(.format)",                   to: "sales#index",     as: :sales
+    get "sales/chart/:id/:title",           to: "sales#chart",     as: :sales_chart
+
+  end
+
+  get "/royalties", to: "royalty#index"
+  namespace :royalty do
+    # get "/uploads", to: "royalty_upload#index"
+    resources :uploads, only: [:index, :new, :show, :create, :destroy] do
+      put "import", on: :member
+    end
+    get "/test/:id", to: "uploads#test", as: :test_upload
+  end
 end

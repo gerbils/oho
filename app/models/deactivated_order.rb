@@ -1,0 +1,3 @@
+ class DeactivatedOrder < Order
+
+ end

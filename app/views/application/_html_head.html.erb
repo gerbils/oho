@@ -1,0 +1,31 @@
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<%= csrf_meta_tags %>
+<%= csp_meta_tag %>
+
+<%#bootswatch-slate.min.css   chart_modal.css   chart_modal.css.map   oho.css%>
+<%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+<%= stylesheet_link_tag "oho", "data-turbo-track": "reload" %>
+<%= javascript_importmap_tags %>
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#444488">
+<meta name="msapplication-TileColor" content="#ffc40d">
+<meta name="theme-color" content="#ffffff">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="theme-color" content="#ffffff">
+
+<script src="https://cdn.jsdelivr.net/npm/theme-change@2.0.2/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+
+<%= turbo_refreshes_with method: :morph, scroll: :preserve %>
+
+<%= yield :head %>
+

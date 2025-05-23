@@ -1,0 +1,42 @@
+
+    <div class="d-flex flex-wrap gap-4 justify-content-center align-items-start">
+    <table class="table" style="min-width: 20em; max-width: 26em;">
+         <tr>
+           <td class="text-muted" >Net sales:</td>
+           <td class="text-end" ><%= money(item.paid_amount) %></td>
+         </tr>
+         <tr>
+           <td class="text-muted" >Less returns:</td>
+           <td class="text-end" ><%= money(item.return_amount) %></td>
+         </tr>
+         <tr>
+           <td class="text-muted">Less per-book cost:</td>
+           <td class="text-end"><%= money(-item.production_cost) %></td>
+         </tr>
+         <tr>
+           <td  class="text-muted">Less fixed costs:</td>
+           <td class="text-end" style="border-bottom: 2px solid #aaa"><%= money(-item.total_fixed_costs) %></td>
+         </tr>
+         <tr>
+           <td>Net receipts:</td>
+           <td  class="text-end" style="border-bottom: 4px solid #999"><%= money(item.net_royalty_based_on) %></td>
+         </tr>
+    </table>
+
+    <table class="table h-auto" style="min-width: 20em; max-width: 26em;">
+         <tr>
+           <td class="text-muted" >Lifetime royalties earned:</td>
+           <td class="text-end"><%= money(@rs.lifetime_royalties_earned) %></td>
+         </tr>
+         <tr>
+           <td  class="text-muted">Less royalties paid to you:</td>
+           <td class="text-end" style="border-bottom: 2px solid #aaa"><%= money(-(@rs.paid_to_date)) %></td>
+         </tr>
+         <tr>
+           <td >Current royalty balance:</td>
+           <td  class="text-end" style="border-bottom: 4px solid #aaa"><b><%= money(@rs.royalty_owed)%></b></td>
+         </tr>
+    </table>
+    </div>
+  </div>
+

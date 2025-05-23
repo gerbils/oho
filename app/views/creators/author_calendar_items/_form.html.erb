@@ -1,0 +1,50 @@
+
+<%= form_with(model: [:creators, author_calendar_item ]) do |form| %>
+  <% if author_calendar_item.errors.any? %>
+    <div style="alert alert-danger">
+      <ul>
+        <% author_calendar_item.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-4" style="max-width: 8rem">
+    <%= form.label :start_date, class: "form-label" %>
+    <%= form.date_field :start_date, class: "form-control", autocomplete: "off" %>
+  </div>
+
+  <div class="mb-4">
+    <%= form.label :what, "What's the name of your session?", class: "form-label" %>
+    <%= form.text_field :what, class: "form-control" %>
+    <div class="form-text">
+      We suggest using a prefix to help people what what kind of event this is:
+      <ul>
+        <li><span class="text-success">Talk:</span> The Dangerous Underscore</li>
+        <li><span class="text-success">Workshop:</span> Writing Components in Fortran</li>
+        <li><span class="text-success">Meetup:</span> Elixir User Group</li>
+        <li><span class="text-success">Attending:</span> Google/IO</li>
+        <li>etc</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="mt-4 mb-4">
+    <%= form.label :where, "Event Name and Location", class: "form-label" %>
+    <%= form.text_field :where, class: "form-control" %>
+    <div class="form-text">
+      For example:  <span class="text-success">Emerging Tech East, Philadelphia, US</span><br/>
+     (optional)</div>
+  </div>
+
+  <div class="mb-4">
+    <%= form.label :event_url, "A link to more information about the event", class: "form-label" %>
+    <%= form.text_field :event_url, class: "form-control" %>
+    <div class="form-text">(optional, requires Event name/location)</div>
+  </div>
+
+  <div>
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>

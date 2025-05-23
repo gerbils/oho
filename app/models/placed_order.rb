@@ -1,0 +1,3 @@
+class PlacedOrder < Order
+
+end

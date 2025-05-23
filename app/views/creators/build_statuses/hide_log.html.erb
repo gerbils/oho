@@ -1,0 +1,11 @@
+<turbo-stream action="replace" target="toggle_log_<%= @build_status.id %>">
+  <template>
+    <%= render "view_log_button", build_status: @build_status %>
+  </template>
+</turbo-stream>
+
+<turbo-stream action="remove" target="log_<%= @build_status.id %>">
+</turbo-stream>
+
+
+

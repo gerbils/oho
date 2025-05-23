@@ -1,0 +1,30 @@
+<div class="royalty">
+<% @page_title = "Royalties for #{@name}"
+   @extra_stylesheets_needed = [ "statement" ]
+ %>
+
+<h4 class="mt-5 mb-4">Royalties for <%= @name %></h4>
+
+<div class="container w-auto mx-auto border-top border-info pt-1">
+  <% for year in @date_map.keys.sort_by {|y| -y}  %>
+    <div class="row w-auto pb-2 pt-1 border-info border-bottom">
+      <div class="col col-auto" style="width: 4em"><%= year %></div>
+
+      <div class="col col-auto d-flex flex-wrap w-auto" style="row-gap: 2px; column-gap: 1.5em">
+        <% first_month = @date_map[year].first - 1%>
+        <% first_month.times do |month| %>
+          <div class="text-secondary"><%= Date::ABBR_MONTHNAMES[month+1] %></div>
+        <% end %>
+
+        <% @date_map[year].each do |month| %>
+           <div>
+             <%= link_to Date::ABBR_MONTHNAMES[month], creators_royalty_path(:year => year, :month => month) %>
+           </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+
+

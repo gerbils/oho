@@ -1,0 +1,87 @@
+<%
+  code = build_status.products_code
+  status = build_status.status
+%>
+<div class="card mt-4">
+  <div class="row">
+    <div class="col-md-2">
+      <img
+          onerror="this.src='https://static.pragprog.com/covers/MISSING/144/750.jpg';this.onerror=''"
+          src="https://pragprog.com/titles/<%= code %>/<%= code %>-large.jpg"
+          alt="cover for <%= build_status.product_title %>"
+          class="img-fluid rounded-start">
+    </div>
+    <div class="col-md-10">
+      <div class="card-body">
+        <div class="card-title">
+          <div class="row justify-content-between w-100">
+            <h5 class="col-md-9"><%= build_status.product_title %></h5>
+            <p class="col-md-3 text-end fs-4 <%= status_class(status) %>"
+               style="letter-spacing: 0.07em">
+            <%= build_status.products_code.downcase %>
+            <i class="ps-2 <%= status_icon(status) %>"></i>
+            </p>
+          </div>
+        </div>
+
+        <div class="card-text row w-100 mb-3">
+          <div class="col-sm-12 col-md-8 text-start">
+            <table>
+              <tr>
+                <th class="text-white-50 pe-3">Last build:</th>
+                <td>
+                  <%= build_status.updated_at.strftime("%Y-%m-%d %H:%MZ") %>
+                  <span class="ps-3 text-white-50">(<%= time_ago_in_words(build_status.updated_at) %> ago)</span>
+                </td>
+              </tr>
+              <tr>
+                <th class="text-white-50 pe-3">Revision:</th>
+                <td>
+                  <%= build_status.revision %>
+                </td>
+              </tr>
+              <tr>
+                <th class="text-white-50 pe-3">Build status:</th>
+                <td>
+                  <span class="<%= status_class(status) %>">
+                    <%= status_name(status).capitalize %>
+                  </span>
+                </td>
+              </tr>
+            </table>
+          </div>
+
+        </div>
+        <div class="card-text d-flex flex-column flex-md-row justify-content-start gap-2">
+          <% if status == "succeeded" %>
+            <div class="col-md-2">
+              <%= link_to "Download PDF", pdf_creators_build_status_path(build_status), class: "btn btn-primary w-100" %>
+            </div>
+          <% end %>
+
+          <div class="col-md-2">
+          <%= turbo_frame_tag "toggle_log_#{build_status.id}" do %>
+            <%= button_to(
+              "View log",
+              log_creators_build_status_path(build_status),
+              class: "btn btn-secondary",
+              form: { data: { turbo: true, turbo_stream: true }}, method: :get) %>
+          <% end %>
+          </div>
+          <div class="col text-end">
+            <% if build_status.counts %>
+              <%= render("counts", counts: build_status.counts) %>
+            <% end %>
+          </div>
+
+
+        </div>
+
+        <div>
+          <%= turbo_frame_tag "log_#{build_status.id}" do %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
