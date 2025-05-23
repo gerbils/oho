@@ -1,11 +1,9 @@
 
 class Creators::CreatorsBaseController < ApplicationController
 
-  # layout 'application'
-  helper_method :menu_name
-
   before_action do
     @app_title = "Pragmatic Creators"
+    @oho_top_menu = "creators/top_menu"
   end
 
   append_before_action do
@@ -20,10 +18,5 @@ class Creators::CreatorsBaseController < ApplicationController
     end
   end
 
-  protected
-
-  def menu_name
-    "creators/creators_base/top_menu"
-  end
 end
 
