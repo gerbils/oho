@@ -35,12 +35,12 @@ Rails.application.routes.draw do
     post "impersonate/:id"       => "impersonate#become", as: :become
   end
 
-  get "/royalties", to: "royalty#index"
-  namespace :royalty do
-    # get "/uploads", to: "royalty_upload#index"
-    resources :uploads, only: [:index, :new, :show, :create, :destroy] do
-      put "import", on: :member
+  namespace :royalties do
+    root  "home#index"
+    namespace :lp do
+      resources :uploads, only: [:index, :new, :show, :create, :destroy] do
+        put "import", on: :member
+      end
     end
-    get "/test/:id", to: "uploads#test", as: :test_upload
   end
 end
