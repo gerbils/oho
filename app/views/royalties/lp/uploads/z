@@ -1,0 +1,4 @@
+
+<section class="container mt-5">
+  <%= link_to "Uploads", royalty_uploads_path, class: "btn btn-primary btn-lg" %>
+</section>

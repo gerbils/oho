@@ -1,0 +1,31 @@
+<% content_for :title, "New upload" %>
+
+<h2>Create new upload</h5>
+
+<%= bootstrap_form_with(model: [:royalties, :lp, @upload]) do |form| %>
+  <% if @upload.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(@upload.errors.count, "error") %> prohibited this upload from being saved</h4>
+    </div>
+    <%= @upload.errors.inspect %>
+  <% end %>
+
+  <div>
+    <%= form.select :upload_channel, Upload::CHANNELS %>
+  </div>
+
+  <div>
+    <%= form.file_field :uploaded_file, accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" %>
+  </div>
+
+  <div>
+    <%= form.submit(class: "mt-3 btn btn-primary") %>
+  </div>
+<% end %>
+
+
+<br>
+
+<div>
+  <%= link_to "Back to uploads", royalties_lp_uploads_path %>
+</div>
