@@ -45,3 +45,5 @@ gem "mission_control-jobs", "~> 1.0"
 gem "roo", "~> 2.10"
 
 gem "csv", "~> 3.3"
+
+gem "sqlite3", "~> 2.6"

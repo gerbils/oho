@@ -69,7 +69,7 @@ module Royalties::Lp::UploadHandler
     ebooks = Sku
       .where(media: "electronic_book")
       .joins(:product)
-      .pluck(:id, :title, :isbn13, :kindle_edition_isbn, :safari_isbn, :channel_epub_isbn, :channel_pdf_isbn )  # yup, it is the SKU id...
+      .pluck(:id, :title, :isbn13, :safari_isbn, :channel_epub_isbn, :kindle_edition_isbn, :channel_pdf_isbn )  # yup, it is the SKU id...
 
     isbn_map = ebooks.reduce({}) do |result, query_row|
       sku_id = query_row.shift
@@ -78,8 +78,8 @@ module Royalties::Lp::UploadHandler
       info = { sku_id:, title:, paper_isbn: }
       query_row.each do |eisbn|
         if eisbn && !eisbn.empty?
-          if result[eisbn]
-            fail "Duplicate ISBN #{eisbn} for SKU #{result[eisbn][:sku_id]} and SKU #{sku_id}"
+          if result[eisbn] && result[eisbn][:sku_id] != sku_id
+            fail "ISBN #{eisbn.inspect} is use by both SKU #{result[eisbn][:sku_id]} and SKU #{sku_id}"
           end
           result[eisbn] = info
         end

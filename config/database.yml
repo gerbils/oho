@@ -3,7 +3,12 @@ connection: &connection
   encoding: utf8mb4
   socket: /tmp/mysql.sock
 
-main_db: &main_db
+sqlite: &sqlite
+  adapter: sqlite3
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000
+
+main_ds ~/tmp/x: &main_db
   <<: *connection
   username: <%= Rails.application.credentials.dig(:db, :primary, :username) %>
   password: <%= Rails.application.credentials.dig(:db, :primary, :password) %>
@@ -32,13 +37,13 @@ development:
   #   migrations_paths: db/cache_migrate
 
   queue:
-    <<: *main_db
-    database: oho_production_queue
+    <<: *sqlite
+    database: /tmp/solid_queue.sqlite
     migrations_paths: db/queue_migrate
 
   cable:
-    <<: *main_db
-    database: oho_production_cable
+    <<: *sqlite
+    database: /tmp/solid_cable.sqlite
     migrations_paths: db/cable_migrate
 
 test:
@@ -50,17 +55,12 @@ staging:
 production:
   <<: *config
 
-  cache:
-    <<: *main_db
-    database: oho_production_cache
-    migrations_paths: db/cache_migrate
-
   queue:
-    <<: *main_db
-    database: oho_production_queue
+    <<: *sqlite
+    database: <%= ENV["SOLID_ROOT"]/solid_queue.sqlite %>`
     migrations_paths: db/queue_migrate
 
   cable:
-    <<: *main_db
-    database: oho_production_cable
+    <<: *sqlite
+    database: <%= ENV["SOLID_ROOT"]/solid_cable.sqlite %>`
     migrations_paths: db/cable_migrate
