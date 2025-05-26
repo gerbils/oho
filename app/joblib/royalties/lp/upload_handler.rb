@@ -17,7 +17,7 @@ module Royalties::Lp::UploadHandler
                when 1
                  add_details_to_upload(upload, file)
                when 2
-                 Royalties::LP::ParseXls.parse_statement(file.download)
+                 Royalties::Lp::ParseXls.parse_statement(file.download)
                when 3
                  date = result[:date]
                  period = result[:period]
@@ -42,9 +42,9 @@ module Royalties::Lp::UploadHandler
   def sanity_check_ok?(file)
     error = case
             when !file.attached?
-              "File is not attache"
-            when file.content_type !~ /vnd.ms-excel.sheet/
-              "File #{file.content_type} is not an Excel sheet"
+              "File is not attached"
+            when file.content_type !~ /vnd.ms-excel.sheet|officedocument.spreadsheetml/
+              "Mime type #{file.content_type} is not an Excel sheet"
             else
               nil
             end

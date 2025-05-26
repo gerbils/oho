@@ -1,5 +1,11 @@
 <% content_for :title, "New upload" %>
 
+<%
+ok_mime_types = [
+  "application/vnd.ms-excel.sheet.macroEnabled",
+  #"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+].join(",")
+%>
 <h2>Create new upload</h5>
 
 <%= bootstrap_form_with(model: [:royalties, :lp, @upload]) do |form| %>
@@ -15,7 +21,7 @@
   </div>
 
   <div>
-    <%= form.file_field :uploaded_file, accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" %>
+    <%= form.file_field :uploaded_file, accept: ok_mime_types %>
   </div>
 
   <div>

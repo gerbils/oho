@@ -1,6 +1,4 @@
 # Import the data from a given LP upload
-require 'pry'
-
 module Royalties::Lp::ImportHandler
   extend self
 

@@ -26,10 +26,25 @@ class Upload < ApplicationRecord
 
   broadcasts_refreshes
 
+  def self.stats(channel)
+    {
+      status: stats_by_status,
+    }
+  end
+
   private
 
+  def self.stats_by_status
+    query = %{
+      SELECT count(*), sum(statement_total), status FROM `uploads` GROUP BY `uploads`.`status`
+    }
+    connection.execute(query).map do |(count, total, status)|
+      { count:, total:, status: }
+    end
+  end
+
   def set_initial_status
-    self.status ||= STATUS_PENDING
+    self.status = STATUS_PENDING
   end
 
   def set_uploaded_at

@@ -26,6 +26,21 @@ config: &config
 development:
   <<: *config
 
+  # cache:
+  #   <<: *main_db
+  #   database: oho_production_cache
+  #   migrations_paths: db/cache_migrate
+
+  queue:
+    <<: *main_db
+    database: oho_production_queue
+    migrations_paths: db/queue_migrate
+
+  cable:
+    <<: *main_db
+    database: oho_production_cable
+    migrations_paths: db/cable_migrate
+
 test:
   <<: *config
 

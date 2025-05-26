@@ -25,7 +25,7 @@ class Royalties::Lp::UploadsController < ApplicationController
 
     respond_to do |format|
       if @upload.save
-        UploadRoyaltyJob.perform_later(@upload.id)
+        Lp::UploadRoyaltyJob.perform_later(@upload.id)
         format.html { redirect_to royalties_lp_uploads_url, notice: "Upload initiated" }
         format.json { render :show, status: :created, location: @upload }
       else
@@ -37,7 +37,7 @@ class Royalties::Lp::UploadsController < ApplicationController
 
   def import
     @upload = Upload.find(params[:id])
-    ImportRoyaltyJob.perform_later(@upload.id)
+    Lp::ImportRoyaltyJob.perform_later(@upload.id)
 
     respond_to do |format|
       format.html { redirect_to royalties_lp_uploads_url, notice: "Import to PIP initiated" }

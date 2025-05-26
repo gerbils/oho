@@ -7,7 +7,24 @@
       <%= link_to "Uploads/Imports", royalties_lp_uploads_path, class: "btn btn-primary" %>
     </div>
     <div class="col">
-      <p> some useful stats...</p>
+      <table class="table">
+        <thead class="table-dark">
+          <tr>
+            <th scope="col">Status</th>
+            <th scope="col" class="text-end">Count</th>
+            <th scope="col" class="text-end">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @lp_stats[:status].each do |stat| %>
+            <tr>
+              <td><%= stat[:status] %></td>
+              <td class="text-end"><%= stat[:count] %></td>
+              <td class="text-end"><%= number_to_currency(stat[:total]) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>

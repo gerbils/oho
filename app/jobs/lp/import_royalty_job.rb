@@ -1,5 +1,3 @@
-require_relative '../../../lib/royalties/dispatcher'
-
 class Lp::ImportRoyaltyJob < ApplicationJob
   queue_as :default
 

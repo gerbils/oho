@@ -1,6 +1,5 @@
 require 'roo'
 require "bigdecimal"
-require 'pry'
 
 module Royalties::Lp::ParseXls
   extend self
@@ -38,7 +37,7 @@ module Royalties::Lp::ParseXls
     if expected_value =~ actual_value
       $1
     else
-      raise "Expected #{msg} but got #{actual_value.inspect} in row: #{row}:\n#{sheet.row(row).inspect}"
+      raise "Expected #{msg} but got #{actual_value.inspect} in row: #{row}:\n#{sheet.row(row).inspect}\nPerhaps this isn't a Learning Platform file?"
     end
   end
 
