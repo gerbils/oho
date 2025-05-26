@@ -57,10 +57,10 @@ production:
 
   queue:
     <<: *sqlite
-    database: <%= ENV["SOLID_ROOT"]/solid_queue.sqlite %>`
+    database: <%= ENV["SOLID_ROOT"]%>/solid_queue.sqlite
     migrations_paths: db/queue_migrate
 
   cable:
     <<: *sqlite
-    database: <%= ENV["SOLID_ROOT"]/solid_cable.sqlite %>`
+    database: <%= ENV["SOLID_ROOT"]%>/solid_cable.sqlite
     migrations_paths: db/cable_migrate
