@@ -1,7 +1,7 @@
 
 Rails.application.routes.draw do
   # mount Sidekiq::Web => "/sidekiq" # mount Sidekiq::Web in your Rails app
-  mount MissionControl::Jobs::Engine, at: "/jobs"
+  mount MissionControl::Jobs::Engine, at: "/johnson"
 
   resources :passwords, param: :token
   resource :session
