@@ -62,10 +62,10 @@ production:
 
   cable:
     <<: *sqlite
-    database:         <%= ENV["SOLID_ROOT"]%>/oho_solid_queue.sqlite
+    database:         <%= ENV["SOLID_ROOT"]%>/oho_solid_cable.sqlite
     migrations_paths: db/cable_migrate
 
   cache:
     <<: *sqlite
-    database:         <%= ENV["SOLID_ROOT"]%>/oho_solid_queue.sqlite
+    database:         <%= ENV["SOLID_ROOT"]%>/oho_solid_cache.sqlite
     migrations_paths: db/cache_migrate
