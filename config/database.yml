@@ -8,12 +8,12 @@ sqlite: &sqlite
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   timeout: 5000
 
-main_ds ~/tmp/x: &main_db
+main_db: &main_db
   <<: *connection
   username: <%= Rails.application.credentials.dig(:db, :primary, :username) %>
   password: <%= Rails.application.credentials.dig(:db, :primary, :password) %>
-  host: <%= Rails.application.credentials.dig(:db, :primary, :host) %>
-  port: <%= Rails.application.credentials.dig(:db, :primary, :port) %>
+  host:     <%= Rails.application.credentials.dig(:db, :primary, :host) %>
+  port:     <%= Rails.application.credentials.dig(:db, :primary, :port) %>
 
 config: &config
   primary:
@@ -25,25 +25,25 @@ config: &config
     database: <%= Rails.application.credentials.dig(:db, :legacy, :database) %>
     username: <%= Rails.application.credentials.dig(:db, :legacy, :username) %>
     password: <%= Rails.application.credentials.dig(:db, :legacy, :password) %>
-    host: <%= Rails.application.credentials.dig(:db, :legacy, :host) %>
-    port: <%= Rails.application.credentials.dig(:db, :legacy, :port) %>
+    host:     <%= Rails.application.credentials.dig(:db, :legacy, :host) %>
+    port:     <%= Rails.application.credentials.dig(:db, :legacy, :port) %>
 
 development:
   <<: *config
 
-  # cache:
-  #   <<: *main_db
-  #   database: oho_production_cache
-  #   migrations_paths: db/cache_migrate
+  cache:
+    <<: *sqlite
+    database:         oho_production_cache
+    migrations_paths: db/cache_migrate
 
   queue:
     <<: *sqlite
-    database: /tmp/solid_queue.sqlite
+    database:         /tmp/solid_queue.sqlite
     migrations_paths: db/queue_migrate
 
   cable:
     <<: *sqlite
-    database: /tmp/solid_cable.sqlite
+    database:         /tmp/solid_cable.sqlite
     migrations_paths: db/cable_migrate
 
 test:
@@ -57,15 +57,15 @@ production:
 
   queue:
     <<: *sqlite
-    database: <%= ENV["SOLID_ROOT"]%>/oho_solid_queue.sqlite
+    database:         <%= ENV["SOLID_ROOT"]%>/oho_solid_queue.sqlite
     migrations_paths: db/queue_migrate
 
   cable:
     <<: *sqlite
-    database: <%= ENV["SOLID_ROOT"]%>/oho_solid_queue.sqlite
+    database:         <%= ENV["SOLID_ROOT"]%>/oho_solid_queue.sqlite
     migrations_paths: db/cable_migrate
 
   cache:
     <<: *sqlite
-    database: <%= ENV["SOLID_ROOT"]%>/oho_solid_queue.sqlite
+    database:         <%= ENV["SOLID_ROOT"]%>/oho_solid_queue.sqlite
     migrations_paths: db/cache_migrate
