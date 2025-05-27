@@ -26,7 +26,7 @@ class Royalties::Lp::UploadsController < ApplicationController
     respond_to do |format|
       if @upload.save
         # Lp::UploadRoyaltyJob.perform_later(@upload.id)
-        Lp::UploadRoyaltyJob.perform(@upload.id)
+        Lp::UploadRoyaltyJob.new.perform(@upload.id)
         format.html { redirect_to royalties_lp_uploads_url, notice: "Upload initiated" }
         format.json { render :show, status: :created, location: @upload }
       else
