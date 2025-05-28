@@ -33,7 +33,7 @@ group :development do
 end
 
 # app gems
-gem "aws-sdk-s3", "~> 1.158"
+gem "aws-sdk-s3", "~> 1.187"
 gem "pagy", "~> 9.3"
 gem "groupdate", "~> 6.6"
 gem "bootstrap_form", "~> 5.4"
