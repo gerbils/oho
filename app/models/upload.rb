@@ -44,7 +44,7 @@ class Upload < ApplicationRecord
   end
 
   def set_initial_status
-    self.status = STATUS_PENDING
+    self.status ||= STATUS_PENDING
   end
 
   def set_uploaded_at

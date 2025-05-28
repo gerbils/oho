@@ -38,7 +38,7 @@ class Royalties::Lp::UploadsController < ApplicationController
 
   def import
     @upload = Upload.find(params[:id])
-    Lp::ImportRoyaltyJob.perform_later(@upload.id)
+    Lp::ImportRoyaltyJob.new.perform(@upload.id)
 
     respond_to do |format|
       format.html { redirect_to royalties_lp_uploads_url, notice: "Import to PIP initiated" }
