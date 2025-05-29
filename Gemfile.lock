@@ -73,8 +73,8 @@ GEM
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
     aws-eventstream (1.3.2)
-    aws-partitions (1.1107.0)
-    aws-sdk-core (3.224.0)
+    aws-partitions (1.1108.0)
+    aws-sdk-core (3.224.1)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.992.0)
       aws-sigv4 (~> 1.9)
@@ -84,8 +84,8 @@ GEM
     aws-sdk-kms (1.101.0)
       aws-sdk-core (~> 3, >= 3.216.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-s3 (1.186.1)
-      aws-sdk-core (~> 3, >= 3.216.0)
+    aws-sdk-s3 (1.188.0)
+      aws-sdk-core (~> 3, >= 3.224.1)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.5)
     aws-sigv4 (1.11.0)
@@ -340,7 +340,7 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
-  aws-sdk-s3 (~> 1.158)
+  aws-sdk-s3 (~> 1.188)
   bcrypt (~> 3.1)
   bootsnap
   bootstrap_form (~> 5.4)
