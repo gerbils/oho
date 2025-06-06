@@ -2,7 +2,6 @@ class Lp::UploadRoyaltyJob < ApplicationJob
   queue_as :default
 
   def perform(upload_id)
-console
     logger.info("starting LP import job")
     upload = UploadWrapper.find(upload_id)
 
