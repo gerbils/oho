@@ -1,5 +1,5 @@
 class Royalties::Lp::StatementsController < ApplicationController
-  before_action :set_statement, only: %i[ show destroy ]
+  before_action :set_statement, only: %i[ show destroy import ]
 
   def index
     @upload_wrapper ||= UploadWrapper.new
@@ -18,21 +18,17 @@ class Royalties::Lp::StatementsController < ApplicationController
         # Lp::UploadRoyaltyJob.perform_later(@upload.id)
         Lp::UploadRoyaltyJob.new.perform(@upload.id)
         format.html { redirect_to royalties_lp_statements_url, notice: "Upload initiated" }
-        format.json { render :show, status: :created, location: @upload }
       else
         format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @upload.errors, status: :unprocessable_entity }
       end
     end
   end
 
   def import
-    @upload = Upload.find(params[:id])
-    Lp::ImportRoyaltyJob.new.perform(@upload.id)
+    Lp::ImportRoyaltyJob.new.perform(@statement.id)
 
     respond_to do |format|
-      format.html { redirect_to royalties_lp_uploads_url, notice: "Import to PIP initiated" }
-      format.json { render :show, status: :ok, location: @upload }
+      format.html { redirect_to royalties_lp_statements_url, notice: "Import to PIP initiated" }
     end
   end
 
@@ -51,18 +47,17 @@ class Royalties::Lp::StatementsController < ApplicationController
 
   # DELETE /uploads/1 or /uploads/1.json
   def destroy
-    @upload.destroy!
+    @statement.destroy!
 
     respond_to do |format|
-      format.html { redirect_to royalties_lp_uploads_url, status: :see_other, notice: "Upload was successfully destroyed." }
-      format.json { head :no_content }
+      format.html { redirect_to royalties_lp_statement_url, status: :see_other, notice: "Upload was successfully destroyed." }
     end
   end
 
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_statement
-      @statement = Statement.find(params.expect(:id))
+      @statement = LpStatement.find(params.expect(:id))
     end
 
     # Only allow a list of trusted parameters through.

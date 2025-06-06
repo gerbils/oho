@@ -1,28 +1,28 @@
 
 # == Schema Information
 #
-# Table name: raw_ips_statement_details
+# Table name: ips_statement_details
 #
-#  id                   :bigint           not null, primary key
-#  basis                :string(255)
-#  basis_for_charge     :decimal(10, 2)   not null
-#  detail               :string(255)      not null
-#  due_this_month       :decimal(10, 2)   not null
-#  factor_or_rate       :decimal(6, 4)    not null
-#  month_due            :date
-#  section              :string(255)      not null
-#  subsection           :string(255)      not null
-#  created_at           :datetime         not null
-#  updated_at           :datetime         not null
-#  raw_ips_statement_id :bigint           not null
+#  id               :bigint           not null, primary key
+#  basis            :string(255)
+#  basis_for_charge :decimal(10, 2)   not null
+#  detail           :string(255)      not null
+#  due_this_month   :decimal(10, 2)   not null
+#  factor_or_rate   :decimal(6, 4)    not null
+#  month_due        :date
+#  section          :string(255)      not null
+#  subsection       :string(255)      not null
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  ips_statement_id :bigint           not null
 #
 # Indexes
 #
-#  index_raw_ips_statement_details_on_raw_ips_statement_id  (raw_ips_statement_id)
+#  index_ips_statement_details_on_ips_statement_id  (ips_statement_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (raw_ips_statement_id => raw_ips_statements.id)
+#  fk_rails_...  (ips_statement_id => ips_statements.id)
 #
 class IpsStatementDetail < ActiveRecord::Base
 

@@ -1,29 +1,31 @@
 
 # == Schema Information
 #
-# Table name: raw_ips_statements
+# Table name: ips_statements
 #
 #  id                  :bigint           not null, primary key
 #  expenses            :decimal(10, 2)   default(0.0)
 #  gross_returns_total :decimal(10, 2)   default(0.0)
 #  gross_sales_total   :decimal(10, 2)   default(0.0)
+#  imported_at         :datetime
 #  month_ending        :date             not null
 #  net_client_earnings :decimal(10, 2)   default(0.0)
 #  net_sales           :decimal(10, 2)   default(0.0)
 #  revenue             :decimal(10, 2)   default(0.0)
+#  status              :string(255)      not null
 #  total_chargebacks   :decimal(10, 2)   default(0.0)
 #  total_expenses      :decimal(10, 2)   default(0.0)
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
-#  upload_id           :bigint           not null
+#  upload_wrapper_id   :bigint           not null
 #
 # Indexes
 #
-#  index_raw_ips_statements_on_upload_id  (upload_id)
+#  index_ips_statements_on_upload_wrapper_id  (upload_wrapper_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (upload_id => uploads.id)
+#  fk_rails_...  (upload_wrapper_id => upload_wrappers.id)
 #
 class IpsStatement < ActiveRecord::Base
   belongs_to :upload_wrapper, dependent: :destroy

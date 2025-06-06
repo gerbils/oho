@@ -1,20 +1,21 @@
 class Lp::ImportRoyaltyJob < ApplicationJob
   queue_as :default
 
-  def perform(upload_id)
-    logger.info("starting import `job")
-    upload = Upload.find(upload_id)
-    if upload.status != Upload::STATUS_UPLOADED
-      logger.error("Upload is not pending")
-      upload.update!(status: Upload::STATUS_IMPORT_FAILED, error_msg: "Upload is not pending")
+  def perform(statement_id)
+    logger.info("starting import job")
+    statement = LpStatement.find(statement_id)
+    if statement.status != LpStatement::STATUS_UPLOADED
+      logger.error("Import is not pending")
+      statement.update!(status: LpStatement::STATUS_IMPORT_FAILED, status_message: "Import is not pending")
       return
     end
-    upload.update!(status: Upload::STATUS_PROCESSING, error_msg: nil)
+    statement.update!(status: LpStatement::STATUS_PROCESSING, status_message: nil)
     begin
-      Royalties::Lp::ImportHandler.handle_import(upload)
+      Royalties::Lp::ImportHandler.handle(statement)
     rescue => e
+      raise if ENV["debug"]
       Rails.logger.error("Error handling import: #{e.message}")
-      upload.update!(status: Upload::STATUS_FAILED_IMPORT, error_msg: e.message)
+      statement.update!(status: LpStatement::STATUS_FAILED_IMPORT, status_message: e.message)
     end
     logger.info("finishing job")
   end

@@ -6,46 +6,36 @@ module Royalties::Lp::StatementUpload
   extend Royalties::Shared
 
 
-  def handle(upload)
-    file = upload.file
+  def handle(statement)
     step = 0
     result = nil # for scoping
-
     loop do   # Poor man's "do"
       result = case step
                when 0
-                 excel_file_attached?(file)
+                 excel_file_attached?(statement)
                when 1
-                 add_details_to_upload(upload, file)
+                 Royalties::Lp::ParseStatement.parse(statement)
                when 2
-                 Royalties::Lp::ParseStatement.parse(file.download)
+                 map_isbns_to_skus(statement)
                when 3
-                 map_isbns_to_skus(result[:statement])
+                 save_statement(statement)
                when 4
-                 save_statement(upload, result[:statement])
-               when 5
                  break
+
+                when :error
+                  record_error(statement, result[:message])
+                  break
                end
       if result[:status] == :ok
         step += 1
+        statement = result[:statement]
       else
-        record_error(upload, result[:message])
-        break
+        step = :error
       end
     end
   end
 
   private
-
-  def add_details_to_upload(upload, file)
-    upload.status_message = nil
-    upload.filename = file.filename.to_s
-    upload.size = file.byte_size
-    upload.save!
-    { status: :ok }
-  rescue => e
-    { status: :error, message: e.message }
-  end
 
   def map_isbns_to_skus(statement)
     lines = statement.lp_statement_lines
@@ -94,8 +84,9 @@ module Royalties::Lp::StatementUpload
     else
       { status: :error, message: errors.join("\n") }
     end
-  # rescue => e  TODO: remove
-  #   { status: :error, message: e.message }
+  rescue => e
+    raise if ENV['debug']
+    { status: :error, message: e.message }
   end
 
   def titles_similar(pip, lp)
@@ -104,21 +95,28 @@ module Royalties::Lp::StatementUpload
     pip[0..10] == lp[0..10]
   end
 
-  def save_statement(upload, statement)
-    statement.upload_wrapper = upload
-    fail
-      statement.save!
-      { status: :ok}
-  # rescue => e  TODO: remove
-  #   msg = case e
-  #         when ActiveRecord::RecordNotUnique
-  #           statement.date_on_report = "dup #{upload.id}: #{upload.date_on_report}"
-  #           "This file has already been statemented"
-  #         else
-  #           e.message
-  #         end
-  #
-  #   { status: :error, message: msg }
+  def save_statement(statement)
+    statement.status = LpStatement::STATUS_UPLOADED
+    statement.save!
+    { status: :ok}
+  rescue => e
+    raise if ENV['debug']
+    msg = case e
+          when ActiveRecord::RecordNotUnique
+            statement.date_on_report = "dup #{upload.id}: #{upload.date_on_report}"
+            "This file has already been statemented"
+          else
+            e.message
+          end
+
+    { status: :error, message: msg }
   end
+
+  def record_error(statement, message)
+    statement.status_message = message
+    statement.status = LpStatement::STATUS_FAILED_UPLOAD
+    statement.save!
+  end
+
 
 end

@@ -42,12 +42,13 @@ module Royalties::Lp::ParseStatement
     [ date, period ]
   end
 
-  def parse(content)
-    sheet = open_spreadsheet(content, 'xlsm')
+  def parse(statement)
+    sheet = open_spreadsheet(statement.upload_wrapper.file.download, 'xlsm')
     date, period  = sanity_check(sheet)
     total = BigDecimal("0")
 
-    statement = LpStatement.new(date_on_report: date, report_period: period)
+    statement.date_on_report = date
+    statement.report_period  = period
 
     row = HEADER_ROW + 1
     while (row <= sheet.last_row)
@@ -86,9 +87,10 @@ module Royalties::Lp::ParseStatement
 
     return { status: :ok, statement: }
 
-  # rescue => e  TODO: remove
-  #   Rails.logger.error "Error parsing LP statement: #{e.message}"
-  #   return { status: :error, message: e.message }
+  rescue => e
+    raise if ENV['debug']
+    Rails.logger.error "Error parsing LP statement: #{e.message}"
+    return { status: :error, message: e.message }
   end
 end
 

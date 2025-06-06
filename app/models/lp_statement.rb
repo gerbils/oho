@@ -1,17 +1,25 @@
 # == Schema Information
 #
-# Table name: uploads
+# Table name: lp_statements
 #
-#  id              :bigint           not null, primary key
-#  date_on_report  :datetime
-#  report_period   :string(255)
-#  statement_total :decimal(10, 2)   default(0.0)
-#  status          :string(255)      not null
-#  imported_at     :datetime
+#  id                :bigint           not null, primary key
+#  date_on_report    :date
+#  imported_at       :datetime
+#  report_period     :string(255)
+#  statement_total   :decimal(10, 2)   default(0.0)
+#  status            :string(255)
+#  status_message    :text(65535)
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  upload_wrapper_id :bigint           not null
 #
 # Indexes
 #
-#  index_uploads_on_date_on_report  (date_on_report) UNIQUE
+#  index_lp_statements_on_upload_wrapper_id  (upload_wrapper_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (upload_wrapper_id => upload_wrappers.id)
 #
 class LpStatement < ApplicationRecord
 
@@ -19,12 +27,12 @@ class LpStatement < ApplicationRecord
   STATUS_FAILED_UPLOAD = 'failed upload'
   STATUS_IMPORTED      = 'imported'
   STATUS_INCOMPLETE    = 'incomplete'
-  STATUS_PENDING       = 'pending'
+  STATUS_UPLOAD_PENDING = 'upload pending'
   STATUS_PROCESSING    = 'processing'
   STATUS_UPLOADED      = 'uploaded'
 
   STATII = [
-    STATUS_PENDING, STATUS_INCOMPLETE, STATUS_PROCESSING, STATUS_UPLOADED,
+    STATUS_UPLOAD_PENDING, STATUS_INCOMPLETE, STATUS_PROCESSING, STATUS_UPLOADED,
     STATUS_IMPORTED, STATUS_FAILED_UPLOAD, STATUS_FAILED_IMPORT
   ]
 
@@ -36,6 +44,15 @@ class LpStatement < ApplicationRecord
   after_initialize :set_initial_status
 
   # broadcasts_refreshes
+
+  def self.new_with_upload(upload)
+    statement = new(
+      upload_wrapper: upload,
+      status: STATUS_UPLOAD_PENDING,
+      status_message: nil
+    )
+    statement
+  end
 
   def self.stats()
     query = %{

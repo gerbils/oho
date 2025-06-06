@@ -120,6 +120,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_05_231338) do
   create_table "lp_statements", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "upload_wrapper_id", null: false
     t.string "status"
+    t.text "status_message"
     t.date "date_on_report"
     t.string "report_period"
     t.decimal "statement_total", precision: 10, scale: 2, default: "0.0"

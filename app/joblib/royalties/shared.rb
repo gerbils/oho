@@ -1,6 +1,7 @@
 module Royalties::Shared
 
-  def excel_file_attached?(file)
+  def excel_file_attached?(statement)
+    file = statement.upload_wrapper.file
     error = case
             when !file.attached?
               "File is not attached"
@@ -12,7 +13,7 @@ module Royalties::Shared
     if error
       { status: :error, message: error }
     else
-      { status: :ok }
+      { status: :ok, statement: }
     end
   end
 
@@ -27,12 +28,6 @@ module Royalties::Shared
       file.unlink
     end
     xls.sheet(0)
-  end
-
-  def record_error(upload, message)
-    upload.status_message = message
-    upload.status = Upload::STATUS_FAILED_UPLOAD
-    upload.save!
   end
 
 end

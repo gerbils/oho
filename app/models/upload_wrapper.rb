@@ -2,15 +2,16 @@
 #
 # Table name: upload_wrappers
 #
-#  id             :bigint           not null, primary key
-#  filename       :string(255)
-#  mime_type      :string(255)
-#  size           :integer
-#  status         :string(255)
-#  status_message :text(65535)
-#  uploaded_at    :datetime
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
+#  id                   :bigint           not null, primary key
+#  filename             :string(255)
+#  id_of_created_object :integer
+#  mime_type            :string(255)
+#  size                 :integer
+#  status               :string(255)
+#  status_message       :text(65535)
+#  uploaded_at          :datetime
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
 #
 class UploadWrapper < ApplicationRecord
   has_one_attached :file

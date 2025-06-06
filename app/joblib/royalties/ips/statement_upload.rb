@@ -63,4 +63,11 @@ module Royalties::Ips::StatementUpload
   #   { status: :error, message: e.message }
   end
 
+  def record_error(statement, message)
+    statement.status_message = message
+    statement.status = IpsStatement::STATUS_FAILED_UPLOAD
+    statement.save!
+  end
+
+
 end
