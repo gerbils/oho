@@ -1,0 +1,60 @@
+<%= turbo_stream_from statement %>
+
+<tr id="<%= dom_id statement %>" class="align-middle">
+  <td>
+    <%= statement.date_on_report&.strftime("%Y-%m") %>
+  </td>
+
+  <td title="<%= statement.upload_wrapper.uploaded_at&.to_fs(:oho_dt) %>">
+    <%= statement.upload_wrapper.uploaded_at&.strftime("%Y-%m-%d") %>
+  </td>
+
+  <td title="<%= statement.imported_at&.to_fs(:oho_dt) %>">
+    <% if statement.imported_at.present? %>
+      <%= statement.imported_at&.to_fs(:oho_md) %>
+    <% elsif statement.status == LpStatement::STATUS_UPLOADED %>
+        <%= button_to 'Import now',
+                  import_royalties_lp_statement_path(statement),
+                  class: 'btn btn-success',
+                  method: :put,
+                  data: { "turbo-method": :put, turbo_confirm: 'This permanently adds royalty information to PIP. Continue? ' }
+                 %>
+    <% end %>
+  </td>
+
+  <td>
+    <%= statement.status %>
+  </td>
+
+  <td>
+    <%= number_to_currency(statement.statement_total) if statement.statement_total.present? %>
+  </td>
+
+  <td>
+    <!-- link_to upload.uploaded_file.filename, upload.uploaded_file if upload.uploaded_file.attached? -->
+    <%=
+      name = statement.upload_wrapper.filename
+      name if statement.upload_wrapper.file.attached? %>
+  </td>
+
+  <td>
+
+    <%= link_to('Delete',
+                  royalties_lp_statement_path(statement),
+                  class: 'btn btn-warning',
+                  method: :delete,
+                  data: { "turbo-method": :delete, turbo_confirm: 'Are you sure?' }
+                 ) if statement.imported_at.blank? %>
+  </td>
+</tr>
+<% if statement.upload_wrapper.status_message.present? %>
+  <tr class="table-warning">
+    <td class="table-danger align-middle" colspan="2">Error on previous row</td>
+    <td colspan="6" class="">
+      <span class="text-dark">
+        <%= statement.upload_wrapper.status_message.gsub(/\n/, "<br/>").html_safe %>
+      </span>
+    </td>
+  </tr>
+<% end %>
+

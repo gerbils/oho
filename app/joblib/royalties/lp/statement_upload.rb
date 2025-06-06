@@ -1,0 +1,124 @@
+require_relative './parse_statement'
+
+module Royalties::Lp; end
+module Royalties::Lp::StatementUpload
+  extend self
+  extend Royalties::Shared
+
+
+  def handle(upload)
+    file = upload.file
+    step = 0
+    result = nil # for scoping
+
+    loop do   # Poor man's "do"
+      result = case step
+               when 0
+                 excel_file_attached?(file)
+               when 1
+                 add_details_to_upload(upload, file)
+               when 2
+                 Royalties::Lp::ParseStatement.parse(file.download)
+               when 3
+                 map_isbns_to_skus(result[:statement])
+               when 4
+                 save_statement(upload, result[:statement])
+               when 5
+                 break
+               end
+      if result[:status] == :ok
+        step += 1
+      else
+        record_error(upload, result[:message])
+        break
+      end
+    end
+  end
+
+  private
+
+  def add_details_to_upload(upload, file)
+    upload.status_message = nil
+    upload.filename = file.filename.to_s
+    upload.size = file.byte_size
+    upload.save!
+    { status: :ok }
+  rescue => e
+    { status: :error, message: e.message }
+  end
+
+  def map_isbns_to_skus(statement)
+    lines = statement.lp_statement_lines
+    ebooks = Sku
+      .where(media: "electronic_book")
+      .joins(:product)
+      .pluck(:id, :title, :isbn13, :safari_isbn, :channel_epub_isbn, :kindle_edition_isbn, :channel_pdf_isbn )  # yup, it is the SKU id...
+
+    isbn_map = ebooks.reduce({}) do |result, query_row|
+      sku_id = query_row.shift
+      title = query_row.shift
+      paper_isbn = query_row.shift
+      info = { sku_id:, title:, paper_isbn: }
+      query_row.each do |eisbn|
+        if eisbn && !eisbn.empty?
+          if result[eisbn] && result[eisbn][:sku_id] != sku_id
+            fail "ISBN #{eisbn.inspect} is use by both SKU #{result[eisbn][:sku_id]} and SKU #{sku_id}"
+          end
+          result[eisbn] = info
+        end
+      end
+      result
+    end
+
+    errors = []
+    lines.each do |line|
+      isbn = line.isbn
+      if match = isbn_map[isbn]
+        match => { sku_id:, title: }
+        if titles_similar(title, line.title)
+          line.sku_id = sku_id
+        else
+          errors << "Title mismatch #{isbn}: #{title.inspect} doesn't start with #{line.title.inspect}"
+        end
+      else
+        errors << "ISBN #{isbn} for #{line.title.inspect} not found in pip"
+      end
+      if errors.length > 9
+        errors << "Too many errors; stopping"
+        return { status: :error, message: errors.join("\n") }
+      end
+    end
+
+    if errors.empty?
+      { status: :ok, statement: statement }
+    else
+      { status: :error, message: errors.join("\n") }
+    end
+  # rescue => e  TODO: remove
+  #   { status: :error, message: e.message }
+  end
+
+  def titles_similar(pip, lp)
+    pip = pip.downcase.tr("^a-z0-9", " ")
+    lp  = lp.downcase.tr("^a-z0-9", " ").sub(/2nd/, "second").sub(/3rd/, "third")
+    pip[0..10] == lp[0..10]
+  end
+
+  def save_statement(upload, statement)
+    statement.upload_wrapper = upload
+    fail
+      statement.save!
+      { status: :ok}
+  # rescue => e  TODO: remove
+  #   msg = case e
+  #         when ActiveRecord::RecordNotUnique
+  #           statement.date_on_report = "dup #{upload.id}: #{upload.date_on_report}"
+  #           "This file has already been statemented"
+  #         else
+  #           e.message
+  #         end
+  #
+  #   { status: :error, message: msg }
+  end
+
+end

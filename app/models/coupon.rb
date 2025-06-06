@@ -1,3 +1,25 @@
+# == Schema Information
+#
+# Table name: coupons
+#
+#  id               :integer          not null, primary key
+#  action           :string(255)
+#  amount           :decimal(8, 2)    default(0.0)
+#  applies_to       :string(255)      default("ANY OF")
+#  code             :string(255)
+#  description      :text(65535)
+#  email_extension  :string(255)
+#  expires_at       :datetime
+#  external_only    :boolean          default(FALSE)
+#  is_user_specific :boolean          default(FALSE)
+#  last_use_at      :datetime
+#  max_uses         :integer
+#  sku_list         :text(65535)
+#  use_count        :integer          default(0)
+#  use_key          :string(255)
+#  created_at       :datetime
+#  updated_at       :datetime
+#
 class Coupon < LegacyRecord
 
   has_many :discount_items

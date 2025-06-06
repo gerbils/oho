@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: build_statuses
+#
+#  id         :integer          not null, primary key
+#  revision   :string(255)
+#  status     :string(255)      default("in_progress")
+#  created_at :datetime
+#  updated_at :datetime
+#  sku_id     :integer
+#
 class BuildStatus < LegacyRecord
   STATUSES = %w(started updating building uploading succeeded failed)
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_11_170211) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_05_231338) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -39,115 +39,105 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_11_170211) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "author_calendar_items", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.integer "user_id"
-    t.date "start_date", null: false
-    t.string "what", null: false
-    t.string "where"
-    t.string "event_url"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "bookshelf_friends", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "purchaser_email"
-    t.boolean "purchaser_accepts_terms"
-    t.datetime "purchaser_terms_date"
-    t.string "reader_name"
-    t.string "reader_email"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "fotb_coupons", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "bookshelf_friends_id", null: false
-    t.string "coupon_name"
-    t.date "expires"
-    t.string "sendowl_coupon_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["bookshelf_friends_id"], name: "index_fotb_coupons_on_bookshelf_friends_id"
-  end
-
-  create_table "fotb_payments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "bookshelf_friends_id", null: false
-    t.decimal "amount", precision: 10
-    t.boolean "successful"
-    t.json "stripe_charge"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["bookshelf_friends_id"], name: "index_fotb_payments_on_bookshelf_friends_id"
-  end
-
-  create_table "images", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "file_name"
-    t.string "product_code"
-    t.string "product_code_and_variant"
-    t.string "bucket"
-    t.string "path_in_bucket"
-    t.string "url"
-    t.integer "width"
-    t.integer "height"
-    t.bigint "images_id"
-    t.integer "update_count", default: 0
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+  create_table "ips_revenue_lines", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "ips_statement_details_id"
+    t.bigint "upload_wrapper_id", null: false
+    t.integer "sku_id"
+    t.string "ean"
+    t.string "title"
+    t.string "format"
+    t.decimal "list_amount", precision: 8, scale: 2
+    t.string "pub_alpha"
+    t.string "brand_category"
+    t.string "imprint"
+    t.string "date"
+    t.string "customer_po_or_claim_no"
+    t.string "invoice_or_credit_memo_no"
+    t.decimal "customer_discount", precision: 6, scale: 5
     t.string "type"
-    t.string "content_type"
-    t.index ["images_id"], name: "index_images_on_images_id"
-    t.index ["product_code_and_variant"], name: "index_images_on_product_code_and_variant"
-  end
-
-  create_table "oauth_access_grants", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "resource_owner_id", null: false
-    t.bigint "application_id", null: false
-    t.string "token", null: false
-    t.integer "expires_in", null: false
-    t.text "redirect_uri", null: false
-    t.string "scopes", default: "", null: false
-    t.datetime "created_at", null: false
-    t.datetime "revoked_at"
-    t.index ["application_id"], name: "index_oauth_access_grants_on_application_id"
-    t.index ["resource_owner_id"], name: "index_oauth_access_grants_on_resource_owner_id"
-    t.index ["token"], name: "index_oauth_access_grants_on_token", unique: true
-  end
-
-  create_table "oauth_access_tokens", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "resource_owner_id"
-    t.bigint "application_id", null: false
-    t.string "token", null: false
-    t.string "refresh_token"
-    t.integer "expires_in"
-    t.string "scopes"
-    t.datetime "created_at", null: false
-    t.datetime "revoked_at"
-    t.string "previous_refresh_token", default: "", null: false
-    t.index ["application_id"], name: "index_oauth_access_tokens_on_application_id"
-    t.index ["refresh_token"], name: "index_oauth_access_tokens_on_refresh_token", unique: true
-    t.index ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id"
-    t.index ["token"], name: "index_oauth_access_tokens_on_token", unique: true
-  end
-
-  create_table "oauth_applications", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "uid", null: false
-    t.string "secret", null: false
-    t.text "redirect_uri", null: false
-    t.string "scopes", default: "", null: false
-    t.boolean "confidential", default: true, null: false
+    t.integer "qty"
+    t.decimal "value", precision: 8, scale: 2
+    t.string "hq_account_no"
+    t.string "headquarter"
+    t.string "shipping_location"
+    t.string "sl_city"
+    t.string "sl_state"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
+    t.index ["ips_statement_details_id"], name: "index_ips_revenue_lines_on_ips_statement_details_id"
+    t.index ["upload_wrapper_id"], name: "index_ips_revenue_lines_on_upload_wrapper_id"
   end
 
-  create_table "oauth_openid_requests", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "access_grant_id", null: false
-    t.string "nonce", null: false
-    t.index ["access_grant_id"], name: "index_oauth_openid_requests_on_access_grant_id"
+  create_table "ips_statement_details", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "ips_statement_id", null: false
+    t.string "section", null: false
+    t.string "subsection", null: false
+    t.string "detail", null: false
+    t.date "month_due"
+    t.string "basis"
+    t.decimal "basis_for_charge", precision: 10, scale: 2, null: false
+    t.decimal "factor_or_rate", precision: 6, scale: 4, null: false
+    t.decimal "due_this_month", precision: 10, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ips_statement_id"], name: "index_ips_statement_details_on_ips_statement_id"
+  end
+
+  create_table "ips_statements", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "upload_wrapper_id", null: false
+    t.string "status", null: false
+    t.date "month_ending", null: false
+    t.decimal "revenue", precision: 10, scale: 2, default: "0.0"
+    t.decimal "gross_sales_total", precision: 10, scale: 2, default: "0.0"
+    t.decimal "gross_returns_total", precision: 10, scale: 2, default: "0.0"
+    t.decimal "net_sales", precision: 10, scale: 2, default: "0.0"
+    t.decimal "expenses", precision: 10, scale: 2, default: "0.0"
+    t.decimal "total_chargebacks", precision: 10, scale: 2, default: "0.0"
+    t.decimal "total_expenses", precision: 10, scale: 2, default: "0.0"
+    t.decimal "net_client_earnings", precision: 10, scale: 2, default: "0.0"
+    t.datetime "imported_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["upload_wrapper_id"], name: "index_ips_statements_on_upload_wrapper_id"
+  end
+
+  create_table "lp_statement_lines", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "lp_statement_id", null: false
+    t.integer "sku_id"
+    t.decimal "sales", precision: 10, scale: 2, default: "0.0", null: false
+    t.decimal "commission_earned", precision: 10, scale: 2, default: "0.0", null: false
+    t.decimal "commission_rate", precision: 5, scale: 4, default: "0.0", null: false
+    t.string "isbn"
+    t.string "e_isbn"
+    t.string "publisher"
+    t.string "title"
+    t.string "author"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lp_statement_id"], name: "index_lp_statement_lines_on_lp_statement_id"
+  end
+
+  create_table "lp_statements", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "upload_wrapper_id", null: false
+    t.string "status"
+    t.date "date_on_report"
+    t.string "report_period"
+    t.decimal "statement_total", precision: 10, scale: 2, default: "0.0"
+    t.datetime "imported_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["upload_wrapper_id"], name: "index_lp_statements_on_upload_wrapper_id"
+  end
+
+  create_table "posts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name"
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "royalty_raw_lp_data", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "upload_id", null: false
+    t.bigint "upload_wrapper_id", null: false
     t.bigint "sku_id"
     t.string "isbn", null: false
     t.string "e_isbn"
@@ -162,7 +152,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_11_170211) do
     t.datetime "updated_at", null: false
     t.index ["isbn"], name: "index_royalty_raw_lp_data_on_isbn"
     t.index ["sku_id"], name: "index_royalty_raw_lp_data_on_sku_id"
-    t.index ["upload_id"], name: "index_royalty_raw_lp_data_on_upload_id"
+    t.index ["upload_wrapper_id"], name: "index_royalty_raw_lp_data_on_upload_wrapper_id"
   end
 
   create_table "sessions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -171,55 +161,27 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_11_170211) do
     t.string "ip_address"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
-  create_table "uploads", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "upload_channel", null: false
-    t.string "status", null: false
-    t.datetime "uploaded_at", null: false
-    t.datetime "date_on_report"
-    t.string "report_period"
-    t.decimal "statement_total", precision: 10, scale: 2, default: "0.0"
+  create_table "upload_wrappers", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "uploaded_at"
+    t.integer "size"
     t.string "filename"
-    t.integer "filesize"
-    t.datetime "imported_at"
-    t.text "error_msg"
+    t.string "mime_type"
+    t.string "status"
+    t.text "status_message"
+    t.integer "id_of_created_object"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["date_on_report"], name: "index_uploads_on_date_on_report", unique: true
-  end
-
-  create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "email", null: false
-    t.string "password_digest", null: false
-    t.boolean "verified", default: false, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["email"], name: "index_users_on_email", unique: true
-  end
-
-  create_table "woo_line_items", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.integer "woo_order_id"
-    t.integer "woo_li_or_ri_id"
-    t.datetime "woo_modified_dtm"
-    t.boolean "is_ri"
-    t.string "sku", limit: 30
-    t.integer "qty"
-    t.decimal "amount", precision: 10, scale: 2
-    t.integer "import_to_royalties_batch_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["woo_li_or_ri_id"], name: "index_woo_line_items_on_woo_li_or_ri_id", unique: true
-    t.index ["woo_modified_dtm"], name: "index_woo_line_items_on_woo_modified_dtm"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "fotb_coupons", "bookshelf_friends", column: "bookshelf_friends_id"
-  add_foreign_key "fotb_payments", "bookshelf_friends", column: "bookshelf_friends_id"
-  add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
-  add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
-  add_foreign_key "oauth_openid_requests", "oauth_access_grants", column: "access_grant_id", on_delete: :cascade
-  add_foreign_key "royalty_raw_lp_data", "uploads"
+  add_foreign_key "ips_revenue_lines", "ips_statement_details", column: "ips_statement_details_id"
+  add_foreign_key "ips_revenue_lines", "upload_wrappers"
+  add_foreign_key "ips_statement_details", "ips_statements"
+  add_foreign_key "ips_statements", "upload_wrappers"
+  add_foreign_key "lp_statement_lines", "lp_statements"
+  add_foreign_key "lp_statements", "upload_wrappers"
+  add_foreign_key "royalty_raw_lp_data", "upload_wrappers"
 end

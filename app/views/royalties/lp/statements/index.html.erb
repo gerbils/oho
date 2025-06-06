@@ -1,0 +1,37 @@
+<% content_for :title, "Learning Platform Royalties" %>
+
+
+<div class="mt-5 mb-3 d-flex align-items-start justify-content-between gap-5 border-bottom border-secondary">
+
+<h1 class="h2 mt-5 mb-3">Learning Platform Royalties</h1>
+
+<div class="align-right py-3 px-5 mb-5 bg-secondary bg-gradient ">
+  <%=  bootstrap_form_with(model: @upload_wrapper, url: royalties_lp_statements_path()) do |f| %>
+    <%= f.file_field :file, multiple: false, accept: ".xlsx,.xlsm", label: "(upload Excel from ORM)" %>
+    <%= f.submit "Upload new statement", class: "btn btn-primary mt-1 mb-4" %>
+  <% end %>
+</div>
+</div>
+
+<%= turbo_stream_from "@statements" %>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th> Stmt date </th>
+      <th> Uploaded </th>
+      <th> Imported </th>
+      <th> Status </th>
+      <th> Period </th>
+      <th> STMT Total </th>
+      <th> Uploaded file </th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="upload-list">
+    <% @statements.each do |statement| %>
+      <%= render partial: "statement", locals: { statement: statement } %>
+    <% end %>
+  </tbody>
+</table>
+<%= pagy_bootstrap_nav(@pagy).html_safe %>

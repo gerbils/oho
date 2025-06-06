@@ -1,33 +1,23 @@
-class Royalties::Lp::UploadsController < ApplicationController
-  before_action :set_upload, only: %i[ show destroy ]
+class Royalties::Lp::StatementsController < ApplicationController
+  before_action :set_statement, only: %i[ show destroy ]
 
-  # GET /uploads or /uploads.json
   def index
-    @pagy, @uploads = pagy(Upload.all.order(uploaded_at: :desc), limit: 5)
+    @upload_wrapper ||= UploadWrapper.new
+    @pagy, @statements = pagy(LpStatement.order(created_at: :desc), limit: 5)
   end
 
-  # GET /uploads/1 or /uploads/1.json
   def show
   end
 
-  # GET /uploads/new
-  def new
-    @upload = Upload.new
-  end
 
-  # # GET /uploads/1/edit
-  # def edit
-  # end
-
-  # POST /uploads or /uploads.json
   def create
-    @upload = Upload.new(upload_params)
+    @upload = UploadWrapper.new(upload_params)
 
     respond_to do |format|
       if @upload.save
         # Lp::UploadRoyaltyJob.perform_later(@upload.id)
         Lp::UploadRoyaltyJob.new.perform(@upload.id)
-        format.html { redirect_to royalties_lp_uploads_url, notice: "Upload initiated" }
+        format.html { redirect_to royalties_lp_statements_url, notice: "Upload initiated" }
         format.json { render :show, status: :created, location: @upload }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -71,12 +61,12 @@ class Royalties::Lp::UploadsController < ApplicationController
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_upload
-      @upload = Upload.find(params.expect(:id))
+    def set_statement
+      @statement = Statement.find(params.expect(:id))
     end
 
     # Only allow a list of trusted parameters through.
     def upload_params
-      params.expect(upload: [ :upload_channel, :uploaded_at, :description, :imported_at, :uploaded_file ])
+      params.expect(upload_wrapper: [ :file ])
     end
 end

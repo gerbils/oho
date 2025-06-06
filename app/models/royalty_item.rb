@@ -1,3 +1,31 @@
+# == Schema Information
+#
+# Table name: royalty_items
+#
+#  id            :integer          not null, primary key
+#  applies_to    :integer          default(0), not null
+#  book_basis    :decimal(8, 2)    default(0.0), not null
+#  date          :datetime         not null
+#  description   :string(255)      not null
+#  free_units    :integer          default(0), not null
+#  item_type     :string(255)      not null
+#  paid_amount   :decimal(8, 2)    default(0.0), not null
+#  paid_units    :integer          default(0), not null
+#  return_amount :decimal(8, 2)    default(0.0), not null
+#  return_units  :integer          default(0), not null
+#  source_type   :string(20)
+#  sku_id        :integer          not null
+#  source_id     :integer
+#
+# Indexes
+#
+#  fk_royalty_items_sku_id     (sku_id)
+#  royalty_items_to_batch_idx  (source_type,source_id)
+#
+# Foreign Keys
+#
+#  fk_royalty_items_sku_id  (sku_id => skus.id)
+#
 class RoyaltyItem < LegacyRecord
 
   belongs_to :sku

@@ -1,30 +1,4 @@
 <div class="container">
-  <div class="row row-cols-3">
-    <div class="col">
-      <h3>Learning Platform</h3>
-    </div>
-    <div class="col">
-      <%= link_to "Uploads/Imports", royalties_lp_uploads_path, class: "btn btn-primary" %>
-    </div>
-    <div class="col">
-      <table class="table">
-        <thead class="table-dark">
-          <tr>
-            <th scope="col">Status</th>
-            <th scope="col" class="text-end">Count</th>
-            <th scope="col" class="text-end">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @lp_stats[:status].each do |stat| %>
-            <tr>
-              <td><%= stat[:status] %></td>
-              <td class="text-end"><%= stat[:count] %></td>
-              <td class="text-end"><%= number_to_currency(stat[:total]) %></td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-  </div>
+  <%= render "channel", channel_title: "Learning Platform", channel_path: royalties_lp_statements_path, channel_stats: @lp_stats %>
+  <%= render "channel", channel_title: "Ingram Pub Svcs",   channel_path: royalties_ips_ips_statements_path, channel_stats: @ips_stats %>
 </div>

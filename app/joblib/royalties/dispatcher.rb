@@ -24,7 +24,8 @@ module Royalties::Dispatcher
   private
 
   SOURCE_TO_HANDLER = {
-    Upload::CHANNEL_LP => Royalties::Lp,
+    Upload::CHANNEL_LP  => Royalties::Lp,
+    Upload::CHANNEL_IPS => Royalties::Ips,
   }
 
   def find_handler(upload_channel)

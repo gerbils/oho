@@ -1,4 +1,4 @@
-<% content_for :title, "New upload" %>
+<% content_for :title, "New LP upload" %>
 
 <%
 ok_mime_types = [
@@ -6,7 +6,7 @@ ok_mime_types = [
   #"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 ].join(",")
 %>
-<h2>Create new upload</h5>
+<h2>Upload a Learning Platform Spreadsheet</h5>
 
 <%= bootstrap_form_with(model: [:royalties, :lp, @upload]) do |form| %>
   <% if @upload.errors.any? %>
@@ -17,7 +17,7 @@ ok_mime_types = [
   <% end %>
 
   <div>
-    <%= form.select :upload_channel, Upload::CHANNELS %>
+    <%= form.text_field :upload_channel, readonly: true %>
   </div>
 
   <div>
@@ -33,5 +33,5 @@ ok_mime_types = [
 <br>
 
 <div>
-  <%= link_to "Back to uploads", royalties_lp_uploads_path %>
+  <%= link_to "Back to LP", royalties_lp_uploads_path %>
 </div>

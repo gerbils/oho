@@ -1,0 +1,34 @@
+<div class="row row-cols-3 mb-4 pb-3 border-bottom border-secondary">
+  <div class="col">
+    <h3>
+      <%= link_to channel_title, channel_path, class: "btn btn-primary" %>
+    </h3>
+  </div>
+  <div class="col">
+    <table class="table">
+      <thead class="table-dark">
+        <tr>
+          <th scope="col">Status</th>
+          <th scope="col" class="text-end">Count</th>
+          <th scope="col" class="text-end">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if channel_stats.empty? %>
+          <tr>
+            <td colspan="3" class="text-center">No data available</td>
+          </tr>
+        <% else %>
+          <% channel_stats.each do |stat| %>
+            <tr>
+              <td><%= stat[:status] %></td>
+              <td class="text-end"><%= stat[:count] %></td>
+              <td class="text-end"><%= number_to_currency(stat[:total]) %></td>
+            </tr>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+

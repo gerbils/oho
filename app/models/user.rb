@@ -1,3 +1,71 @@
+# == Schema Information
+#
+# Table name: users
+#
+#  id                        :integer          not null, primary key
+#  accepted_terms_at         :datetime
+#  activated_from_ip         :string(255)
+#  activation_sent_at        :datetime
+#  admin                     :boolean          default(FALSE)
+#  allow_order_status_emails :boolean          default(TRUE)
+#  allows_marketing_email    :boolean          default(FALSE)
+#  author                    :boolean          default(FALSE)
+#  bio                       :text(65535)
+#  created_from_ip           :string(255)
+#  editor                    :boolean          default(FALSE)
+#  email                     :string(255)
+#  email_subscription        :boolean
+#  email_subscription_date   :datetime
+#  frights                   :boolean
+#  hashed_password           :string(255)
+#  hotmail                   :integer
+#  is_potential_blaggard     :string(255)
+#  is_tax_exempt             :boolean          default(FALSE)
+#  kindle_name               :string(255)
+#  last_login_at             :datetime
+#  last_seen_at              :datetime
+#  login_count               :integer          default(0)
+#  login_key                 :string(255)
+#  login_key_expires_at      :datetime
+#  name                      :string(255)
+#  not_interested_in_kindle  :boolean          default(FALSE)
+#  notify_using_email        :boolean          default(TRUE)
+#  over_18                   :boolean          default(TRUE)
+#  password_digest           :string(255)
+#  posts_count               :integer          default(0)
+#  promotion_last_seen_at    :datetime
+#  provider                  :string(255)
+#  rss_feed_url              :string(255)
+#  salt                      :string(255)
+#  series_editor             :boolean
+#  stored_account_number     :string(255)
+#  subscribed_rss_at         :datetime
+#  support                   :boolean          default(FALSE)
+#  twitter_name              :string(255)
+#  uid                       :string(255)
+#  upload_filename           :string(255)
+#  uploaded_at               :datetime
+#  verified                  :boolean
+#  website_url               :string(255)
+#  created_at                :datetime
+#  updated_at                :datetime
+#  last_seen_promotion_id    :integer
+#  publisher_id              :integer
+#  shipping_location_id      :integer
+#
+# Indexes
+#
+#  fk_users_publisher_id                 (publisher_id)
+#  fk_users_shipping_location_id         (shipping_location_id)
+#  index_users_on_email                  (email)
+#  index_users_on_last_seen_at           (last_seen_at)
+#  index_users_on_stored_account_number  (stored_account_number)
+#
+# Foreign Keys
+#
+#  fk_users_publisher_id          (publisher_id => publishers.id)
+#  fk_users_shipping_location_id  (shipping_location_id => shipping_locations.id)
+#
 class User < LegacyRecord
   has_one :author_details, :class_name => "Author", :foreign_key => "user_id"
   has_many :author_calendar_items

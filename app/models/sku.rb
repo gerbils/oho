@@ -1,3 +1,30 @@
+# == Schema Information
+#
+# Table name: skus
+#
+#  id                              :integer          not null, primary key
+#  basis_price                     :decimal(8, 2)    default(0.0), not null
+#  does_not_participate_in_coupons :boolean
+#  duration                        :integer
+#  fulfill_state                   :string(255)
+#  media                           :string
+#  part_name                       :string(255)
+#  price                           :decimal(8, 2)    not null
+#  released_on                     :date
+#  sku                             :string(255)      not null
+#  weight                          :integer          default(0)
+#  product_id                      :integer          not null
+#
+# Indexes
+#
+#  fk_skus_product_id   (product_id)
+#  index_skus_on_media  (media)
+#  index_skus_on_sku    (sku)
+#
+# Foreign Keys
+#
+#  fk_skus_product_id  (product_id => products.id)
+#
 class Sku < LegacyRecord
   belongs_to :product
   has_many :author_sku_royalties, -> { order("user_id asc") }

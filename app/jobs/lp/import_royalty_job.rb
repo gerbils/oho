@@ -10,7 +10,12 @@ class Lp::ImportRoyaltyJob < ApplicationJob
       return
     end
     upload.update!(status: Upload::STATUS_PROCESSING, error_msg: nil)
-    Royalties::Dispatcher.handle_import(upload)
-    logger.info("finishing import job")
+    begin
+      Royalties::Lp::ImportHandler.handle_import(upload)
+    rescue => e
+      Rails.logger.error("Error handling import: #{e.message}")
+      upload.update!(status: Upload::STATUS_FAILED_IMPORT, error_msg: e.message)
+    end
+    logger.info("finishing job")
   end
 end

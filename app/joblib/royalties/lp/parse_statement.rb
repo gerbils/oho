@@ -1,8 +1,9 @@
 require 'roo'
 require "bigdecimal"
 
-module Royalties::Lp::ParseXls
+module Royalties::Lp::ParseStatement
   extend self
+  extend Royalties::Shared
 
   HEADER_ROW = 16
   HEADERS = {
@@ -19,18 +20,6 @@ module Royalties::Lp::ParseXls
   PAYMENT_LABEL = 9
   PAYMENT_DUE   = PAYMENT_LABEL + 1
 
-  def open_spreadsheet(buffer)
-    file = Tempfile.new('upload')
-    begin
-      file.binmode
-      file.write(buffer)
-      file.close
-      xls = Roo::Spreadsheet.open(file.path, extension: 'xlsm')
-    ensure
-      file.unlink
-    end
-    xls.sheet(0)
-  end
 
   def expect(sheet, row, col, expected_value, msg=expected_value)
     actual_value = sheet.cell(row, col)
@@ -53,28 +42,31 @@ module Royalties::Lp::ParseXls
     [ date, period ]
   end
 
-  def parse_statement(content)
-    sheet = open_spreadsheet(content)
+  def parse(content)
+    sheet = open_spreadsheet(content, 'xlsm')
     date, period  = sanity_check(sheet)
-    rows = []
     total = BigDecimal("0")
+
+    statement = LpStatement.new(date_on_report: date, report_period: period)
 
     row = HEADER_ROW + 1
     while (row <= sheet.last_row)
       isbn = sheet.excelx_value(row, HEADERS["ISBN"])
       break if isbn.nil? || isbn.empty?
-      rows << {
+      line = LpStatementLine.new(
         isbn:              isbn,
         e_isbn:            sheet.cell(row, HEADERS["eISBN"]),
         title:             sheet.cell(row, HEADERS["Title"]),
         publisher:         sheet.cell(row, HEADERS["Publisher"]),
         author:            sheet.cell(row, HEADERS["Author"]),
-        channel:           sheet.cell(row, HEADERS["Channel"]),
         sales:             sheet.cell(row, HEADERS["Sales"]),
         commission_rate:   sheet.excelx_value(row, HEADERS["Commission Rate"]),
         commission_earned: sheet.excelx_value(row, HEADERS["Commission Earned"]),
-      }
-      total += BigDecimal(sheet.excelx_value(row, HEADERS["Commission Earned"]))
+      )
+
+      statement.lp_statement_lines << line
+
+      total += BigDecimal(line.commission_earned.to_s)
       row += 1
     end
 
@@ -90,11 +82,13 @@ module Royalties::Lp::ParseXls
       raise "Total of rows (#{total.to_f}) does not agree with batch total (#{their_total.to_f})"
     end
 
-    return { status: :ok, date: date, period: period, rows: rows, total: their_total }
+    statement.statement_total = total
 
-  rescue => e
-    Rails.logger.error "Error parsing LP statement: #{e.message}"
-    return { status: :error, message: e.message }
+    return { status: :ok, statement: }
+
+  # rescue => e  TODO: remove
+  #   Rails.logger.error "Error parsing LP statement: #{e.message}"
+  #   return { status: :error, message: e.message }
   end
 end
 

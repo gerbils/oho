@@ -38,8 +38,15 @@ Rails.application.routes.draw do
 
   namespace :royalties do
     root  "home#index"
+    namespace :ips do
+      resources :ips_statements, only: [ :index, :show, :update, :destroy ] do
+        post "upload", on: :collection, to: "ips_statements#create", as: :upload
+        post "upload_revenue_lines", on: :member, to: "ips_statements#upload_revenue_lines", as: :upload_revenue_lines
+        put "import", on: :member
+      end
+    end
     namespace :lp do
-      resources :uploads, only: [:index, :new, :show, :create, :destroy] do
+      resources :statements, only: [:index, :new, :show, :create, :destroy] do
         put "import", on: :member
       end
     end

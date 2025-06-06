@@ -47,3 +47,5 @@ gem "roo", "~> 2.10"
 gem "csv", "~> 3.3"
 
 gem "sqlite3", "~> 2.6"
+
+gem "pry", "~> 0.15.2"

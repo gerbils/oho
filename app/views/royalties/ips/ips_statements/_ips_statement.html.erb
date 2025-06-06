@@ -1,20 +1,26 @@
-<%= turbo_stream_from upload %>
+<%
+  stmt = ips_statement
+  upload = stmt.upload_wrapper
+%>
 
-<tr id="<%= dom_id upload %>" class="align-middle">
+<%= turbo_stream_from ips_statement %>
+
+<tr id="<%= dom_id stmt %>" class="align-middle">
   <td>
-    <%= upload.date_on_report&.strftime("%Y-%m") %>
+    <%= stmt.month_ending %>
   </td>
 
-  <td title="<%= upload.uploaded_at&.to_fs(:oho_dt) %>">
-    <%= upload.uploaded_at&.to_fs(:oho_md) %>
+  <td>
+    <%= upload.uploaded_at&.strftime("%Y-%m-%d %H:%M") %>
   </td>
-
+  <% if false %>
+month_ending: date, revenue: decimal, gross_sales_total: decimal, gross_returns_total: decimal, net_sales: decimal, expenses: decimal, total_chargebacks: decimal, total_expenses: decimal, net_client_earnings: decimal, created_at: datetime, updated_at: datetime)
   <td title="<%= upload.imported_at&.to_fs(:oho_dt) %>">
     <% if upload.imported_at.present? %>
       <%= upload.imported_at&.to_fs(:oho_md) %>
     <% elsif upload.status == Upload::STATUS_UPLOADED %>
         <%= button_to 'Import now',
-                  import_royalties_lp_upload_path(upload),
+                  import_royalties_ips_upload_path(upload),
                   class: 'btn btn-success',
                   method: :put,
                   data: { "turbo-method": :put, turbo_confirm: 'This permanently adds royalty information to PIP. Continue? ' }
@@ -23,45 +29,36 @@
     <% end %>
   </td>
 
+<% end %>
   <td>
     <%= upload.status %>
   </td>
 
   <td>
-    <%= upload.upload_channel %>
-  </td>
-
-  <td>
-    <%= upload.report_period %>
-  </td>
-
-  <td>
-    <%= number_to_currency(upload.statement_total) if upload.statement_total.present? %>
+    <%= number_to_currency(stmt.net_client_earnings) %>
   </td>
 
   <td>
     <!-- link_to upload.uploaded_file.filename, upload.uploaded_file if upload.uploaded_file.attached? -->
-    <%= upload.uploaded_file.filename if upload.uploaded_file.attached? %>
+    <%= upload.file.filename if upload.file.attached? %>
   </td>
 
   <td>
-
     <%= link_to('Delete',
-                  royalties_lp_upload_path(upload),
+                  royalties_ips_ips_statement_path(stmt),
                   class: 'btn btn-warning',
                   method: :delete,
                   data: { "turbo-method": :delete, turbo_confirm: 'Are you sure?' }
-                 ) if upload.imported_at.blank? %>
+                 ) if stmt.imported_at.blank? %>
   </td>
 </tr>
-<% if upload.error_msg.present? %>
+<% if upload.status_message.present? %>
   <tr class="table-warning">
     <td class="table-danger align-middle" colspan="2">Error on previous row</td>
     <td colspan="6" class="">
       <span class="text-dark">
-        <%= upload.error_msg.gsub(/\n/, "<br/>").html_safe %>
+        <%= upload.status_message.gsub(/\n/, "<br/>").html_safe %>
       </span>
     </td>
   </tr>
 <% end %>
-
