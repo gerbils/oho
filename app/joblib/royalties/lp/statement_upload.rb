@@ -14,7 +14,10 @@ module Royalties::Lp::StatementUpload
                when 0
                  excel_file_attached?(statement)
                when 1
-                 Royalties::Lp::ParseStatement.parse(statement)
+                 Royalties::Lp::ParseStatement.parse(
+                   statement,
+                   statement.upload_wrapper.file.download,
+                   'xlsm')
                when 2
                  map_isbns_to_skus(statement)
                when 3

@@ -35,15 +35,15 @@ module Royalties::Lp::ParseStatement
     expect(sheet, 4, 2, /^O'Reilly Media, Inc.$/)
     date = expect(sheet, 4, 6, %r{^Statement Date:\s+(\d{2}/\d{2}/\d{4})$}, "mm/dd/yyyy")
     date = Date.strptime(date, "%m/%d/%Y")
-    period = expect(sheet, 5, 6, %r{^Statement Period:\s+(.*)}, "Statement Period")
+    period = expect(sheet, 5, 6, %r{^Statement Period:\s+(\w+ - \w+ \d{4})}, "Statement Period")
     HEADERS.each do |header, col|
       expect(sheet, HEADER_ROW, col, %r{^#{header}$})
     end
     [ date, period ]
   end
 
-  def parse(statement)
-    sheet = open_spreadsheet(statement.upload_wrapper.file.download, 'xlsm')
+  def parse(statement, spreadsheet_data, extension)
+    sheet = open_spreadsheet(spreadsheet_data, extension)
     date, period  = sanity_check(sheet)
     total = BigDecimal("0")
 

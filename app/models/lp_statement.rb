@@ -23,13 +23,14 @@
 #
 class LpStatement < ApplicationRecord
 
-  STATUS_FAILED_IMPORT = 'failed import'
-  STATUS_FAILED_UPLOAD = 'failed upload'
-  STATUS_IMPORTED      = 'imported'
-  STATUS_INCOMPLETE    = 'incomplete'
+  STATUS_PENDING        = 'pending'
+  STATUS_FAILED_IMPORT  = 'failed import'
+  STATUS_FAILED_UPLOAD  = 'failed upload'
+  STATUS_IMPORTED       = 'imported'
+  STATUS_INCOMPLETE     = 'incomplete'
   STATUS_UPLOAD_PENDING = 'upload pending'
-  STATUS_PROCESSING    = 'processing'
-  STATUS_UPLOADED      = 'uploaded'
+  STATUS_PROCESSING     = 'processing'
+  STATUS_UPLOADED       = 'uploaded'
 
   STATII = [
     STATUS_UPLOAD_PENDING, STATUS_INCOMPLETE, STATUS_PROCESSING, STATUS_UPLOADED,
