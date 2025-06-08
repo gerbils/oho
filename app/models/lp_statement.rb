@@ -23,18 +23,22 @@
 #
 class LpStatement < ApplicationRecord
 
-  STATUS_PENDING        = 'pending'
   STATUS_FAILED_IMPORT  = 'failed import'
   STATUS_FAILED_UPLOAD  = 'failed upload'
   STATUS_IMPORTED       = 'imported'
-  STATUS_INCOMPLETE     = 'incomplete'
-  STATUS_UPLOAD_PENDING = 'upload pending'
+  # STATUS_INCOMPLETE     = 'incomplete'
+  # STATUS_PENDING        = 'pending'
   STATUS_PROCESSING     = 'processing'
   STATUS_UPLOADED       = 'uploaded'
+  STATUS_UPLOAD_PENDING = 'upload pending'
 
   STATII = [
-    STATUS_UPLOAD_PENDING, STATUS_INCOMPLETE, STATUS_PROCESSING, STATUS_UPLOADED,
-    STATUS_IMPORTED, STATUS_FAILED_UPLOAD, STATUS_FAILED_IMPORT
+    STATUS_FAILED_IMPORT,
+    STATUS_FAILED_UPLOAD,
+    STATUS_IMPORTED,
+    STATUS_PROCESSING,
+    STATUS_UPLOADED,
+    STATUS_UPLOAD_PENDING,
   ]
 
   belongs_to :upload_wrapper, dependent: :destroy

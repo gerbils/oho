@@ -6,7 +6,7 @@
   <h1 class="h2">IPS Royalty Statements</h1>
 
   <div class="align-right py-3 px-5 mb-5 bg-secondary bg-gradient ">
-    <%=  bootstrap_form_with(model: @upload_wrapper, url: upload_royalties_ips_ips_statements_path()) do |f| %>
+    <%=  bootstrap_form_with(model: @upload_wrapper, url: upload_royalties_ips_statements_path()) do |f| %>
       <%= f.file_field :file, multiple: false, accept: ".xlsx", label: "(download Excel from IQ Statement)" %>
       <%= f.submit "Upload new statement", class: "btn btn-primary mt-1 mb-4" %>
     <% end %>
@@ -22,8 +22,6 @@
       <th> Uploaded </th>
       <th> Imported </th>
       <th> Status </th>
-      <th> Channel </th>
-      <th> Period </th>
       <th> STMT Total </th>
       <th> Uploaded file </th>
       <th></th>
@@ -31,7 +29,7 @@
   </thead>
   <tbody id="upload-list">
     <% @statements.each do |statement| %>
-      <%= render statement %>
+      <%= render partial: "statement", object: statement %>
     <% end %>
   </tbody>
 </table>

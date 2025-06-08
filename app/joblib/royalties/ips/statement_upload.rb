@@ -7,27 +7,30 @@ module Royalties::Ips::StatementUpload
   extend Royalties::Shared
 
 
-  def handle(upload)
-    file = upload.file
+  def handle(statement)
     step = 0
     result = nil # for scoping
 
     loop do   # Poor man's "do"
       result = case step
                when 0
-                 excel_file_attached?(file)
+                 excel_file_attached?(statement)
                when 1
-                 Royalties::Ips::ParseStatement.parse_statement(file.download)
+                 Royalties::Ips::ParseStatement.parse(
+                   statement,
+                   statement.upload_wrapper.file.download,
+                   'xlsx')
                when 2
-                 save_statement(upload, result[:statement])
+                 save_statement(statement)
                when 3
                  break
                when :error
-                 record_error(upload, result[:message])
+                 record_error(statement, result[:message])
                  break
                end
       if result[:status] == :ok
         step += 1
+        statement = result[:statement]
       else
         step = :error
       end
@@ -36,9 +39,8 @@ module Royalties::Ips::StatementUpload
 
   private
 
-  def save_statement(upload, statement)
-    UploadWrapper.transaction do
-      statement.upload_wrapper = upload
+  def save_statement(statement)
+    IpsStatement.transaction do
       save_details = statement.expenses + statement.revenues
       statement.expenses = []
       statement.revenues = []
@@ -52,15 +54,11 @@ module Royalties::Ips::StatementUpload
 
     end
 
-    # has to be outside the transaction in order to pick up the statement.id
-    upload.status = Upload::STATUS_INCOMPLETE   # still need details uploaded
-    upload.id_of_created_object = statement.id
-    upload.save!
-
     { status: :ok}
 
-  # rescue => e  TODO: undo me
-  #   { status: :error, message: e.message }
+  rescue => e
+    raise if ENV['debug']
+    { status: :error, message: e.message }
   end
 
   def record_error(statement, message)

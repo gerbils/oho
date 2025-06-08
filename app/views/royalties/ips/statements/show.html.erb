@@ -4,7 +4,7 @@
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     ].join(",")
   %>
-<% content_for :title, "Complete Upload" %>
+<% content_for :title, "IPS Statement #{@statement.month_ending.strftime("%B %d %Y")}" %>
 <%
     def charge_basis(item)
       if item.basis == "unit"
@@ -31,36 +31,27 @@ end
 
 <h4 class="text-secondary mt-3">Pragmatic Programmers LLC</h4>
 <h5 class="text-secondary">Client Statement</h5>
-<h5><span><span class="text-secondary">Month ending </span><%= @statement.month_ending.strftime("%B %d %Y") %></h5>
+<h5><span><span class="text-secondary">Month ending: </span><%= @statement.month_ending.strftime("%B %d %Y") %></h5>
 
-<h3 class="mt-5 bg-secondary">Revenues</h3>
-<div class="d-flex gap-4 align-items-stretch">
-  <table class="table table-striped table-sm table-hover align-middle">
-    <thead>
-      <tr>
-        <th scope="col"></th>
-        <th scope="col"></th>
-        <th scope="col"></th>
-        <th scope="col"></th>
-        <th scope="col"></th>
-        <th scope="col" class="text-end">Basis for charge</th>
-        <th scope="col" class="text-end">Factor</th>
-        <th scope="col" class="text-end">Due this month</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @statement.revenues.group_by(&:section).each do |section, sections| %>
+<h3 class="mt-5 bg-dark-subtle text-center p-2">Revenues</h3>
+<div class="d-flex gap-4 justify-content-between align-items-stretch">
+  <table class="table table-striped table-sm table-hover align-middle w-auto">
+    <% @statement.revenues.group_by(&:section).each do |section, sections| %>
+      <thead>
         <tr class="bg-secondary">
-          <td colspan="8"><strong><%= section %></strong></td>
+          <th colspan="4"></th>
+          <th scope="col" class="text-end">Basis for charge</th>
+          <th scope="col" class="text-end ps-4">Factor</th>
+          <th scope="col" class="text-end ps-4">Due this month</th>
         </tr>
+      </thead>
+      <tbody>
         <% sections.group_by(&:subsection).each do |subsection, details| %>
           <tr class="bg-light">
-            <td class="text-uppercase py-4"></td>
-            <td colspan="7"><strong><%= subsection %></strong></td>
+            <td colspan="7"><strong><%= subsection.upcase %></strong></td>
           </tr>
           <% details.each do |item| %>
             <tr>
-              <td></td>
               <td></td>
               <td><%= item.detail %></td>
               <td><%= item.month_due ? item.month_due.strftime("%B %Y") : "" %></td>
@@ -73,11 +64,11 @@ end
         <% end %>
       <% end %>
 
-    </tbody>
+      </tbody>
   </table>
 
   <div class="bg-secondary bg-gradient text-center align-self-center p-5">
-    <%= bootstrap_form_with(model: @upload_wrapper, url: upload_revenue_lines_royalties_ips_ips_statement_path(@statement)) do |form| %>
+    <%= bootstrap_form_with(model: @upload_wrapper, url: upload_revenue_lines_royalties_ips_statement_path(@statement)) do |form| %>
       <div class="my-auto h-100">
         <h4>Upload Revenue Files</h4>
         <p>Drop all revenue files here (one or more at a time)</p>
@@ -94,29 +85,23 @@ end
   </div>
 </div>
 
-<h3 class="mt-5 bg-secondary">Expenses</h3>
-<table class="table table-striped table-sm table-hover align-middle">
-  <thead>
-    <tr>
-      <th scope="col"></th>
-      <th scope="col"></th>
-      <th scope="col"></th>
-      <th scope="col">Month Due</th>
-      <th scope="col">Basis</th>
-      <th scope="col" class="text-end">Basis for charge</th>
-      <th scope="col" class="text-end">Factor/rate</th>
-      <th scope="col" class="text-end">Due this month</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @statement.expenses.group_by(&:section).each do |section, sections| %>
+<h3 class="mt-5 text-center bg-dark-subtle p-2">Expenses</h3>
+<table class="table table-striped table-sm table-hover align-middle w-auto">
+  <% @statement.expenses.group_by(&:section).each do |section, sections| %>
+    <thead>
       <tr class="bg-secondary">
-        <td colspan="8"><strong><%= section %></strong></td>
+        <th colspan="3"></th>
+        <th scope="col">Month Due</th>
+        <th scope="col" class="text-center px-3">Basis</th>
+        <th scope="col" class="text-end ps-3">Basis for charge</th>
+        <th scope="col" class="text-end ps-3">Factor/rate</th>
+        <th scope="col" class="text-end ps-3">Due this month</th>
       </tr>
+    </thead>
+    <tbody>
       <% sections.group_by(&:subsection).each do |subsection, details| %>
         <tr class="bg-light">
-          <td class="py-4"></td>
-          <td colspan="7" class="text-uppercase mt-2"><strong><%= subsection %></strong></td>
+          <td colspan="3" class="text-uppercase mt-2"><strong><%= subsection %></strong></td>
         </tr>
         <% details.each do |item| %>
           <tr>
@@ -124,7 +109,7 @@ end
             <td></td>
             <td><%= item.detail %></td>
             <td><%= item.month_due ? item.month_due.strftime("%B %Y") : "" %></td>
-            <td><%= item.basis %></td>
+            <td class="text-center px-3"><%= item.basis %></td>
             <td class="text-end"><%= charge_basis(item) %></td>
             <td class="text-end"><%= charge_factor(item) %></td>
             <td class="text-end"><%= number_to_currency(item.due_this_month) %></td>
@@ -133,6 +118,6 @@ end
       <% end %>
     <% end %>
 
-  </tbody>
+    </tbody>
 </table>
 

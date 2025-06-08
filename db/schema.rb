@@ -86,6 +86,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_05_231338) do
   create_table "ips_statements", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "upload_wrapper_id", null: false
     t.string "status", null: false
+    t.string "status_message"
     t.date "month_ending", null: false
     t.decimal "revenue", precision: 10, scale: 2, default: "0.0"
     t.decimal "gross_sales_total", precision: 10, scale: 2, default: "0.0"

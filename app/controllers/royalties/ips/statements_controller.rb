@@ -1,6 +1,6 @@
 require 'pry'
 
-class Royalties::Ips::IpsStatementsController < ApplicationController
+class Royalties::Ips::StatementsController < ApplicationController
   before_action :set_statement, only: %i[ show destroy upload_revenue_lines ]
 
 
@@ -43,7 +43,7 @@ class Royalties::Ips::IpsStatementsController < ApplicationController
           index
           format.html { redirect_to action: "index", status: :unprocessable_entity }
         else
-          format.html {  redirect_to royalties_ips_ips_statement_path(@statement), notice: "Details uploaded"  }
+          format.html {  redirect_to royalties_ips_statement_path(@statement), notice: "Details uploaded"  }
         end
       else
         index
@@ -67,7 +67,7 @@ class Royalties::Ips::IpsStatementsController < ApplicationController
     @statement.destroy!
 
     respond_to do |format|
-      format.html { redirect_to royalties_ips_ips_statements_url, status: :see_other, notice: "Statement deleted" }
+      format.html { redirect_to royalties_ips_statements_url, status: :see_other, notice: "Statement deleted" }
     end
   end
 

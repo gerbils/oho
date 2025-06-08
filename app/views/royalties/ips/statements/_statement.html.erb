@@ -1,9 +1,9 @@
 <%
-  stmt = ips_statement
+  stmt = statement
   upload = stmt.upload_wrapper
 %>
 
-<%= turbo_stream_from ips_statement %>
+<%= turbo_stream_from stmt %>
 
 <tr id="<%= dom_id stmt %>" class="align-middle">
   <td>
@@ -13,25 +13,28 @@
   <td>
     <%= upload.uploaded_at&.strftime("%Y-%m-%d %H:%M") %>
   </td>
-  <% if false %>
-month_ending: date, revenue: decimal, gross_sales_total: decimal, gross_returns_total: decimal, net_sales: decimal, expenses: decimal, total_chargebacks: decimal, total_expenses: decimal, net_client_earnings: decimal, created_at: datetime, updated_at: datetime)
-  <td title="<%= upload.imported_at&.to_fs(:oho_dt) %>">
-    <% if upload.imported_at.present? %>
-      <%= upload.imported_at&.to_fs(:oho_md) %>
-    <% elsif upload.status == Upload::STATUS_UPLOADED %>
+
+  <td title="<%= stmt.imported_at&.to_fs(:oho_dt) %>">
+    <% if stmt.imported_at.present? %>
+      <%= stmt.imported_at&.to_fs(:oho_md) %>
+    <% elsif stmt.status == IpsStatement::STATUS_UPLOADED %>
         <%= button_to 'Import now',
-                  import_royalties_ips_upload_path(upload),
+                  import_royalties_ips_upload_path(stmt),
                   class: 'btn btn-success',
                   method: :put,
                   data: { "turbo-method": :put, turbo_confirm: 'This permanently adds royalty information to PIP. Continue? ' }
                  %>
+     <% else %>
+        <%= link_to 'Add Details',
+                  royalties_ips_statement_path(stmt),
+                  class: 'btn btn-success'
+                 %>
 
-    <% end %>
+     <% end %>
   </td>
 
-<% end %>
   <td>
-    <%= upload.status %>
+    <%= stmt.status %>
   </td>
 
   <td>
@@ -45,7 +48,7 @@ month_ending: date, revenue: decimal, gross_sales_total: decimal, gross_returns_
 
   <td>
     <%= link_to('Delete',
-                  royalties_ips_ips_statement_path(stmt),
+                  royalties_ips_statement_path(stmt),
                   class: 'btn btn-warning',
                   method: :delete,
                   data: { "turbo-method": :delete, turbo_confirm: 'Are you sure?' }

@@ -6,15 +6,15 @@ module Royalties::Ips::ParseStatement
   extend self
   extend Royalties::Shared
 
-  def parse_statement(content)
-    sheet = open_spreadsheet(content, 'xlsx')
-    report = IpsStatement.new
-    report = validate_expected_format(sheet, report)
-    report = split_rows(report, sheet)
-    reconcile(report)
-    { status: :ok, statement: report }
-  # rescue => e
-  #   { status: :error, message: e.message }
+  def parse(statement, content, file_type)
+    sheet = open_spreadsheet(content, file_type)
+    statement = validate_expected_format(sheet, statement)
+    statement = split_rows(statement, sheet)
+    reconcile(statement)
+    { status: :ok, statement: statement }
+  rescue => e
+    raise if ENV['debug']
+    { status: :error, message: e.message }
   end
 
   private

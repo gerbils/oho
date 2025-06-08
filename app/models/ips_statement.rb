@@ -38,15 +38,22 @@ class IpsStatement < ActiveRecord::Base
   SECTION_EXPENSE = "EXPENSE"
   SECTIONS = [SECTION_REVENUE, SECTION_EXPENSE]
 
-  STATUS_PENDING       = 'Pending'
-  STATUS_INCOMPLETE    = 'Incomplete'
-  STATUS_PROCESSING    = 'Processing'
-  STATUS_COMPLETE      = 'Complete'
-  STATUS_FAILED_UPLOAD = 'Failed upload'
-  STATUS_FAILED_IMPORT = 'Failed import'
+  STATUS_IMPORTED       = 'Complete'
+  STATUS_FAILED_IMPORT  = 'Failed import'
+  STATUS_FAILED_UPLOAD  = 'Failed upload'
+  STATUS_INCOMPLETE     = 'Incomplete'
+  STATUS_PROCESSING     = 'Processing'
+  STATUS_UPLOADED       = 'Uploaded'
+  STATUS_UPLOAD_PENDING = 'Pending'
+
   STATII = [
-    STATUS_PENDING, STATUS_INCOMPLETE, STATUS_PROCESSING, STATUS_COMPLETE,
-    STATUS_FAILED_UPLOAD, STATUS_FAILED_IMPORT
+    STATUS_FAILED_IMPORT,
+    STATUS_FAILED_UPLOAD,
+    STATUS_IMPORTED,
+    STATUS_INCOMPLETE,
+    STATUS_PROCESSING,
+    STATUS_UPLOADED,
+    STATUS_UPLOAD_PENDING,
   ]
 
   validates :month_ending,        presence: true
@@ -69,6 +76,14 @@ class IpsStatement < ActiveRecord::Base
     :upload_wrapper_id,
     presence: true
   )
+
+  def self.new_with_upload(upload)
+    new(
+      upload_wrapper: upload,
+      status: STATUS_UPLOAD_PENDING,
+      status_message: nil
+    )
+  end
 
   def self.stats
     query = %{
