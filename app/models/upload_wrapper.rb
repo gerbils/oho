@@ -17,6 +17,11 @@ class UploadWrapper < ApplicationRecord
   has_one_attached :file
   has_one :ips_statement
 
+  # this is a hack. At the point we upload and process these lines, we don't know which ips detail
+  # they belong to, but we have to return them via the database because they might be processed by a
+  # job. We attached them temporrily to the upload, and then reattache them to the correct detail
+  has_many :ips_revenue_lines
+
   STATUS_FAILED_IMPORT = 'failed mport'
   STATUS_FAILED_UPLOAD = 'failed upload'
   STATUS_IMPORTED      = 'imported'

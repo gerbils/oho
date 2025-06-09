@@ -12,7 +12,13 @@ module Royalties::Lp::StatementUpload
     loop do   # Poor man's "do"
       result = case step
                when 0
-                 excel_file_attached?(statement)
+                 error = excel_file_attached?(statement.upload_wrapper.file)
+                 if error
+                   { status: :error, message: error }
+                 else
+                   { status: :ok, statement: }
+                 end
+                 ee
                when 1
                  Royalties::Lp::ParseStatement.parse(
                    statement,
@@ -25,9 +31,9 @@ module Royalties::Lp::StatementUpload
                when 4
                  break
 
-                when :error
-                  record_error(statement, result[:message])
-                  break
+               when :error
+                 record_error(statement, result[:message])
+                 break
                end
       if result[:status] == :ok
         step += 1

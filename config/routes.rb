@@ -43,6 +43,7 @@ Rails.application.routes.draw do
         post "upload", on: :collection, to: "statements#create", as: :upload
         put  "import", on: :member
         post "upload_revenue_lines", on: :member, to: "statements#upload_revenue_lines", as: :upload_revenue_lines
+        get  "detail/:revenue_line_id", on: :member, to: "statements#detail", as: :detail
       end
     end
     namespace :lp do

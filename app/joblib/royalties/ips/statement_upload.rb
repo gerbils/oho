@@ -14,7 +14,12 @@ module Royalties::Ips::StatementUpload
     loop do   # Poor man's "do"
       result = case step
                when 0
-                 excel_file_attached?(statement)
+                 error = excel_file_attached?(statement.upload_wrapper.file)
+                 if error
+                   { status: :error, message: error }
+                 else
+                   { status: :ok, statement: }
+                 end
                when 1
                  Royalties::Ips::ParseStatement.parse(
                    statement,
@@ -47,10 +52,14 @@ module Royalties::Ips::StatementUpload
       statement.status = IpsStatement::STATUS_INCOMPLETE   # still need details uploaded
       statement.save!
 
+      statement.upload_wrapper.id_of_created_object = statement.id
+      statement.upload_wrapper.save!
+
       save_details.each do |detail|
         detail.ips_statement = statement
         detail.save!
       end
+
 
     end
 

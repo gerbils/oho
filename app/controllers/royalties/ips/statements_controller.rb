@@ -23,7 +23,7 @@ class Royalties::Ips::StatementsController < ApplicationController
           index
           format.html { redirect_to action: "index", status: :unprocessable_entity }
         else
-          format.html {  redirect_to royalties_ips_ips_statement_path(@upload_wrapper.id_of_created_object), notice: "Now upload the details spreadsheets…"  }
+          format.html {  redirect_to royalties_ips_statement_path(@upload_wrapper.id_of_created_object), notice: "Now upload the details spreadsheets…"  }
         end
       else
         index
@@ -35,23 +35,31 @@ class Royalties::Ips::StatementsController < ApplicationController
 
   def upload_revenue_lines
     @upload_wrapper = UploadWrapper.new(upload_params)
-
     respond_to do |format|
       if @upload_wrapper.save
-        Ips::UploadRevenueLinesJob.new.perform(@upload_wrapper.id)
+        Ips::UploadRevenueLinesJob.new.perform(@statement.id, @upload_wrapper.id)
         if @upload_wrapper.status == UploadWrapper::STATUS_FAILED_UPLOAD
           index
-          format.html { redirect_to action: "index", status: :unprocessable_entity }
+          format.html { redirect_to action: "index", status: :unprocessable_entity, alert: @upload_wrapper.status_message || "Failed to upload revenue lines" }
         else
           format.html {  redirect_to royalties_ips_statement_path(@statement), notice: "Details uploaded"  }
         end
       else
         index
-        fail @upload_wrapper.inspect
         format.html { render :index, status: :unprocessable_entity, error: @upload_wrapper.errors.full_messages.to_sentence }
       end
     end
+  rescue StandardError => e
+    Rails.logger.error("Error in upload_revenue_lines: #{e.message}")
+    fail
+    respond_to do |format|
+      format.html { redirect_to royalties_ips_statement_path(@statement), status: :unprocessable_entity, alert: "Failed to upload revenue lines: #{e.message}" }
+    end
+  end
 
+  def detail
+    @statement = IpsStatement.find(params.expect(:id))
+    @detail = @statement.details.find(params.expect(:revenue_line_id))
   end
 
   def import

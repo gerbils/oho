@@ -80,8 +80,8 @@
 #
 class Product < LegacyRecord
   has_many :skus, -> { order("released_on asc") }
-  has_one :paper_sku, -> { joins(:skus).where(media: "paper_book").first }
-  has_one :ebook_sku, -> { joins(:skus).where(media: "electronic_book").first }
+  def paper_sku = skus.where(media: "printed_book").first
+  def ebook_sku = skus.where(media: "electronic_book").first
 
   has_many :author_sku_royalties,
            -> { order("author_sku_royalties.user_id asc") },
@@ -98,30 +98,32 @@ class Product < LegacyRecord
     end
   end
 
-  # Topie from admin_b app/models/title.rb
+  # Copied from admin_b app/models/title.rb
   ISBN_TO_SKU_MAP = {}
 
   def self.product_and_sku_for_isbn(isbn)
-    unless sku = ISBN_TO_SKU_MAP[isbn]
+    title, sku = ISBN_TO_SKU_MAP[isbn]
+
+    unless title && sku
       title = Title.find_by_isbn13(isbn) || Title.find_by_hardcover_isbn(isbn)
       if title
         sku = title.paper_sku
       else
         title = Title.find_by_kindle_edition_isbn(isbn) ||
-                Title.find_by_safari_isbn(isbn)         ||
-                Title.find_by_channel_epub_isbn(isbn)   ||
-                Title.find_by_channel_pdf_isbn(isbn)
+          Title.find_by_safari_isbn(isbn)         ||
+          Title.find_by_channel_epub_isbn(isbn)   ||
+          Title.find_by_channel_pdf_isbn(isbn)
 
         if title
           sku = title.ebook_sku
         else
           fail("No title for ISBN13: #{isbn}")
         end
-        unless sku
-          fail("No sku for #{title.code}")
-        end
-        ISBN_TO_SKU_MAP[isbn] = sku
       end
+      unless sku
+        fail("No sku for #{title.code}")
+      end
+      ISBN_TO_SKU_MAP[isbn] = [ title, sku ]
     end
     [ title, sku ]
   end

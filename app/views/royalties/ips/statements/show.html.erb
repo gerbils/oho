@@ -43,12 +43,13 @@ end
           <th scope="col" class="text-end">Basis for charge</th>
           <th scope="col" class="text-end ps-4">Factor</th>
           <th scope="col" class="text-end ps-4">Due this month</th>
+          <th scope="col" class="text-center ps-4">Uploaded</th>
         </tr>
       </thead>
       <tbody>
         <% sections.group_by(&:subsection).each do |subsection, details| %>
           <tr class="bg-light">
-            <td colspan="7"><strong><%= subsection.upcase %></strong></td>
+            <td colspan="8"><strong><%= subsection.upcase %></strong></td>
           </tr>
           <% details.each do |item| %>
             <tr>
@@ -59,6 +60,22 @@ end
               <td class="text-end"><%= number_to_currency(item.basis_for_charge) %></td>
               <td class="text-end"><%= number_to_percentage(item.factor_or_rate*10000, precision: 0) %></td>
               <td class="text-end"><%= number_to_currency(item.due_this_month) %></td>
+              <td class="text-start ps-4" style="max-height: 1rem; text-overflow: hidden">
+                <div style="max-height: 1rem; position: relative; top: -.7rem;" class="p-0">
+              <% if item.ips_revenue_lines.empty? %>
+                     <span class="text-warning fs-4 " title="Revenue lines not uploaded for this item">
+                     <i class="bi bi-x-circle-fill"></i>
+                    </span>
+                   <% else %>
+                     <span title="Revenue lines uploaded for this item">
+                       <i class="bi bi-check-circle-fill text-success fs-4"></i>
+                       <%= link_to detail_royalties_ips_statement_path(@statement, item), class: "info-link" do %>
+                         <i class="bi bi-eye-fill fs-4"></i>
+                       <% end %>
+                    </span>
+                  <% end %>
+                </div>
+              </td>
             </tr>
           <% end %>
         <% end %>

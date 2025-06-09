@@ -13,6 +13,7 @@
 #  net_sales           :decimal(10, 2)   default(0.0)
 #  revenue             :decimal(10, 2)   default(0.0)
 #  status              :string(255)      not null
+#  status_message      :string(255)
 #  total_chargebacks   :decimal(10, 2)   default(0.0)
 #  total_expenses      :decimal(10, 2)   default(0.0)
 #  created_at          :datetime         not null
@@ -92,7 +93,11 @@ class IpsStatement < ActiveRecord::Base
     connection.execute(query).map do |(count, total, status)|
       { count:, total:, status: }
     end
-
   end
+
+  def get_matching_details_for_total(total)
+    details.where(due_this_month: total)
+  end
+
 
 end

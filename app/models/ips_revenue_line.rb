@@ -39,7 +39,10 @@
 #  fk_rails_...  (upload_wrapper_id => upload_wrappers.id)
 #
 class IpsRevenueLine < ApplicationRecord
+  self.inheritance_column = :_none   # disable STI
+
   belongs_to :ips_statement_detail, optional: true
   belongs_to :upload_wrapper
+  belongs_to :sku
 end
 

@@ -1,19 +1,13 @@
 module Royalties::Shared
 
-  def excel_file_attached?(statement)
-    file = statement.upload_wrapper.file
-    error = case
-            when !file.attached?
-              "File is not attached"
-            when file.content_type !~ /vnd.ms-excel.sheet|officedocument.spreadsheetml/
-              "Mime type #{file.content_type} is not an Excel sheet"
-            else
-              nil
-            end
-    if error
-      { status: :error, message: error }
+  def excel_file_attached?(file)
+    case
+    when !file.attached?
+      "File is not attached"
+    when file.content_type !~ /vnd.ms-excel.sheet|officedocument.spreadsheetml/
+      "Mime type #{file.content_type} is not an Excel sheet"
     else
-      { status: :ok, statement: }
+      nil
     end
   end
 

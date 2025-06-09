@@ -31,7 +31,7 @@ class IpsStatementDetail < ActiveRecord::Base
   SECTIONS = [SECTION_REVENUE, SECTION_EXPENSE]
 
   belongs_to :ips_statement
-  # has_many   :raw_ips_revenue_lines, dependent: :destroy
+  has_many   :ips_revenue_lines, dependent: :destroy
 
   validates :section, inclusion: { in: SECTIONS }
   validates :subsection, presence: true

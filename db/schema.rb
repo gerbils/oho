@@ -40,7 +40,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_05_231338) do
   end
 
   create_table "ips_revenue_lines", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "ips_statement_details_id"
+    t.bigint "ips_statement_detail_id"
     t.bigint "upload_wrapper_id", null: false
     t.integer "sku_id"
     t.string "ean"
@@ -53,7 +53,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_05_231338) do
     t.string "date"
     t.string "customer_po_or_claim_no"
     t.string "invoice_or_credit_memo_no"
-    t.decimal "customer_discount", precision: 6, scale: 5
+    t.decimal "customer_discount", precision: 8, scale: 5
     t.string "type"
     t.integer "qty"
     t.decimal "value", precision: 8, scale: 2
@@ -64,7 +64,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_05_231338) do
     t.string "sl_state"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["ips_statement_details_id"], name: "index_ips_revenue_lines_on_ips_statement_details_id"
+    t.index ["ips_statement_detail_id"], name: "index_ips_revenue_lines_on_ips_statement_detail_id"
     t.index ["upload_wrapper_id"], name: "index_ips_revenue_lines_on_upload_wrapper_id"
   end
 
@@ -179,7 +179,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_05_231338) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "ips_revenue_lines", "ips_statement_details", column: "ips_statement_details_id"
+  add_foreign_key "ips_revenue_lines", "ips_statement_details"
   add_foreign_key "ips_revenue_lines", "upload_wrappers"
   add_foreign_key "ips_statement_details", "ips_statements"
   add_foreign_key "ips_statements", "upload_wrappers"
