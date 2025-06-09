@@ -16,6 +16,6 @@
   <td><%= line.customer_po_or_claim_no %></td>
   <td class="border-start border-secondary"><%= line.qty %></td>
   <td class="text-end"><%= number_to_currency(line.list_amount) %></td>
-  <td><%= number_to_percentage(line.customer_discount, precision: 0) %></td>
+  <td class="text-end"><%= number_to_percentage(line.customer_discount, precision: 0) %></td>
   <td class="text-end"><%= number_to_currency(line.value) %></td>
 </tr>

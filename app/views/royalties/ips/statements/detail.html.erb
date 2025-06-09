@@ -15,10 +15,15 @@
   </tr>
 </table>
 
+<style>
+  .table-sticky, .table-sticky thead, .table-sticky th {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+  }
+</style>
 
-<hr/>
-
-<table class="table">
+<table class="table table-sticky" style="display: block; height: 50vh; overflow: auto;">
   <thead class="table-dark">
     <tr>
       <th class="pb-0 border-bottom-0">Transaction</th>
@@ -44,5 +49,13 @@
   <tbody>
     <%= render partial: "revenue_line", collection: @detail.ips_revenue_lines, as: :line %>
   </tbody>
+
 </table>
+
+  <div class="">
+    <span class="align-baseline pe-4">Back to:</span>
+    <%= link_to "Royalties", royalties_ips_statements_path, class: "btn btn-secondary mt-3 align-baseline me-4" %>
+    <%= link_to "Statement", royalties_ips_statement_path(@statement), class: "btn btn-secondary mt-3 align-baseline" %>
+  </div>
+
 

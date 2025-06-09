@@ -57,15 +57,15 @@ module Royalties::Ips::UploadRevenueLines
                when 5
                  break
 
-               when -1
-                 record_error(upload_wrapper, result[:message])
+               when :error
+                 record_error(statement, result[:message])
                  break
 
                end
       if result[:status] == :ok
         step += 1
       else
-        step = -1
+        step = :error
       end
     end
   end
@@ -92,11 +92,11 @@ module Royalties::Ips::UploadRevenueLines
         if titles_similar(product.title, row[:title])
           row[:sku_id] = sku.id
         else
-          errors << "Title mismatch #{isbn}: #{title.inspect} doesn't start with #{row[:title].inspect}"
+          errors << "Title mismatch #{isbn}: #{product.title.inspect} doesn't start with #{row[:title].inspect} (#{normalize(product.title)} vs. #{normalize(row[:title])} )"
         end
       end
 
-      if errors.length > 10
+      if errors.length > 0
         errors << "Too many errors"
         break
       end
@@ -112,10 +112,16 @@ module Royalties::Ips::UploadRevenueLines
     { status: :error, message: e.message }
   end
 
+  def normalize(title)
+    title
+      .downcase
+      .tr("^a-z0-9", "")
+      .sub(/(2nd|3rd|4th|5th|6th|7th|8th|9th|second|third|fourth|fifth|sixth|seventh|eighth|ninth)ed(ition)?/, "")
+      .strip
+  end
+
   def titles_similar(pip, lp)
-    pip = pip.downcase.tr("^a-z0-9", " ")
-    lp  = lp.downcase.tr("^a-z0-9", " ").sub(/2nd/, "second").sub(/3rd/, "third")
-    pip[0..10] == lp[0..10]
+    normalize(pip) == normalize(lp)
   end
 
   # try to match the sum of the rows to a revenue detqil line. If found, attach the rows there,
@@ -150,10 +156,10 @@ module Royalties::Ips::UploadRevenueLines
     { status: :error, message: msg }
   end
 
-  def record_error(upload_wrapper, message)
-    upload_wrapper.status_message = message
-    upload_wrapper.status = IpsStatement::STATUS_FAILED_UPLOAD
-    upload_wrapper.save!
+  def record_error(statement, message)
+    statement.status_message = message
+    statement.status = IpsStatement::STATUS_FAILED_UPLOAD
+    statement.save!
   end
 
 end

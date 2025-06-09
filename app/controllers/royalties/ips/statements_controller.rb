@@ -38,15 +38,17 @@ class Royalties::Ips::StatementsController < ApplicationController
     respond_to do |format|
       if @upload_wrapper.save
         Ips::UploadRevenueLinesJob.new.perform(@statement.id, @upload_wrapper.id)
-        if @upload_wrapper.status == UploadWrapper::STATUS_FAILED_UPLOAD
-          index
-          format.html { redirect_to action: "index", status: :unprocessable_entity, alert: @upload_wrapper.status_message || "Failed to upload revenue lines" }
+
+        if @statement.status == IpsStatement::STATUS_FAILED_UPLOAD
+          Rails.logger.error("here 1")
+          format.html { redirect_to action: "show", status: :unprocessable_entity, alert: @statement.status_message || "Failed to upload revenue lines" }
         else
-          format.html {  redirect_to royalties_ips_statement_path(@statement), notice: "Details uploaded"  }
+          Rails.logger.error("here 2")
+          format.html {  redirect_to royalties_ips_statement_path(@statement), notice: @statement.status } #"Details uploaded"  }
         end
       else
         index
-        format.html { render :index, status: :unprocessable_entity, error: @upload_wrapper.errors.full_messages.to_sentence }
+        format.html { render :show, status: :unprocessable_entity, error: @statement.errors.full_messages.to_sentence }
       end
     end
   rescue StandardError => e

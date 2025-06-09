@@ -32,6 +32,7 @@ class IpsStatement < ActiveRecord::Base
   belongs_to :upload_wrapper, dependent: :destroy
 
   has_many :details, class_name: "IpsStatementDetail", dependent: :destroy
+  has_many :ips_revenue_lines, through: :details
   has_many :expenses, -> { where(section: SECTION_EXPENSE) }, class_name: "IpsStatementDetail"
   has_many :revenues, -> { where(section: SECTION_REVENUE) }, class_name: "IpsStatementDetail"
 
@@ -93,6 +94,25 @@ class IpsStatement < ActiveRecord::Base
     connection.execute(query).map do |(count, total, status)|
       { count:, total:, status: }
     end
+  end
+
+  def mark_if_complete
+    if details.empty?
+      self.status = STATUS_INCOMPLETE
+      return
+    end
+
+    completed_details = self.ips_revenue_lines.select(:ips_statement_detail_id).distinct.count
+    all_details = details.count
+
+    if completed_details == all_details
+      self.status = STATUS_UPLOADED
+      self.status_message = "Can be imported"
+    else
+      self.status = STATUS_INCOMPLETE
+      self.status_message = "#{pluralize("subreports", all-details - completed_details)} need to be uploaded"
+    end
+    self.save!
   end
 
   def get_matching_details_for_total(total)
