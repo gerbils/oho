@@ -1,0 +1,21 @@
+<%##  pub_alpha                 :string(255)%>
+<%##  qty                       :integer%>
+<%##  shipping_location         :string(255)%>
+<%##  sl_city                   :string(255)%>
+<%##  sl_state                  :string(255)%>
+<%##  title                     :string(255)%>
+<%##  type                      :string(255)%>
+<%##  value                     :decimal(8, 2)%>
+<tr class="border-secondary">
+  <td><%= line.date %></td>
+  <td><%= line.type %></td>
+  <td><%= line.sku.sku %><br/><span class="small"><%= line.ean %></span></td>
+  <td class="border-start border-secondary"><%= line.hq_account_no %></td>
+  <td><%= line.headquarter %><br/> <span class="small"><%= line.sl_city %> <br/> <%= line.sl_state %></span></td>
+  <td><%= line.invoice_or_credit_memo_no %></td>
+  <td><%= line.customer_po_or_claim_no %></td>
+  <td class="border-start border-secondary"><%= line.qty %></td>
+  <td class="text-end"><%= number_to_currency(line.list_amount) %></td>
+  <td class="text-end"><%= number_to_percentage(line.customer_discount, precision: 0) %></td>
+  <td class="text-end"><%= number_to_currency(line.value) %></td>
+</tr>

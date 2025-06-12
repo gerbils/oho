@@ -14,6 +14,7 @@ class CreateIpsStatement < ActiveRecord::Migration[8.0]
       t.decimal    :total_expenses,      default: 0,  precision: 10, scale: 2
       t.decimal    :net_client_earnings, default: 0,  precision: 10, scale: 2
       t.datetime   :imported_at
+      t.integer    :ips_statement_details_count,       default: 0   # rails counter cache
       t.timestamps
     end
   end

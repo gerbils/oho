@@ -1,0 +1,17 @@
+<div id="<%= dom_id(item, :status) %>">
+  <% if item.uploaded_at? %>
+    <div style="max-height: 1rem; position: relative; top: -.7rem;" class="p-0">
+      <span title="Revenue lines uploaded for this item">
+        <i class="bi bi-check-circle-fill text-success fs-4"></i>
+        <%= link_to detail_royalties_ips_statement_path(statement, item), class: "info-link" do %>
+          <i class="bi bi-eye-fill fs-4"></i>
+        <% end %>
+      </span>
+    <% else %>
+      <span class="text-warning fs-6 ">
+        not yet
+      </span>
+    </div>
+  <% end %>
+</div>
+

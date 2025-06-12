@@ -1,0 +1,17 @@
+<% level_class = [
+  'list-group-item-success',
+  'list-group-item-info',
+  'list-group-item-warning',
+  'list-group-item-danger',
+]
+%>
+
+<li id="<%= dom_id(oho_error) %>" class="list-group-item <%= level_class[oho_error.level] || ""%>">
+  <% if oho_error.label.present? %>
+    <div class="d-flex justify-content-between">
+      <h5><%= oho_error.label %></h5>
+      <div class="text-secondary" style="font-size: 75%"><%= oho_error.created_at %></div>
+    </div>
+  <% end %>
+  <p><%= oho_error.message %></p>
+</li>

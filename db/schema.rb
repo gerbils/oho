@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_05_231338) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_12_174604) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -39,37 +39,27 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_05_231338) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "ips_revenue_lines", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "ips_detail_lines", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "ips_statement_detail_id"
     t.bigint "upload_wrapper_id", null: false
     t.integer "sku_id"
-    t.string "ean"
+    t.string "content_type"
+    t.string "description"
     t.string "title"
-    t.string "format"
-    t.decimal "list_amount", precision: 8, scale: 2
-    t.string "pub_alpha"
-    t.string "brand_category"
-    t.string "imprint"
-    t.string "date"
-    t.string "customer_po_or_claim_no"
-    t.string "invoice_or_credit_memo_no"
-    t.decimal "customer_discount", precision: 8, scale: 5
-    t.string "type"
-    t.integer "qty"
-    t.decimal "value", precision: 8, scale: 2
-    t.string "hq_account_no"
-    t.string "headquarter"
-    t.string "shipping_location"
-    t.string "sl_city"
-    t.string "sl_state"
+    t.string "ean"
+    t.integer "quantity"
+    t.decimal "amount", precision: 8, scale: 2
+    t.json "json"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["ips_statement_detail_id"], name: "index_ips_revenue_lines_on_ips_statement_detail_id"
-    t.index ["upload_wrapper_id"], name: "index_ips_revenue_lines_on_upload_wrapper_id"
+    t.index ["ips_statement_detail_id"], name: "index_ips_detail_lines_on_ips_statement_detail_id"
+    t.index ["upload_wrapper_id"], name: "index_ips_detail_lines_on_upload_wrapper_id"
   end
 
   create_table "ips_statement_details", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "ips_statement_id", null: false
+    t.integer "ips_detail_lines_count", default: 0, null: false
+    t.datetime "uploaded_at"
     t.string "section", null: false
     t.string "subsection", null: false
     t.string "detail", null: false
@@ -97,6 +87,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_05_231338) do
     t.decimal "total_expenses", precision: 10, scale: 2, default: "0.0"
     t.decimal "net_client_earnings", precision: 10, scale: 2, default: "0.0"
     t.datetime "imported_at"
+    t.integer "ips_statement_details_count", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["upload_wrapper_id"], name: "index_ips_statements_on_upload_wrapper_id"
@@ -131,30 +122,24 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_05_231338) do
     t.index ["upload_wrapper_id"], name: "index_lp_statements_on_upload_wrapper_id"
   end
 
-  create_table "posts", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "name"
-    t.text "content"
+  create_table "notices", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.integer "level"
+    t.string "owning_class"
+    t.integer "owner_id"
+    t.text "message"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "royalty_raw_lp_data", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "upload_wrapper_id", null: false
-    t.bigint "sku_id"
-    t.string "isbn", null: false
-    t.string "e_isbn"
-    t.string "title", null: false
-    t.string "publisher", null: false
-    t.string "author", null: false
-    t.string "channel", null: false
-    t.decimal "sales", precision: 10, scale: 2, null: false
-    t.decimal "commission_rate", precision: 5, scale: 2, null: false
-    t.decimal "commission_earned", precision: 10, scale: 2, null: false
+  create_table "oho_errors", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "owner_dom_id", null: false
+    t.string "display_tag", null: false
+    t.integer "level", default: 0, null: false
+    t.string "label", null: false
+    t.string "message", limit: 2048
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["isbn"], name: "index_royalty_raw_lp_data_on_isbn"
-    t.index ["sku_id"], name: "index_royalty_raw_lp_data_on_sku_id"
-    t.index ["upload_wrapper_id"], name: "index_royalty_raw_lp_data_on_upload_wrapper_id"
+    t.index ["owner_dom_id"], name: "index_oho_errors_on_owner_dom_id"
   end
 
   create_table "sessions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -179,11 +164,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_05_231338) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "ips_revenue_lines", "ips_statement_details"
-  add_foreign_key "ips_revenue_lines", "upload_wrappers"
+  add_foreign_key "ips_detail_lines", "ips_statement_details"
+  add_foreign_key "ips_detail_lines", "upload_wrappers"
   add_foreign_key "ips_statement_details", "ips_statements"
   add_foreign_key "ips_statements", "upload_wrappers"
   add_foreign_key "lp_statement_lines", "lp_statements"
   add_foreign_key "lp_statements", "upload_wrappers"
-  add_foreign_key "royalty_raw_lp_data", "upload_wrappers"
 end
