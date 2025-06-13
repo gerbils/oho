@@ -23,15 +23,17 @@
 # Foreign Keys
 #
 #  fk_rails_...  (ips_statement_id => ips_statements.id)
-#
+
 class IpsStatementDetail < ActiveRecord::Base
+
+  include ActionView::RecordIdentifier   # for dom_id
 
   SECTION_REVENUE = "REVENUE"
   SECTION_EXPENSE = "EXPENSE"
   SECTIONS = [SECTION_REVENUE, SECTION_EXPENSE]
 
-  belongs_to :ips_statement
-  has_many   :ips_revenue_lines, dependent: :destroy
+  belongs_to :ips_statement, counter_cache: true
+  has_many   :ips_detail_lines, dependent: :destroy
 
   validates :section, inclusion: { in: SECTIONS }
   validates :subsection, presence: true
@@ -43,4 +45,18 @@ class IpsStatementDetail < ActiveRecord::Base
 
   scope :expense, -> { where(section: SECTION_EXPENSE) }
   scope :revenue, -> { where(section: SECTION_REVENUE) }
+
+
+  private
+
+  after_save :maybe_update_status
+  def maybe_update_status
+    if saved_change_to_uploaded_at?
+       broadcast_replace_to(
+         dom_id(ips_statement, :show),
+         target: dom_id(self, :status),
+         partial: "royalties/ips/statements/detail_status", locals: { statement: self.ips_statement, item: self }
+       )
+    end
+  end
 end

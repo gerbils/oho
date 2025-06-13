@@ -26,14 +26,17 @@ def charge_factor(item)
   end
 end
   %>
-Error: <%= @statement.status_message %>
 
+<%= turbo_stream_from dom_id(@statement, :show) %>
+<%= turbo_stream_from dom_id(@statement, :errors) %>
 
 <h1>IPS Statement</h1>
 
 <h4 class="text-secondary mt-3">Pragmatic Programmers LLC</h4>
 <h5 class="text-secondary">Client Statement</h5>
-<h5><span><span class="text-secondary">Month ending: </span><%= @statement.month_ending.strftime("%B %d %Y") %></h5>
+<h5 class="mb-4"><span><span class="text-secondary">Month ending: </span><%= @statement.month_ending.strftime("%B %d %Y") %></h5>
+
+<%= render partial: "shared/oho_errors_list", locals: { object: @statementi, errors: @statement.errors } %>
 
 <h3 class="mt-5 bg-dark-subtle text-center p-2">Revenues</h3>
 <div class="d-flex gap-4 justify-content-between align-items-stretch">
@@ -63,20 +66,7 @@ Error: <%= @statement.status_message %>
               <td class="text-end"><%= number_to_percentage(item.factor_or_rate*10000, precision: 0) %></td>
               <td class="text-end"><%= number_to_currency(item.due_this_month) %></td>
               <td class="text-start ps-4" style="max-height: 1rem; text-overflow: hidden">
-                <div style="max-height: 1rem; position: relative; top: -.7rem;" class="p-0">
-              <% if item.ips_revenue_lines.empty? %>
-                     <span class="text-warning fs-4 " title="Revenue lines not uploaded for this item">
-                     <i class="bi bi-x-circle-fill"></i>
-                    </span>
-                   <% else %>
-                     <span title="Revenue lines uploaded for this item">
-                       <i class="bi bi-check-circle-fill text-success fs-4"></i>
-                       <%= link_to detail_royalties_ips_statement_path(@statement, item), class: "info-link" do %>
-                         <i class="bi bi-eye-fill fs-4"></i>
-                       <% end %>
-                    </span>
-                  <% end %>
-                </div>
+                <%= render partial: "detail_status", locals: { statement: @statement, item: item } %>
               </td>
             </tr>
           <% end %>
@@ -87,13 +77,16 @@ Error: <%= @statement.status_message %>
   </table>
 
   <div class="bg-secondary bg-gradient text-center align-self-center p-5">
-    <%= bootstrap_form_with(model: @upload_wrapper, url: upload_revenue_lines_royalties_ips_statement_path(@statement)) do |form| %>
+    <%= bootstrap_form_with(model: @upload_files, url: upload_revenue_lines_royalties_ips_statement_path(@statement)) do |form| %>
       <div class="my-auto h-100">
         <h4>Upload Revenue Files</h4>
-        <p>Drop all revenue files here (one or more at a time)</p>
+
+
+<div class="text-primary">Drop ls spreadsheets here</div>
+  <div class="text-primary" style="--bs-text-opacity: .5;">(one or more at a time)</div>
 
         <div>
-          <%= form.file_field :file, multiple: false, accept: ".xlsx" %>
+          <%= form.file_field :files, label: "&nbsp;".html_safe, multiple: true, accept: ".xlsx" %>
         </div>
 
         <div>
@@ -132,7 +125,10 @@ Error: <%= @statement.status_message %>
             <td class="text-end"><%= charge_basis(item) %></td>
             <td class="text-end"><%= charge_factor(item) %></td>
             <td class="text-end"><%= number_to_currency(item.due_this_month) %></td>
-          </tr>
+            <td class="text-start ps-4" style="max-height: 1rem; text-overflow: hidden">
+              <%= render partial: "detail_status", locals: { statement: @statement, item: item } %>
+            </td>
+          </tr
         <% end %>
       <% end %>
     <% end %>

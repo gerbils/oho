@@ -29,6 +29,9 @@
 #  fk_rails_...  (upload_wrapper_id => upload_wrappers.id)
 #
 class IpsStatement < ActiveRecord::Base
+
+  include ActionView::RecordIdentifier   # for dom_id
+
   belongs_to :upload_wrapper, dependent: :destroy
 
   has_many :details, class_name: "IpsStatementDetail", dependent: :destroy
@@ -58,7 +61,7 @@ class IpsStatement < ActiveRecord::Base
     STATUS_UPLOAD_PENDING,
   ]
 
-  validates :month_ending,        presence: true
+  # validates :month_ending,        presence: true
   validates :gross_sales_total,   numericality: true
   validates :gross_returns_total, numericality: true
   validates :net_sales,           numericality: true
@@ -74,10 +77,14 @@ class IpsStatement < ActiveRecord::Base
     :net_sales,
     :total_chargebacks,
     :total_expenses,
-    :month_ending,
+    # :month_ending,
     :upload_wrapper_id,
     presence: true
   )
+
+
+  # after_create_commit :add_to_index_page
+  after_update_commit :update_index_page
 
   def self.new_with_upload(upload)
     new(
@@ -96,13 +103,17 @@ class IpsStatement < ActiveRecord::Base
     end
   end
 
+  def oho_errors
+    OhoError.for_object(self)
+  end
+
   def mark_if_complete
     if details.empty?
       self.status = STATUS_INCOMPLETE
       return
     end
 
-    completed_details = self.ips_revenue_lines.select(:ips_statement_detail_id).distinct.count
+    completed_details = details.where('ips_detail_lines_count > 0').count
     all_details = details.count
 
     if completed_details == all_details
@@ -110,7 +121,7 @@ class IpsStatement < ActiveRecord::Base
       self.status_message = "Can be imported"
     else
       self.status = STATUS_INCOMPLETE
-      self.status_message = "#{pluralize("subreports", all-details - completed_details)} need to be uploaded"
+      self.status_message = "#{"subreport".pluralize(all_details - completed_details)} need to be uploaded"
     end
     self.save!
   end
@@ -119,5 +130,22 @@ class IpsStatement < ActiveRecord::Base
     details.where(due_this_month: total)
   end
 
+  private
+
+  # def add_to_index_page
+  #   broadcast_prepend_to(
+  #     "ips-royalty-index",
+  #     target: "upload-list",
+  #     partial: "royalties/ips/statements/statement", locals: { statement: self }
+  #   )
+  # end
+
+  def update_index_page
+    broadcast_replace_to(
+      "ips-royalty-index",
+      target: dom_id(self),
+      partial: "royalties/ips/statements/statement", locals: { statement: self }
+    )
+  end
 
 end

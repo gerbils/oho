@@ -77,7 +77,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_12_174604) do
     t.bigint "upload_wrapper_id", null: false
     t.string "status", null: false
     t.string "status_message"
-    t.date "month_ending", null: false
+    t.date "month_ending", default: "1000-01-01"
     t.decimal "revenue", precision: 10, scale: 2, default: "0.0"
     t.decimal "gross_sales_total", precision: 10, scale: 2, default: "0.0"
     t.decimal "gross_returns_total", precision: 10, scale: 2, default: "0.0"

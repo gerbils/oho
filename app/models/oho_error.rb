@@ -1,9 +1,14 @@
 class OhoError < ActiveRecord::Base
       # t.string  :owner_dom_id
-      # t.string  :display_tag, null: false
+      # t.string  :display_tag, null: true
       # t.integer :level,       null: false, default: 0
       # t.string  :label,       null: false
       # t.string  :message,     limit: 2048
+
+  SUCCESS = 0
+  INFO    = 1
+  WARNING = 2
+  ERROR   = 3
 
   after_create_commit  :notify_create
   after_update_commit  :notify_update

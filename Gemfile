@@ -34,18 +34,12 @@ end
 
 # app gems
 gem "aws-sdk-s3", "~> 1.158"
-gem "pagy", "~> 9.3"
-gem "groupdate", "~> 6.6"
 gem "bootstrap_form", "~> 5.4"
-
 gem "chartkick", "~> 5.1"
-
-gem "mission_control-jobs", "~> 1.0"
-
-gem "roo", "~> 2.10"
-
 gem "csv", "~> 3.3"
-
-gem "sqlite3", "~> 2.6"
-
+gem "groupdate", "~> 6.6"
+gem "mission_control-jobs", "~> 1.0"
+gem "pagy", "~> 9.3"
 gem "pry", "~> 0.15.2"
+gem "roo", "~> 2.10"
+gem "sqlite3", "~> 2.6"

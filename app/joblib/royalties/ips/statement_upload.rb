@@ -8,38 +8,22 @@ module Royalties::Ips::StatementUpload
 
 
   def handle(statement)
-    step = 0
-    result = nil # for scoping
+    sleep(5)
+    file = statement.upload_wrapper.file
+    excel_file_attached?(file)
+    add_details_to_upload(statement.upload_wrapper, file)
 
-    loop do   # Poor man's "do"
-      result = case step
-               when 0
-                 error = excel_file_attached?(statement.upload_wrapper.file)
-                 if error
-                   { status: :error, message: error }
-                 else
-                   { status: :ok, statement: }
-                 end
-               when 1
-                 Royalties::Ips::ParseStatement.parse(
-                   statement,
-                   statement.upload_wrapper.file.download,
-                   'xlsx')
-               when 2
-                 save_statement(statement)
-               when 3
-                 break
-               when :error
-                 record_error(statement, result[:message])
-                 break
-               end
-      if result[:status] == :ok
-        step += 1
-        statement = result[:statement]
-      else
-        step = :error
-      end
-    end
+    statement =  Royalties::Ips::ParseStatement.parse(
+      statement,
+      statement.upload_wrapper.file.download,
+      'xlsx')
+     save_statement(statement)
+
+  rescue StandardError => e
+    raise if ENV['debug']
+    OhoError.create(object: statement, label: "Error uploading IPS statement", message: e.message, level: OhoError::ERROR)
+    statement.status = IpsStatement::STATUS_FAILED_UPLOAD
+    statement.save!
   end
 
   private
@@ -59,22 +43,14 @@ module Royalties::Ips::StatementUpload
         detail.ips_statement = statement
         detail.save!
       end
-
-
     end
-
-    { status: :ok}
-
-  rescue => e
-    raise if ENV['debug']
-    { status: :error, message: e.message }
   end
 
-  def record_error(statement, message)
-    statement.status_message = message
-    statement.status = IpsStatement::STATUS_FAILED_UPLOAD
-    statement.save!
-  end
-
+  # def record_error(statement, message)
+  #   statement.status_message = message
+  #   statement.status = IpsStatement::STATUS_FAILED_UPLOAD
+  #   statement.save!
+  # end
+  #
 
 end

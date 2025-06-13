@@ -11,10 +11,7 @@ module Royalties::Ips::ParseStatement
     statement = validate_expected_format(sheet, statement)
     statement = split_rows(statement, sheet)
     reconcile(statement)
-    { status: :ok, statement: statement }
-  rescue => e
-    raise if ENV['debug']
-    { status: :error, message: e.message }
+    statement
   end
 
   private

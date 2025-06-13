@@ -40,6 +40,7 @@ Rails.application.routes.draw do
     root  "home#index"
     namespace :ips do
       resources :statements, only: [ :index, :show, :update, :destroy ] do
+        get "xxx", on: :member, to: "statements#xxx", as: :xxx
         post "upload", on: :collection, to: "statements#create", as: :upload
         put  "import", on: :member
         post "upload_revenue_lines", on: :member, to: "statements#upload_revenue_lines", as: :upload_revenue_lines

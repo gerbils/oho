@@ -3,8 +3,6 @@
   upload = stmt.upload_wrapper
 %>
 
-<%= turbo_stream_from stmt %>
-
 <tr id="<%= dom_id stmt %>" class="align-middle">
   <td>
     <%= stmt.month_ending %>
@@ -24,12 +22,13 @@
                   method: :put,
                   data: { "turbo-method": :put, turbo_confirm: 'This permanently adds royalty information to PIP. Continue? ' }
                  %>
-     <% else %>
+    <% elsif stmt.status == IpsStatement::STATUS_INCOMPLETE %>
         <%= link_to 'Add Details',
                   royalties_ips_statement_path(stmt),
                   class: 'btn btn-success'
                  %>
-
+     <% else %>
+        <i>initializing</i>
      <% end %>
   </td>
 

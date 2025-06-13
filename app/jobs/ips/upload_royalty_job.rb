@@ -1,16 +1,15 @@
 class Ips::UploadRoyaltyJob < ApplicationJob
   queue_as :default
 
-  def perform(upload_id)
+  def perform(statement_id)
     logger.info("starting IPS upload job")
-    upload = UploadWrapper.find(upload_id)
-    statement = IpsStatement.new_with_upload(upload)
+    statement = IpsStatement.find(statement_id)
     begin
       Royalties::Ips::StatementUpload.handle(statement)
     rescue StandardError => e
       raise if ENV['debug']
-      Rails.logger.error("Error handling lp upload: #{e.message}")
-      statement.save!(status: IpsStatement::STATUS_FAILED_UPLOAD, status_message: e.message)
+      Rails.logger.error("Error handling ips upload: #{e.message}")
+      OhoError.create(object: statement, label: "Error uploading IPS statement", message: e.message, level: OhoError::ERROR)
     end
     logger.info("finishing IPS upload job")
   end
