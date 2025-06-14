@@ -15,4 +15,12 @@ class IpsDetailLine < ApplicationRecord
         :json,
        presence: true)
 
+  def from_json()
+    @parsed_json ||= JSON.parse(json)
+  end
+
+  def json=(obj)
+    @parsed_json = obj
+    super(obj)
+  end
 end

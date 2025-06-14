@@ -58,6 +58,7 @@ class Royalties::Ips::StatementsController < ApplicationController
   def detail
     @statement = IpsStatement.find(params.expect(:id))
     @detail = @statement.details.find(params.expect(:revenue_line_id))
+    @content_type = @detail.ips_detail_lines.first&.content_type
   end
 
   def import

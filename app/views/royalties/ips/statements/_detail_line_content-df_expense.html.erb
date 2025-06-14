@@ -1,0 +1,62 @@
+<%
+  def format_address(name, a1, a2, a3, city, state, zip)
+    address = [ name ]
+    address << a1 if a1.present?
+    address << a2 if a2.present?
+    address << a3 if a3.present?
+    address << city if city.present?
+    if state.present?
+    if zip.present?
+      address << "#{state}, #{zip}"
+    else
+      address << state
+    end
+    end
+    address.join("<br/>").html_safe
+  end
+
+def qa(qty, amt)
+  qty ||= "0"
+  amt ||= "0.0"
+  if qty == "0" && amt == "0.0"
+    "—"
+  else
+    %{#{qty} x #{number_to_currency(amt)}}
+  end
+end
+  %>
+
+<td>
+  <%= content["Invoice Date"] %><br/>
+  <span class="text-secondary">#<%= content["Invoice Number"] %></span>
+</td>
+<td>
+  <%= content["Customer PO"] %></br>
+  <span class="text-secondary"><%= content["Bill to Number"] %></span>
+</td>
+<td>
+  <%= format_address(
+  content["DF Name"],
+  content["DF Address 1"],
+  content["DF Address 2"],
+  content["DF Address 3" ],
+  content["DF City"],
+  content["DF State"],
+  content["DF Zip"])
+%>
+</td>
+<td class="text-end ps-4">
+    <%= number_to_currency(content["IPS INVC"]) %>
+</td>
+<td class="text-end ps-4">
+  <%= qa(content["Carton Count"], content["Carton Charge"]) %>
+</td>
+<td class="text-end ps-4">
+<%= qa(content["Loose Units"], content["Loose Charge"]) %>
+</td>
+<td class="text-end ps-4">
+<%= qa(content["SKID CNT"], content["SKID Charge"]) %>
+</td>
+<td class="text-end ps-4">
+<%= qa(content["Title Count"], content["Title Charge"]) %>
+</td>

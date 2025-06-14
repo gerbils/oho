@@ -2,7 +2,7 @@ module Royalties::Ips::ParseDetailLines
   extend self
   extend Royalties::Shared
 
-  Detail = Struct.new("Detail", :ean, :description, :title, :quantity, :amount)
+  Detail = Struct.new("DetailLine", :ean, :description, :title, :quantity, :amount, :content_type)
 
   module Type1
     # CanadianFreightPctofSales.xlsx
@@ -14,11 +14,11 @@ module Royalties::Ips::ParseDetailLines
     ]
     def self.extract(row)
       description = "Freight"
-      ean = row[7].cell_value
-      title = row[8].cell_value
+      ean      = row[7].cell_value
+      title    = row[8].cell_value
+      amount   = BigDecimal(row[-1].cell_value)
       quantity = 0
-      amount = BigDecimal(row[-1].cell_value)
-      Detail.new(ean:, description:, title:, quantity:, amount:)
+      Detail.new(ean:, description:, title:, quantity:, amount:, content_type: "freight")
     end
   end
 
@@ -44,7 +44,7 @@ module Royalties::Ips::ParseDetailLines
       title = row[1].cell_value
       quantity = row[13].value
       amount = BigDecimal(row[15].cell_value)
-      Detail.new(ean:, description:, title:, quantity:, amount:)
+      Detail.new(ean:, description:, title:, quantity:, amount:, content_type: "expense1")
     end
   end
 
@@ -63,7 +63,7 @@ module Royalties::Ips::ParseDetailLines
       title = nil
       quantity = 0
       amount = BigDecimal(row[-1].cell_value)
-      Detail.new(ean:, description:, title:, quantity:, amount:)
+      Detail.new(ean:, description:, title:, quantity:, amount:, content_type: "df_expense")
     end
   end
 
@@ -88,7 +88,7 @@ module Royalties::Ips::ParseDetailLines
       title = row[7].cell_value
       quantity = row[8].value
       amount = BigDecimal(row[-1].cell_value)
-      Detail.new(ean:, description:, title:, quantity:, amount:)
+      Detail.new(ean:, description:, title:, quantity:, amount:, content_type: "lsi_expense")
     end
   end
 
@@ -107,7 +107,7 @@ module Royalties::Ips::ParseDetailLines
       title = row[1].cell_value
       quantity = row[12].value
       amount = BigDecimal(row[13].cell_value)
-      Detail.new(ean:, description:, title:, quantity:, amount:)
+      Detail.new(ean:, description:, title:, quantity:, amount:, content_type: "all_revenues")
     end
   end
 
@@ -122,7 +122,7 @@ module Royalties::Ips::ParseDetailLines
   def to_h(handler, row)
     headers = handler::HEADINGS
     fail "Mismatched columns: expected #{headers.size} columns, got #{row.size}" if headers.size != row.size
-    Hash[headers.zip(row)]
+    Hash[headers.zip(row.map(&:cell_value))]
   end
 
   def parse(statement, content, file_type)
@@ -148,8 +148,8 @@ module Royalties::Ips::ParseDetailLines
       hash = to_h(handler, row)
 
       lines << IpsDetailLine.new(
-        content_type: handler.name,
         ean: result.ean,
+        content_type: result.content_type,
         title: result.title,
         description: result.description,
         quantity: result.quantity,

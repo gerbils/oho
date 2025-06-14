@@ -1,0 +1,32 @@
+<%
+  %>
+
+<td>
+  <%= content["Date"] %><br/>
+</td>
+
+<td>
+  <%= content["Type"] %><br/>
+</td>
+
+<td>
+  <%= content["Headquarter"] %></br>
+  <%= content["SL City"] %></br>
+  <%= content["SL State"] %></br>
+</td>
+
+<td>
+  <%= content["Customer PO / Claim #"] %></br>
+  <%= content["Invoice / Credit Memo #"] %>
+</td>
+
+<td class="text-end ps-4">
+  <%= number_to_percentage(content["Customer Discount"]) %>
+</td>
+
+<td class="text-end ps-4">
+  <%= number_to_percentage(content["Fee Factor Pct"]) %>
+</td>
+<td class="text-end ps-4">
+  <%= number_to_currency(content["Sum of Value"]) %>
+</td>

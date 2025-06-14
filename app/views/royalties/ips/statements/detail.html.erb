@@ -24,26 +24,16 @@
 </style>
 
 <table class="table table-sticky" style="display: block; height: 50vh; overflow: auto;">
-  <thead class="table-dark">
+  <thead class="table-dark"> <!-- style because there's a 1px gap between rows -->
     <tr>
-      <th class="pb-0 border-bottom-0">Transaction</th>
-      <th scope="col" class="pb-0 border-bottom-0">Type</th>
-      <th scope="col" class="pb-0 border-bottom-0">Sku/</th>
-      <th scope="col" colspan="4" class="text-center pb-0 border-start">Customer</th>
-      <th scope="col" class="text-center pb-0 border-start" colspan="4">Order</th>
+      <th scope="col" class="text-center" style="border-right: 1px solid #777; border-bottom: none" colspan="3">Royalty Info</th>
+      <th colspan="100%" class="text-center" style="border-bottom: none">Content Info</th>
     </tr>
     <tr>
-      <th class="pt-0">Date</th>
-      <th class="pt-0"></th>
-      <th scope="col" class="pt-0">ISBN</th>
-      <th scope="col" class="pt-0 border-start">Account No.</th>
-      <th scope="col" class="pt-0">Headquarters</th>
-      <th scope="col" class="pt-0">PO/claim #</th>
-      <th scope="col" class="pt-0">Inv/credit #</th>
-      <th scope="col" class="text-end pt-0 border-start">Qty</th>
-      <th scope="col" class="text-end pt-0">List price</th>
-      <th scope="col" class="text-end pt-0">Discount</th>
-      <th scope="col" class="text-end pt-0">Value</th>
+      <th scope="col" class=" border-bottom-0">Sku</th>
+      <th scope="col" class="text-end border-bottom-0">Qty</th>
+      <th class="text-end border-bottom-0 ps-3" style="border-right: 1px solid #777">Value</th>
+      <%= render partial: "detail_line_header-#{@content_type}", locals: { detail: @detail } %>
     </tr>
   </thead>
   <tbody>

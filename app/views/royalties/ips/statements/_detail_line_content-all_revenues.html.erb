@@ -1,0 +1,11 @@
+<td><%= content["Date"]%></td>
+<td><%= content["HQ Account #"]%></td>
+<td>
+  <%= content["Headquarter"]%><br/>
+  <span class="small"><%= content["SL City"]%></span></br>
+  <span class="small"><%= content["SL State"]%></span></br>
+</td>
+<td><%= content["Customer PO / Claim #"]%></td>
+<td><%= content["Invoice / Credit Memo #"]%></td>
+<td class="text-end"><%= number_to_currency(content["List Amount"])%></td>
+<td class="text-end"><%= number_to_percentage(content["Customer Discount"])%></td>

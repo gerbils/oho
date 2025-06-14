@@ -1,0 +1,25 @@
+<td class="ps-4">
+  <%= content["Invoice Date"] %>
+</td>
+
+<td class="ps-4">
+    <%= content["Currency Code"] %>
+</td>
+
+<td class="text-end ps-4">
+    <%= number_to_currency(content["Functional Unit Amount"]) %>
+</td>
+
+<td class="text-end ps-4">
+    <%= number_to_currency(content["Functional Extended Amount"]) %>
+</td>
+
+<td class="text-end ps-4">
+    <%= content["Tax Rate"] %>
+</td>
+
+<td class="text-end ps-4">
+    <%= number_to_currency(content["Tax Amount"]) %>
+</td>
+
+

@@ -18,6 +18,10 @@ module Royalties::Ips::DetailLinesUpload
 
     map_isbns_to_skus(rows)
     save_rows(statement, upload_wrapper,rows)
+
+  rescue StandardError => e
+    raise if ENV['debug']
+    OhoError.create(owner: statement, label: "Uploading: #{file.filename}", message: e.message, level: OhoError::ERROR)
   end
 
   private
