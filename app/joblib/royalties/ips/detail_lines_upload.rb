@@ -18,11 +18,6 @@ module Royalties::Ips::DetailLinesUpload
 
     map_isbns_to_skus(rows)
     save_rows(statement, upload_wrapper,rows)
-  rescue StandardError => e
-    raise if ENV['debug']
-    statement.status_message = e.message
-    statement.status = IpsStatement::STATUS_FAILED_UPLOAD
-    statement.save!
   end
 
   private
@@ -61,15 +56,20 @@ module Royalties::Ips::DetailLinesUpload
       .strip
   end
 
-  def titles_similar(pip, lp)
-    normalize(pip) == normalize(lp)
+  def titles_similar(pip, ips)
+    pip = normalize(pip)
+    ips = normalize(ips)
+    len = [ pip.length, ips.length ].min
+    fail "zero length title" if len == 0
+    pip[0...len] == ips[0...len]
   end
 
   # try to match the sum of the rows to a revenue detail line. If found, attach the rows there,
   # otherwise throw them away and record an error
   #
   def save_rows(statement, upload, rows)
-    total = rows.reduce(BigDecimal("0.00")) { |sum, row| sum + row.amount }
+    total = rows.reduce(BigDecimal("0.00000")) { |sum, row| sum + row.amount }
+    total = total.round(2)
     details = statement.get_matching_details_for_total(total)
 
     case details.length
@@ -86,17 +86,12 @@ module Royalties::Ips::DetailLinesUpload
 
       return detail
     else
-      raise "Too many matching revenue details for total #{total.to_f}: #{details.length}"
+      raise "Too many matching revenue details for total #{total.to_f}: #{details.length}\n" +
+            details.map { |d| "#{d.detail}: #{d.due_this_month}" }.join("\n")
     end
 
   rescue ActiveRecord::RecordNotUnique
     raise "This file has already been uploaded"
-  end
-
-  def record_error(statement, message)
-    statement.status_message = message
-    statement.status = IpsStatement::STATUS_FAILED_UPLOAD
-    statement.save!
   end
 
 end

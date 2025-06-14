@@ -2,7 +2,7 @@ class CreateOhoErrors < ActiveRecord::Migration[8.0]
   def change
     create_table :oho_errors do |t|
       t.string  :owner_dom_id, null: false
-      t.string  :display_tag,  null: false
+      t.string  :display_tag,  null: true
       t.integer :level,        null: false, default: 0
       t.string  :label,        null: false
       t.string  :message,      limit: 2048

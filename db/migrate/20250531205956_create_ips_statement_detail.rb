@@ -14,9 +14,9 @@ class CreateIpsStatementDetail < ActiveRecord::Migration[8.0]
 
       t.string     :basis,            null: true
 
-      t.decimal    :basis_for_charge, null: false, precision: 10, scale: 2
+      t.decimal    :basis_for_charge, null: false, precision: 12, scale: 4
       t.decimal    :factor_or_rate,   null: false, precision: 6,  scale: 4
-      t.decimal    :due_this_month,   null: false, precision: 10, scale: 2
+      t.decimal    :due_this_month,   null: false, precision: 12, scale: 4
 
       t.timestamps
     end

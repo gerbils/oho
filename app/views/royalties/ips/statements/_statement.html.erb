@@ -54,13 +54,18 @@
                  ) if stmt.imported_at.blank? %>
   </td>
 </tr>
-<% if upload.status_message.present? %>
+<% errors = OhoError.for_object(statement)
+  unless errors.empty? %>
   <tr class="table-warning">
     <td class="table-danger align-middle" colspan="2">Error on previous row</td>
     <td colspan="6" class="">
-      <span class="text-dark">
-        <%= upload.status_message.gsub(/\n/, "<br/>").html_safe %>
-      </span>
+      <ul>
+        <% errors.each do |error| %>
+          <li>
+            <%= error.message %>
+          </li>
+        <% end %>
+      </ul>
     </td>
   </tr>
 <% end %>

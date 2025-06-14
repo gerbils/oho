@@ -16,7 +16,8 @@ module Oho
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w[assets tasks])
 
-    config.mission_control.jobs.base_controller_class = "MissionControlController"
+  config.mission_control.jobs.http_basic_auth_enabled  = false
+  config.mission_control.jobs.base_controller_class = "MissionControlController"
     #
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.

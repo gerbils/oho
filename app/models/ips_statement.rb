@@ -29,13 +29,12 @@
 #  fk_rails_...  (upload_wrapper_id => upload_wrappers.id)
 #
 class IpsStatement < ActiveRecord::Base
-
   include ActionView::RecordIdentifier   # for dom_id
 
   belongs_to :upload_wrapper, dependent: :destroy
 
   has_many :details, class_name: "IpsStatementDetail", dependent: :destroy
-  has_many :ips_revenue_lines, through: :details
+  # has_many :ips_revenue_lines, through: :details
   has_many :expenses, -> { where(section: SECTION_EXPENSE) }, class_name: "IpsStatementDetail"
   has_many :revenues, -> { where(section: SECTION_REVENUE) }, class_name: "IpsStatementDetail"
 
@@ -103,10 +102,6 @@ class IpsStatement < ActiveRecord::Base
     end
   end
 
-  def oho_errors
-    OhoError.for_object(self)
-  end
-
   def mark_if_complete
     if details.empty?
       self.status = STATUS_INCOMPLETE
@@ -126,8 +121,16 @@ class IpsStatement < ActiveRecord::Base
     self.save!
   end
 
+  def oho_errors
+    OhoError.for_object(self)
+  end
+
+  def clear_oho_errors
+    OhoError.clear_errors(self)
+  end
+
   def get_matching_details_for_total(total)
-    details.where(due_this_month: total)
+    details.where('abs(due_this_month - ?) <= 0.011', total)
   end
 
   private

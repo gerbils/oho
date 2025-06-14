@@ -10,7 +10,7 @@ class CreateIpsDetailLine < ActiveRecord::Migration[8.0]
       t.string  :title
       t.string  :ean
       t.integer :quantity
-      t.decimal :amount, precision: 8, scale: 2
+      t.decimal :amount, precision: 10, scale: 4
       t.json    :json
 
       t.timestamps

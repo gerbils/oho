@@ -3,6 +3,7 @@ module Royalties::Ips::ParseDetailLines
   extend Royalties::Shared
 
   Detail = Struct.new("Detail", :ean, :description, :title, :quantity, :amount)
+
   module Type1
     # CanadianFreightPctofSales.xlsx
     # DomesticFreightPctofSales.xlsx
@@ -13,17 +14,16 @@ module Royalties::Ips::ParseDetailLines
     ]
     def self.extract(row)
       description = "Freight"
-      ean = row[7]
-      title = row[8]
+      ean = row[7].cell_value
+      title = row[8].cell_value
       quantity = 0
-      amount = BigDecimal(row[-1].to_s)
+      amount = BigDecimal(row[-1].cell_value)
       Detail.new(ean:, description:, title:, quantity:, amount:)
     end
   end
 
   module Type2
     # CanadianSalesGross.xlsx
-    # DigitalDistributionFees-LSI.xlsx
     # DomesticGrossReturns.xlsx
     # DomesticGrossSales.xlsx
     # GlobalConnectLSIFees-UK.xlsx
@@ -34,15 +34,16 @@ module Royalties::Ips::ParseDetailLines
     # UKWarehouseSales.xlsx
     HEADINGS = [
       "EAN", "Title", "Format", "List Amount", "Pub Alpha", "Brand Category", "Imprint", "Date", "Customer PO / Claim #",
-      "Invoice / Credit Memo #", "Customer Discount", "description", "Fee Factor Pct", "Sum of quantity", "Sum of Value",
+      "Invoice / Credit Memo #", "Customer Discount", "Type", "Fee Factor Pct", "Sum of Qty", "Sum of Value",
       "Sum of Total Fee", "HQ Account #", "Headquarter", "Shipping Location", "SL City", "SL State"
     ]
     def self.extract(row)
+
       description = "Distribution fee"
-      ean = row[0]
-      title = row[1]
-      quantity = row[13]
-      amount = BigDecimal(row[15].to_s)
+      ean = row[0].cell_value
+      title = row[1].cell_value
+      quantity = row[13].value
+      amount = BigDecimal(row[15].cell_value)
       Detail.new(ean:, description:, title:, quantity:, amount:)
     end
   end
@@ -52,7 +53,7 @@ module Royalties::Ips::ParseDetailLines
     # DirectFulfillmentOrderFees.xlsx
     HEADINGS = [
       "Invoice Date", "Invoice Number", "Bill to Number", "Customer PO", "DF Name", "DF Address 1", "DF Address 2",
-      "DF Address 3", "DF City", "DF State", "DF Zip", "PUB NUM", "Imprint", "Pub Alpha", "quantity", "Total List",
+      "DF Address 3", "DF City", "DF State", "DF Zip", "PUB NUM", "Imprint", "Pub Alpha", "QTY", "Total List",
       "IPS INVC", "# of ISBNs", "Carton Count", "Carton Charge", "Loose Units", "Loose Charge",
       "SKID CNT", "SKID Charge", "Title Count", "Title Charge", "Total Amount"
     ]
@@ -61,7 +62,7 @@ module Royalties::Ips::ParseDetailLines
       ean = nil
       title = nil
       quantity = 0
-      amount = BigDecimal(row[-1].to_s)
+      amount = BigDecimal(row[-1].cell_value)
       Detail.new(ean:, description:, title:, quantity:, amount:)
     end
   end
@@ -70,23 +71,23 @@ module Royalties::Ips::ParseDetailLines
     # LSIChargesDropShipPrintUK.xlsx
     # LSIChargesPrintToOrderPrinting.xlsx
     HEADINGS = [
-      "Invoice Date", "Invoice description", "Invoice Number", "Currency Code", "Invoice Due Date",
+      "Invoice Date", "Invoice Type", "Invoice Number", "Currency Code", "Invoice Due Date",
       "Bill to Customer Name", "ISBN", "Description", "Quantity Shipped", "Functional Unit Amount",
       "Functional Extended Amount", "Tax Rate", "Tax Amount", "Total"
     ]
 
     def self.extract(row)
-      description = case row[1]
+      description = case row[1].value
                     when "Inv-PTO" then "Printing"
                     when "Inv-DS"  then "Drop Ship"
                     else
                       raise "Unknown description4 invoice type: #{row[1].inspect}"
                     end
 
-      ean = row[6]
-      title = row[7]
-      quantity = row[8]
-      amount = BigDecimal(row[-1].to_s)
+      ean = row[6].cell_value
+      title = row[7].cell_value
+      quantity = row[8].value
+      amount = BigDecimal(row[-1].cell_value)
       Detail.new(ean:, description:, title:, quantity:, amount:)
     end
   end
@@ -102,10 +103,10 @@ module Royalties::Ips::ParseDetailLines
 
     def self.extract(row)
       description = "Revenue"
-      ean = row[0]
-      title = row[1]
-      quantity = row[12]
-      amount = BigDecimal(row[13].to_s)
+      ean = row[0].cell_value
+      title = row[1].cell_value
+      quantity = row[12].value
+      amount = BigDecimal(row[13].cell_value)
       Detail.new(ean:, description:, title:, quantity:, amount:)
     end
   end
@@ -115,7 +116,7 @@ module Royalties::Ips::ParseDetailLines
   def find_handler_module(headers)
     ALL_TYPES.find do |type|
       type::HEADINGS.zip(headers).all? {|a,b| a == b }
-    end || raise("No matching handler found for headers: #{headers}")
+    end || raise("No matching handler found for headers:\n#{headers}")
   end
 
   def to_h(handler, row)
@@ -132,12 +133,16 @@ module Royalties::Ips::ParseDetailLines
 
     headers = sheet.row(next_row)
     handler = find_handler_module(headers)
-
     next_row += 1
     lines = []
 
-    while next_row <= end_row
-      row = sheet.row(next_row)
+    skip_header = true
+
+    sheet.each_row_streaming do |row|
+      if skip_header
+        skip_header = false
+        next
+      end
 
       result = handler.extract(row)
       hash = to_h(handler, row)

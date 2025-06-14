@@ -48,7 +48,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_12_174604) do
     t.string "title"
     t.string "ean"
     t.integer "quantity"
-    t.decimal "amount", precision: 8, scale: 2
+    t.decimal "amount", precision: 10, scale: 4
     t.json "json"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -65,9 +65,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_12_174604) do
     t.string "detail", null: false
     t.date "month_due"
     t.string "basis"
-    t.decimal "basis_for_charge", precision: 10, scale: 2, null: false
+    t.decimal "basis_for_charge", precision: 12, scale: 4, null: false
     t.decimal "factor_or_rate", precision: 6, scale: 4, null: false
-    t.decimal "due_this_month", precision: 10, scale: 2, null: false
+    t.decimal "due_this_month", precision: 12, scale: 4, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["ips_statement_id"], name: "index_ips_statement_details_on_ips_statement_id"
@@ -78,14 +78,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_12_174604) do
     t.string "status", null: false
     t.string "status_message"
     t.date "month_ending", default: "1000-01-01"
-    t.decimal "revenue", precision: 10, scale: 2, default: "0.0"
-    t.decimal "gross_sales_total", precision: 10, scale: 2, default: "0.0"
-    t.decimal "gross_returns_total", precision: 10, scale: 2, default: "0.0"
-    t.decimal "net_sales", precision: 10, scale: 2, default: "0.0"
-    t.decimal "expenses", precision: 10, scale: 2, default: "0.0"
-    t.decimal "total_chargebacks", precision: 10, scale: 2, default: "0.0"
-    t.decimal "total_expenses", precision: 10, scale: 2, default: "0.0"
-    t.decimal "net_client_earnings", precision: 10, scale: 2, default: "0.0"
+    t.decimal "revenue", precision: 12, scale: 4, default: "0.0"
+    t.decimal "gross_sales_total", precision: 12, scale: 4, default: "0.0"
+    t.decimal "gross_returns_total", precision: 12, scale: 4, default: "0.0"
+    t.decimal "net_sales", precision: 12, scale: 4, default: "0.0"
+    t.decimal "expenses", precision: 12, scale: 4, default: "0.0"
+    t.decimal "total_chargebacks", precision: 12, scale: 4, default: "0.0"
+    t.decimal "total_expenses", precision: 12, scale: 4, default: "0.0"
+    t.decimal "net_client_earnings", precision: 12, scale: 4, default: "0.0"
     t.datetime "imported_at"
     t.integer "ips_statement_details_count", default: 0
     t.datetime "created_at", null: false
@@ -133,7 +133,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_12_174604) do
 
   create_table "oho_errors", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "owner_dom_id", null: false
-    t.string "display_tag", null: false
+    t.string "display_tag"
     t.integer "level", default: 0, null: false
     t.string "label", null: false
     t.string "message", limit: 2048
