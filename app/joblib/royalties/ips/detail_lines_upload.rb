@@ -17,11 +17,11 @@ module Royalties::Ips::DetailLinesUpload
       'xlsx')
 
     map_isbns_to_skus(rows)
-    save_rows(statement, upload_wrapper,rows)
+    save_rows(statement, upload_wrapper, rows)
 
   rescue StandardError => e
     raise if ENV['debug']
-    OhoError.create(owner: statement, label: "Uploading: #{file.filename}", message: e.message, level: OhoError::ERROR)
+    OhoError.create(owner: statement, label: "Uploading #{file.filename}", message: e.message, level: OhoError::ERROR)
   end
 
   private
@@ -72,23 +72,25 @@ module Royalties::Ips::DetailLinesUpload
   # otherwise throw them away and record an error
   #
   def save_rows(statement, upload, rows)
-    total = rows.reduce(BigDecimal("0.00000")) { |sum, row| sum + row.amount }
-    total = total.round(2)
+    total   = rows.reduce(BigDecimal("0.00000")) { |sum, row| sum + row.amount }
+    total   = total.round(2)
     details = statement.get_matching_details_for_total(total)
 
     case details.length
     when 0
       raise "No matching revenue detail for total #{total.to_f}"
+
     when 1
       detail = details.first
+      detail.upload_wrapper = upload
+
       rows.each do |row|
-        row.upload_wrapper = upload
         detail.ips_detail_lines << row
       end
 
       detail.update!(uploaded_at: Time.now)
-
       return detail
+
     else
       raise "Too many matching revenue details for total #{total.to_f}: #{details.length}\n" +
             details.map { |d| "#{d.detail}: #{d.due_this_month}" }.join("\n")

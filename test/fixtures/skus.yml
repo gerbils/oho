@@ -1,0 +1,67 @@
+trevan_b:
+  id: 285
+  sku: TREVAN-B-00
+  price: 32.95
+  basis_price: 1.64
+  weight: 9
+  fulfill_state: SHIPPABLE
+  product_id: 183
+  part_name:
+  duration: NULL
+  released_on: 2010-10-26
+  media: printed_book
+  does_not_participate_in_coupons: 0
+
+trevan_p:
+  id: 286
+  sku: TREVAN-P-00
+  price: 26.95
+  basis_price: 0.00
+  weight: 0
+  fulfill_state: SHIPPABLE
+  product_id: 183
+  part_name:
+  duration: NULL
+  released_on: 2013-05-11
+  media: electronic_book
+  does_not_participate_in_coupons: 0
+
+trevan_s:
+    id: 963
+    sku: TVMELIXIR-B-00
+    price: 34.95
+    basis_price: 2.73
+    weight: 15
+    fulfill_state: SHIPPABLE
+    product_id: 527
+    part_name:
+    duration: NULL
+    released_on: 2017-11-07
+    media: printed_book
+    does_not_participate_in_coupons: 0
+
+pg_git_b:
+  id: 292
+  sku: PG_GIT-B-00
+  price: 25.00
+  basis_price: 1.81
+  weight: 8
+  fulfill_state: SHIPPABLE
+  product_id: 188
+  part_name:
+  duration: NULL
+  released_on: 2009-08-24
+  media: printed_book
+
+pg_git_p:
+  id: 293
+  sku: PG_GIT-P-00
+  price: 19.95
+  basis_price: 0.00
+  weight: 0
+  fulfill_state: SHIPPABLE
+  product_id: 188
+  part_name:
+  duration: NULL
+  released_on: 2009-08-24
+  media: electronic_book

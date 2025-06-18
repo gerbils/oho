@@ -34,11 +34,13 @@ class RoyaltyItem < LegacyRecord
   ONLINE_TYPE = "Online"
   LP_TYPE     = "LP"
 
-  DISTRIBUTOR_TYPE = "ORA"
+  DISTRIBUTOR_TYPE     = "ORA"
   AUTHOR_PURCHASE_TYPE = "Author"
-  INTL_RIGHTS_TYPE = "IntlRights"
-  INTL_ROYALTY_TYPE = "IntlRylty"
-  OTHER_TYPE = "Other"
+  INTL_RIGHTS_TYPE     = "IntlRights"
+  INTL_ROYALTY_TYPE    = "IntlRylty"
+  OTHER_TYPE           = "Other"
+  IPS_REVENUE_TYPE     = "IPS-R"
+  IPS_EXPENSE_TYPE     = "IPS-E"
 
   APPLIES_TO_BOTH = 0
   APPLIES_TO_AUTHOR_ONLY = 1

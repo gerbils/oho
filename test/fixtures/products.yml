@@ -1,0 +1,147 @@
+---
+trevan:
+  id: 183
+  type: Title
+  code: trevan
+  title: Driving Technical Change
+  subtitle: Why People on Your Team Don't Act on Good Ideas, and How to Convince
+    Them They Should
+  tagline: null
+  highlight_description: If you work with people
+  long_description: Finding cool languages, tools
+  author: Terrence Ryan
+  author_bio: Terrence Ryan currently works
+  series: null
+  pubdate: 2010-11-09
+  sales_conf_date: null
+  announced_on_date: 2010-03-11
+  isbn13: 9781934356609
+  edition: 1
+  upc: null
+  bisac1: COM079000 COMPUTERS / Social Aspects / General
+  bisac2: COM081000 COMPUTERS / Desktop Applications / Project Management Software
+  bisac3: BUS071000 BUSINESS & ECONOMICS / Leadership
+  page_count: 146
+  keywords: evangelism, leadership, technical lead
+  trim_size: 7.5x9
+  channel_price_usd: 32.95
+  channel_price_cad: 37.95
+  shelving: Programming
+  user_level: Beginner
+  background_info: This book is about getting technical
+  was_previous_edition: null
+  summary_feature_points: Learn how to overcome
+  market_description: This book is for any
+  key_selling_points: Readers of any other
+  related_titles: null
+  will_sell_like: null
+  competing_titles: null
+  copies_per_case: 27
+  spine_thickness: null
+  print_status: In Print
+  contents_and_extracts: Full Table of Contents
+  code_available: 0
+  beta: 0
+  hidden: 0
+  available_on: 2010-11-10
+  ora_category: Project & Career Management
+  url_title: driving-technical-change
+  template_name: show
+  layout_name: application
+  errata_locked: 0
+  beta_page_count: null
+  efile_password: 96191369
+  previous_edition_id: null
+  release_to_intl_partners_at: 2010-09-20 18:00:00
+  signed_on: 2009-02-16
+  cover_image_uploaded_at: 2011-02-24 23:25:18
+  youtube_code: null
+  youtube_width: null
+  youtube_height: null
+  prerequisites: null
+  color: 0
+  kindle_edition_isbn: 9781680501025
+  show_to_partners: 1
+  is_distribution_only: 0
+  web_highlight: null
+  safari_isbn: 9781680500011
+  skill_level_low: null
+  skill_level_high: null
+  one_line_description: null
+  channel_epub_isbn: null
+  channel_pdf_isbn: null
+  hardcover_isbn: null
+  vat_tax_category: professional
+
+pg_git:
+  id: 188
+  type: Title
+  code: pg_git
+  title: Pragmatic Guide to Git
+  subtitle:
+  tagline:
+  highlight_description: Need to learn how to wrap
+  long_description: Get up to speed on Git
+  author: Travis Swicegood
+  author_bio: Travis Swicegood i
+  series:
+  pubdate: 2010-11-01
+  sales_conf_date: NULL
+  announced_on_date: NULL
+  isbn13: 9781934356722
+  edition: 1
+  upc:
+  bisac1: COM051440 COMPUTERS / Software Development & Engineering / Tools
+  bisac2: COM052000 COMPUTERS / Reference
+  bisac3: NULL
+  page_count: 160
+  keywords: git, svn, subversion, version control, dvcs, versioning, development, tools
+  trim_size: 6x9
+  channel_price_usd: 25.00
+  channel_price_cad: 29.00
+  shelving: Software Tools
+  user_level: Intermediate
+  background_info: Git enables you
+  was_previous_edition:
+  summary_feature_points: Find what you need
+  market_description: This book
+  key_selling_points: Two page spreads
+  related_titles: Pragmatic V
+  will_sell_like: Pragmatic Version
+  competing_titles: Pragmatic Version
+  copies_per_case: 48
+  spine_thickness: NULL
+  print_status: In Print
+  contents_and_extracts:
+  code_available: 0
+  beta: 0
+  hidden: 0
+  available_on: 2010-10-29
+  ora_category: Other Programming
+  url_title: pragmatic-guide-to-git
+  template_name: show
+  layout_name: application
+  errata_locked: 0
+  beta_page_count: NULL
+  efile_password: 77355930
+  previous_edition_id: NULL
+  release_to_intl_partners_at: 2010-09-20 18:00:00
+  signed_on: 2009-07-17
+  cover_image_uploaded_at: 2011-02-24 23:25:26
+  youtube_code:
+  youtube_width: NULL
+  youtube_height: NULL
+  prerequisites:
+  color: 0
+  kindle_edition_isbn: 9781937785116
+  show_to_partners: 1
+  is_distribution_only: 0
+  web_highlight:
+  safari_isbn: 9781680500028
+  skill_level_low: NULL
+  skill_level_high: NULL
+  one_line_description:
+  channel_epub_isbn: 9781680504163
+  channel_pdf_isbn: 9781680504170
+  hardcover_isbn:
+  vat_tax_category: professional

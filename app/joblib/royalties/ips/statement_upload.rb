@@ -17,7 +17,8 @@ module Royalties::Ips::StatementUpload
       statement,
       upload_wrapper.file.download,
       'xlsx')
-     save_statement(statement)
+    save_statement(statement)
+    update_show_page(statement)
 
   rescue StandardError => e
     raise if ENV['debug']
@@ -27,6 +28,17 @@ module Royalties::Ips::StatementUpload
   end
 
   private
+
+  def update_show_page(statement)
+    broadcast_replace_to(
+      Turbo::StreamsChannel.broadcast_render_to(
+      "show_ips_statement_#{statement.id}",
+      turbo_stream.update(
+        target: "maybe-show-import-button",
+        partial: "royalties/ips/statements/maybe_show_import_button",
+        locals: { statement:  }
+    ))
+  end
 
   def save_statement(statement)
     IpsStatement.transaction do

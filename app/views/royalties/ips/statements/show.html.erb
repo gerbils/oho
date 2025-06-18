@@ -38,11 +38,14 @@ end
     <h4 class="text-secondary mt-3">Pragmatic Programmers LLC</h4>
     <h5 class="text-secondary">Client Statement</h5>
     <h5 class="mb-4"><span><span class="text-secondary">Month ending: </span><%= @statement.month_ending.strftime("%B %d %Y") %></h5>
-  </div>
+
+    <%= render partial: "maybe_show_import_button", locals: { statement: @statement } %>
+ </div>
+
   <div class="bg-secondary bg-gradient text-center align-self-center p-5">
     <%= bootstrap_form_with(model: @upload_files, url: upload_revenue_lines_royalties_ips_statement_path(@statement)) do |form| %>
       <div class="my-auto h-100">
-        <h4>Upload Details Files</h4>
+        <h4>Upload Details Sheets</h4>
 
 
         <div class="text-primary">Drop IPS spreadsheets here</div>

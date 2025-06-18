@@ -92,6 +92,25 @@ module Royalties::Ips::ParseDetailLines
     end
   end
 
+  module Type5
+    # LSIChargesDropShipPrintUK.xlsx
+    # LSIChargesPrintToOrderPrinting.xlsx
+    HEADINGS = [
+      "Year", "Period", "Misc Item Id", "Pub #", "Pub Name", "Pub Alpha", "Brand Category",
+      "Imprint", "EAN", "Title", "Statement Section", "Statement Sub-Section", "Transaction Type",
+      "Description of Statement", "Credit or Charge", "Unit Quantity", "Unit Amount", "Misc Amount"
+    ]
+
+    def self.extract(row)
+      description = row[13].value
+      ean = row[8]&.cell_value
+      title = row[9]&.cell_value
+      quantity = row[-3].value
+      amount = BigDecimal(row[-1].cell_value)
+      Detail.new(ean:, description:, title:, quantity:, amount:, content_type: "misc_expense")
+    end
+  end
+
   module AllRevenues
 
     HEADINGS = [
@@ -111,7 +130,7 @@ module Royalties::Ips::ParseDetailLines
     end
   end
 
-  ALL_TYPES = [ Type1, Type2, Type3, Type4, AllRevenues ]
+  ALL_TYPES = [ Type1, Type2, Type3, Type4, Type5, AllRevenues ]
 
   def find_handler_module(headers)
     ALL_TYPES.find do |type|

@@ -1,10 +1,11 @@
 class CreateIpsStatementDetail < ActiveRecord::Migration[8.0]
   def change
     create_table :ips_statement_details do |t|
-      t.references :ips_statement, null: false, foreign_key: true
+      t.references :ips_statement,          null: false, foreign_key: true
+      t.references :upload_wrapper,         null: true,  foreign_key: true
       t.integer    :ips_detail_lines_count, null: false, default: 0
 
-      t.datetime   :uploaded_at, null: true
+      t.datetime   :uploaded_at,      null: true
 
       t.string     :section,          null: false      # REVENUE, EXPENSE
       t.string     :subsection,       null: false      # e.g. Gross Sales

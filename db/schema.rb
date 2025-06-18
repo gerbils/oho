@@ -41,8 +41,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_12_174604) do
 
   create_table "ips_detail_lines", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "ips_statement_detail_id"
-    t.bigint "upload_wrapper_id", null: false
-    t.integer "sku_id"
+    t.integer "sku_id", null: false
     t.string "content_type"
     t.string "description"
     t.string "title"
@@ -53,11 +52,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_12_174604) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["ips_statement_detail_id"], name: "index_ips_detail_lines_on_ips_statement_detail_id"
-    t.index ["upload_wrapper_id"], name: "index_ips_detail_lines_on_upload_wrapper_id"
   end
 
   create_table "ips_statement_details", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "ips_statement_id", null: false
+    t.bigint "upload_wrapper_id"
     t.integer "ips_detail_lines_count", default: 0, null: false
     t.datetime "uploaded_at"
     t.string "section", null: false
@@ -71,6 +70,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_12_174604) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["ips_statement_id"], name: "index_ips_statement_details_on_ips_statement_id"
+    t.index ["upload_wrapper_id"], name: "index_ips_statement_details_on_upload_wrapper_id"
   end
 
   create_table "ips_statements", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -165,8 +165,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_12_174604) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "ips_detail_lines", "ips_statement_details"
-  add_foreign_key "ips_detail_lines", "upload_wrappers"
   add_foreign_key "ips_statement_details", "ips_statements"
+  add_foreign_key "ips_statement_details", "upload_wrappers"
   add_foreign_key "ips_statements", "upload_wrappers"
   add_foreign_key "lp_statement_lines", "lp_statements"
   add_foreign_key "lp_statements", "upload_wrappers"

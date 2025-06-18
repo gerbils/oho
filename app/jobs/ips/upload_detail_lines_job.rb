@@ -17,8 +17,7 @@ class Ips::UploadDetailLinesJob < ApplicationJob
     begin
       detail = Royalties::Ips::DetailLinesUpload.handle(statement, upload)
       detail.save!
-        statement.mark_if_complete
-        statement.save!
+      statement.save!
 
     rescue => e
       raise if ENV['debug']

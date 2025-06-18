@@ -18,7 +18,7 @@
 #
 # Indexes
 #
-#  index_ips_statement_details_on_ips_statement_id  (ips_statement_id)
+#  inde_ips_statement_details_on_ips_statement_id  (ips_statement_id)
 #
 # Foreign Keys
 #
@@ -32,6 +32,7 @@ class IpsStatementDetail < ActiveRecord::Base
   SECTION_EXPENSE = "EXPENSE"
   SECTIONS = [SECTION_REVENUE, SECTION_EXPENSE]
 
+  belongs_to :upload_wrapper, optional: true
   belongs_to :ips_statement, counter_cache: true
   has_many   :ips_detail_lines, dependent: :destroy
 
@@ -43,8 +44,10 @@ class IpsStatementDetail < ActiveRecord::Base
   validates :factor_or_rate,   numericality: true
   validates :due_this_month,   numericality: true
 
-  scope :expense, -> { where(section: SECTION_EXPENSE) }
-  scope :revenue, -> { where(section: SECTION_REVENUE) }
+
+  def ready_to_import?
+    self.uploaded_at? || self.detail == "Co-Op"   # ugly, but there's no upload for co-op
+  end
 
 
   private
