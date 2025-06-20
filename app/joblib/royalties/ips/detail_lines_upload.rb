@@ -93,7 +93,7 @@ module Royalties::Ips::DetailLinesUpload
 
     else
       raise "Too many matching revenue details for total #{total.to_f}: #{details.length}\n" +
-            details.map { |d| "#{d.detail}: #{d.due_this_month}" }.join("\n")
+        details.map { |d| "#{d.detail}: #{d.due_this_month}" }.join("\n")
     end
 
   rescue ActiveRecord::RecordNotUnique

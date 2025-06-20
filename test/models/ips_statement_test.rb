@@ -5,7 +5,7 @@ class IpsStatementTest < ActiveSupport::TestCase
 
   @@id = 0
 
-  def mock_statement
+  def mock_statement(net)
     @@id += 1
     IpsStatement.new(
       id:                          @@id,
@@ -18,7 +18,7 @@ class IpsStatementTest < ActiveSupport::TestCase
       net_sales:                   500,
       total_chargebacks:           0,
       total_expenses:              0,
-      net_client_earnings:         500,
+      net_client_earnings:         net,
       imported_at:                 nil,
       ips_statement_details_count: 0,
     )
@@ -61,8 +61,8 @@ class IpsStatementTest < ActiveSupport::TestCase
     uw
   end
 
-  def build_statement(details)
-    statement = mock_statement
+  def build_statement(net, details)
+    statement = mock_statement(net)
     details.each {|detail| statement.details << detail }
     statement.save!
     statement
@@ -78,7 +78,9 @@ class IpsStatementTest < ActiveSupport::TestCase
     mock_line(content_type:, description:, quantity:, amount:, sku:skus(sku))
   end
 
-  def assert_expected(expected, statement)
+  ######################################################################
+
+  def assert_royalty_calculated(expected, statement)
     result = statement.statement_lines
     assert_equal expected.size, result.size
     expected.zip(result).each do |exp, line|
@@ -97,32 +99,71 @@ class IpsStatementTest < ActiveSupport::TestCase
     end
   end
 
+  def assert_royalty_lines_saved(expected, statement)
+    totals = Royalties::Ips::ImportHandler.import(statement)
+    result = RoyaltyItem.all.order(:sku_id)
+    assert_equal expected.size, result.size, "Expected #{expected.size} royalty lines, got #{result.size}"
+
+    expected = expected.sort_by { |e| skus(e[0]).id }
+
+    expected.zip(result).each do |exp, line|
+      binding.pry if skus(exp[0]).id != line.sku_id
+      assert_equal skus(exp[0]).id, line.sku_id, "SKU ID should match"
+      assert_equal exp[1], line.item_type
+      assert_equal exp[2], line.description
+      assert_equal exp[3], line.free_units, "Free units should be zero"
+      assert_equal exp[4], line.paid_units, "Paid units should match quantity"
+      assert_equal exp[5], line.paid_amount, "Paid amount should match line amount"
+      assert_equal exp[6], line.return_units, "Return units should be zero"
+      assert_equal exp[7], line.return_amount, "Return amount should be zero"
+      assert_equal exp[8], line.date.strftime('%Y-%m-%d'), "Date should match month ending"
+      assert_equal RoyaltyItem::APPLIES_TO_BOTH, line.applies_to, "Applies to should be both"
+      assert_equal IpsStatement.name, line.source_type, "Source type should be IpsStatement"
+      assert_equal statement.id, line.source_id, "Source ID should match statement ID"
+    end
+  end
+
+  ######################################################################
+
   test "should be valid with all attributes" do
-    statement = mock_statement
+    statement = mock_statement(123)
     assert statement.valid?
   end
 
   ######################################################################
 
   test "statement with one detail and one line creates correct royalty line" do
-    statement = build_statement(
+    statement = build_statement(500,
       [ detail(IpsStatementDetail::SECTION_REVENUE, "Gross Sales", "Domestic Gross Sales Excluding Canada", 500, 1, 500,
-          [
-            line(:trevan_b, "royalty", "Test Royalty", 2, 500),
-          ])
+          [ line(:trevan_b, "royalty", "Test Royalty", 2, 500), ])
       ]
     )
 
     expected = [
       [ :trevan_b, "IPS-R", "Distribution: Domestic Sales", 0, 2, 500, 0, 0, '2025-04-30', statement.id ],
     ]
-    assert_expected(expected, statement)
+    assert_royalty_calculated(expected, statement)
+    assert_royalty_lines_saved(expected, statement)
+  end
+
+  ######################################################################
+
+  test "statement with different total to sum(rls) fails" do
+    statement = build_statement(300,
+      [ detail(IpsStatementDetail::SECTION_REVENUE, "Gross Sales", "Domestic Gross Sales Excluding Canada", 500, 1, 500,
+          [ line(:trevan_b, "royalty", "Test Royalty", 2, 500), ])
+      ]
+    )
+    error = assert_raises(RuntimeError) do
+      Royalties::Ips::ImportHandler.import(statement)
+    end
+    assert_match(%r[Net client earnings mismatch—\nstatement: 300.0,\ncalculated: 500.0]m, error.message)
   end
 
   ######################################################################
 
   test "statement with one detail and two lines for same sku creates correct royalty line" do
-    statement = build_statement(
+    statement = build_statement(500,
       [ detail(IpsStatementDetail::SECTION_REVENUE, "Gross Sales", "Domestic Gross Sales Excluding Canada", 500, 1, 500,
           [
             line(:trevan_b, "royalty", "Test Royalty", 2, 200),
@@ -134,13 +175,14 @@ class IpsStatementTest < ActiveSupport::TestCase
     expected = [
       [ :trevan_b, "IPS-R", "Distribution: Domestic Sales", 0, 5, 500, 0, 0, '2025-04-30', statement.id ],
     ]
-    assert_expected(expected, statement)
+    assert_royalty_calculated(expected, statement)
+    assert_royalty_lines_saved(expected, statement)
   end
 
   ######################################################################
 
   test "statement with two details, one line each for same sku creates correct royalty line" do
-    statement = build_statement(
+    statement = build_statement(500,
       [
         detail(IpsStatementDetail::SECTION_REVENUE, "Gross Sales", "Domestic Gross Sales Excluding Canada", 200, 1, 200,
           [
@@ -157,14 +199,15 @@ class IpsStatementTest < ActiveSupport::TestCase
       [ :trevan_b, "IPS-R", "Distribution: Domestic Sales", 0, 2, 200, 0, 0, '2025-04-30', statement.id ],
       [ :trevan_b, "IPS-R", "Distribution: Ebook Sales",    0, 3, 300, 0, 0, '2025-04-30', statement.id ],
     ]
-    assert_expected(expected, statement)
+    assert_royalty_calculated(expected, statement)
+    assert_royalty_lines_saved(expected, statement)
   end
 
 
   ######################################################################
 
   test "statement with two details, one line each for different sku creates correct royalty line" do
-    statement = build_statement(
+    statement = build_statement(500,
       [
         detail(IpsStatementDetail::SECTION_REVENUE, "Gross Sales", "Domestic Gross Sales Excluding Canada", 200, 1, 200,
           [
@@ -181,13 +224,14 @@ class IpsStatementTest < ActiveSupport::TestCase
       [ :trevan_b, "IPS-R", "Distribution: Domestic Sales", 0, 2, 200, 0, 0, '2025-04-30', statement.id ],
       [ :pg_git_b, "IPS-R", "Distribution: Ebook Sales",    0, 3, 300, 0, 0, '2025-04-30', statement.id ],
     ]
-    assert_expected(expected, statement)
+    assert_royalty_calculated(expected, statement)
+    assert_royalty_lines_saved(expected, statement)
   end
 
   ######################################################################
 
   test "statement with two details, one sale line and one return" do
-    statement = build_statement(
+    statement = build_statement(100,
       [
         detail(IpsStatementDetail::SECTION_REVENUE, "Gross Sales", "Domestic Gross Sales Excluding Canada", 100, 1, 100,
           [
@@ -204,14 +248,15 @@ class IpsStatementTest < ActiveSupport::TestCase
       [ :trevan_b, "IPS-R", "Distribution: Domestic Sales", 0, 2, 200, 0, 0, '2025-04-30', statement.id ],
       [ :pg_git_b, "IPS-R", "Distribution: Ebook Returns",  0, 0, 0, -1, -100, '2025-04-30', statement.id ],
     ]
-    assert_expected(expected, statement)
+    assert_royalty_calculated(expected, statement)
+    assert_royalty_lines_saved(expected, statement)
   end
 
 
   ######################################################################
 
   test "expense categorization" do
-    statement = build_statement(
+    statement = build_statement(-1500,
       [
         detail(IpsStatementDetail::SECTION_EXPENSE, "Direct Fulfillment Freight & Handling Fees", "Direct Fulfillment Order Fees", -100, 1, -100,
           [
@@ -243,7 +288,8 @@ class IpsStatementTest < ActiveSupport::TestCase
       [ :pg_git_p, "IPS-E", "Printing costs",               0, 0, -400, 0, 0, '2025-04-30', statement.id ],
       [ :trevan_s, "IPS-E", "Distribution: Marketing & Misc.", 0, 0, -500, 0, 0, '2025-04-30', statement.id ],
     ]
-    assert_expected(expected, statement)
+    assert_royalty_calculated(expected, statement)
+    assert_royalty_lines_saved(expected, statement)
   end
 
 
