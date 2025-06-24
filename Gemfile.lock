@@ -116,16 +116,12 @@ GEM
       reline (>= 0.3.8)
     dotenv (3.1.8)
     drb (2.2.3)
+    dry-cli (1.2.0)
     ed25519 (1.4.0)
     erb (5.0.1)
     erubi (1.13.1)
     et-orbi (1.2.11)
       tzinfo
-    factory_bot (6.5.4)
-      activesupport (>= 6.1.0)
-    factory_bot_rails (6.5.0)
-      factory_bot (~> 6.5)
-      railties (>= 6.1.0)
     fugit (1.11.1)
       et-orbi (~> 1, >= 1.2.11)
       raabro (~> 1.4)
@@ -183,6 +179,7 @@ GEM
       stimulus-rails
       turbo-rails
     msgpack (1.8.0)
+    mutex_m (0.3.0)
     mysql2 (0.5.6)
     net-imap (0.5.8)
       date
@@ -218,11 +215,6 @@ GEM
     pp (0.6.2)
       prettyprint
     prettyprint (0.2.0)
-    propshaft (1.1.0)
-      actionpack (>= 7.0.0)
-      activesupport (>= 7.0.0)
-      rack
-      railties (>= 7.0.0)
     pry (0.15.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -234,6 +226,8 @@ GEM
     raabro (1.4.0)
     racc (1.8.1)
     rack (3.1.15)
+    rack-proxy (0.7.7)
+      rack
     rack-session (2.1.1)
       base64 (>= 0.1.0)
       rack (>= 3.0.0)
@@ -327,6 +321,15 @@ GEM
       concurrent-ruby (~> 1.0)
     uri (1.0.3)
     useragent (0.16.11)
+    vite_rails (3.0.19)
+      railties (>= 5.1, < 9)
+      vite_ruby (~> 3.0, >= 3.2.2)
+    vite_ruby (3.9.2)
+      dry-cli (>= 0.7, < 2)
+      logger (~> 1.6)
+      mutex_m
+      rack-proxy (~> 0.6, >= 0.6.1)
+      zeitwerk (~> 2.2)
     web-console (4.2.1)
       actionview (>= 6.0.0)
       activemodel (>= 6.0.0)
@@ -359,15 +362,12 @@ DEPENDENCIES
   chartkick (~> 5.1)
   csv (~> 3.3)
   debug
-  factory_bot_rails
   groupdate (~> 6.6)
-  importmap-rails
   jbuilder
   kamal
   mission_control-jobs (~> 1.0)
   mysql2 (~> 0.5)
   pagy (~> 9.3)
-  propshaft
   pry (~> 0.15.2)
   puma (>= 5.0)
   rails (~> 8.0.2)
@@ -380,6 +380,7 @@ DEPENDENCIES
   thruster
   turbo-rails
   tzinfo-data
+  vite_rails
   web-console
 
 BUNDLED WITH

@@ -3,30 +3,17 @@
 <%= csrf_meta_tags %>
 <%= csp_meta_tag %>
 
-<%#bootswatch-slate.min.css   chart_modal.css   chart_modal.css.map   oho.css%>
-<%= stylesheet_link_tag "bootswatch-darkly.min" %>
-<%= stylesheet_link_tag "bootstrap-icons" %>
-<%= stylesheet_link_tag "bootstrap-print-css.min" %>
-<%= stylesheet_link_tag "rails_bootstrap-forms" %>
-<%= stylesheet_link_tag "chart_modal" %>
-<%= stylesheet_link_tag "oho", "data-turbo-track": "reload" %>
-<%# <script src="https://cdn.jsdelivr.net/npm/theme-change@2.0.2/index.js"></script> %>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
-</script>
-
-<%= javascript_importmap_tags %>
+<%= vite_client_tag %>
+<%= vite_stylesheet_tag 'application', data: { "turbo-track":  "reload" } %>
+<%= vite_javascript_tag 'application', data: { "turbo-track":  "reloa"  }%>
 
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="mask-icon" href="/safari-pinne-tab.svg" color="#444488">
 <link rel="manifest" href="/site.webmanifest">
-<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#444488">
-<link rel="manifest" href="/site.webmanifest">
-<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
 <meta name="msapplication-TileColor" content="#da532c">
 <meta name="theme-color" content="#ffffff">
-
 
 <%= turbo_refreshes_with method: :morph, scroll: :preserve %>
 

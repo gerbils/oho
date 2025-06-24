@@ -2,7 +2,7 @@
     def maybe_link(title, path)
 
       if url_for() == path
-        tag.p(title, class: "p-2 active")
+        tag.p(title, class: "p-2 active nav-link")
       else
         link_to(title, path, class: "nav-link")
       end
@@ -10,7 +10,6 @@
   %>
 
 <div class="d-flex flex-column align-items-center">
-  <div class="display-5 mb-3" style="color: #FFF7DE"><%= @app_title %></div>
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <%= render(partial: @oho_top_menu || "top_menu" ) %>
   </div>
