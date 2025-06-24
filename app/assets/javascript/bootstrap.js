@@ -1,7 +1,12 @@
-import 'bootstrap'
+// import "jquery"
+import "@popperjs/core"
+import * as bootstrap from "bootstrap";
+
 // import 'data-confirm-modal'
 
-$(document).on('turbo:load', () => {
-  $('[data-toggle="tooltip"]').tooltip()
-  $('[data-toggle="popover"]').popover()
+window.oho_bs = bootstrap;
+
+document.addEventListener('turbo:load', () => {
+  document.querySelectorAll('[data-toggle="tooltip"]').forEach(t => t.tooltip())
+  document.querySelectorAll('[data-toggle="popover"]').forEach(t => t.popover())
 })

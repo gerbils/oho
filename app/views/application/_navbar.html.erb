@@ -1,3 +1,13 @@
+<style>
+[data-bs-theme="dark"] {
+  .show-when-dark  { display: inline-block; }
+  .show-when-light { display: none; }
+}
+[data-bs-theme="light"] {
+      .show-when-dark  { display: none; }
+      .show-when-light { display: inherit; }
+    }
+</style>
 <nav class="navbar navbar-expand-lg">
   <div class="container-fluid">
     <div>
@@ -15,5 +25,13 @@
       </button>
     </div>
     <%= render partial: Current.user ? "logged_in_nav" : "logged_out_nav" %>
+    <div data-controller="dark-light-toggle" class="d-flex align-items-center">
+      <button data-action="dark-light-toggle#toggle" class="text-secondary btn btn-outline-primary btn-sm ms-2 show-when-light">
+        <span data-dark-light-toggle-target="icon" class="bi bi-moon-stars-fill"></span>
+      </button>
+      <button data-action="dark-light-toggle#toggle" class="text-secondary btn btn-outline-primary btn-sm ms-2 show-when-dark">
+        <span data-dark-light-toggle-target="icon" class="bi bi-sun-fill"></span>
+      </button>
+    </div>
   </div>
 </nav>
