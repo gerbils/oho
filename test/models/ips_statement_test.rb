@@ -90,8 +90,8 @@ class IpsStatementTest < ActiveSupport::TestCase
       assert_equal exp[3], line.free_units, "Free units should be zero"
       assert_equal exp[4], line.paid_units, "Paid units should match quantity"
       assert_equal exp[5], line.paid_amount, "Paid amount should match line amount"
-      assert_equal exp[6], line.return_units, "Return units should be zero"
-      assert_equal exp[7], line.return_amount, "Return amount should be zero"
+      assert_equal exp[6], line.return_units, "Return units should match"
+      assert_equal exp[7], line.return_amount, "Return amount should match"
       assert_equal exp[8], line.date.strftime('%Y-%m-%d'), "Date should match month ending"
       assert_equal RoyaltyItem::APPLIES_TO_BOTH, line.applies_to, "Applies to should be both"
       assert_equal IpsStatement.name, line.source_type, "Source type should be IpsStatement"
@@ -150,14 +150,14 @@ class IpsStatementTest < ActiveSupport::TestCase
 
   test "statement with different total to sum(rls) fails" do
     statement = build_statement(300,
-      [ detail(IpsStatementDetail::SECTION_REVENUE, "Gross Sales", "Domestic Gross Sales Excluding Canada", 500, 1, 500,
+      [ detail(IpsStatementDetail::SECTION_REVENUE, "Gross Sales", "Domestic Gross Sales Excluding Canada", 300, 1, 300,
           [ line(:trevan_b, "royalty", "Test Royalty", 2, 500), ])
       ]
     )
     error = assert_raises(RuntimeError) do
       Royalties::Ips::ImportHandler.import(statement)
     end
-    assert_match(%r[Net client earnings mismatch—\nstatement: 300.0,\ncalculated: 500.0]m, error.message)
+    assert_match(%r[Net client earnings mismatch—\nstatement: \$300.00,\ncalculated: \$500.00]m, error.message)
   end
 
   ######################################################################
@@ -282,11 +282,11 @@ class IpsStatementTest < ActiveSupport::TestCase
     )
 
     expected = [
-      [ :trevan_b, "IPS-E", "Distribution: Fulfillment",    0, 1, -100, 0, 0, '2025-04-30', statement.id ],
-      [ :pg_git_b, "IPS-E", "Distribution: Fees",           0, 0, -200, 0, 0, '2025-04-30', statement.id ],
-      [ :trevan_p, "IPS-E", "Distribution: Fulfillment",    0, 0, -300, 0, 0, '2025-04-30', statement.id ],
-      [ :pg_git_p, "IPS-E", "Printing costs",               0, 0, -400, 0, 0, '2025-04-30', statement.id ],
-      [ :trevan_s, "IPS-E", "Distribution: Marketing & Misc.", 0, 0, -500, 0, 0, '2025-04-30', statement.id ],
+      [ :trevan_b, "IPS-E", "Distribution: Fulfillment",       0, 0, 0, 1, -100, '2025-04-30', statement.id ],
+      [ :pg_git_b, "IPS-E", "Distribution: Fees",              0, 0, 0, 0, -200, '2025-04-30', statement.id ],
+      [ :trevan_p, "IPS-E", "Distribution: Fulfillment",       0, 0, 0, 0, -300, '2025-04-30', statement.id ],
+      [ :pg_git_p, "IPS-E", "Printing costs",                  0, 0, 0, 0, -400, '2025-04-30', statement.id ],
+      [ :trevan_s, "IPS-E", "Distribution: Marketing & Misc.", 0, 0, 0, 0, -500, '2025-04-30', statement.id ],
     ]
     assert_royalty_calculated(expected, statement)
     assert_royalty_lines_saved(expected, statement)

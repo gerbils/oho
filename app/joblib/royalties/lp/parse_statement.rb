@@ -85,12 +85,7 @@ module Royalties::Lp::ParseStatement
 
     statement.statement_total = total
 
-    return { status: :ok, statement: }
-
-  rescue => e
-    raise if ENV['debug']
-    Rails.logger.error "Error parsing LP statement: #{e.message}"
-    return { status: :error, message: e.message }
+    statement
   end
 end
 

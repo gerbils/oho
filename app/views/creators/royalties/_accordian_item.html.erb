@@ -1,30 +1,52 @@
-<div class="accordion-item">
-  <h2 class="accordion-header" id="ah-<%= id %>">
-    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#ab-<%= id %>" aria-expanded="true" aria-controls="ab-<%= id %>">
-      <div class="w-100 d-flex justify-content-between">
-        <div>
-          <%= icon(icon_name) %>
-          <span class="ps-2"><%= title %></span>
-        </div>
-        <div class="pe-5 d-flex gap-5">
-          <div>
-            <% if money_amount %>
-              <span <%= tooltip("The total royalty earned for this SKU (click for details)") %>><%= money(money_amount) %></span>
-            <% end %>
-          </div>
-          <div <%= tooltip("Start and end months of activity") %>>
-            <% if start_date && end_date %>
-              <%= start_date.strftime("%Y-%m") %> – <%= end_date.strftime("%Y-%m") %>
-            <% end %>
-          </div>
-        </div>
+<style>
+  details summary {
+    .i-toggle.i-closed {
+      display: inline-block;
+      color: #444;
+    }
+    &:hover {
+      color: var(--bs-blue);
+      font-size: 102% !important;
+      cursor: zoom-in;
+    }
+    &:hover h5 {
+      font-size: 1.26rem !important;
+    }
+    .i-toggle.i-open { display: none; }
+  }
+
+  details:open summary {
+    .i-toggle.i-open { display: inline-block; color: #888; }
+    .i-toggle.i-closed { display: none; }
+
+    &:hover {
+      color: var(--bs-secondary);
+      cursor: zoom-out;
+    }
+  }
+
+</style>
+
+<details class="pb-1 pt-1 mb-1 border-bottom border-secondary expando" >
+  <summary class="d-flex justify-content-between">
+    <h5>
+      <i class="i-toggle i-closed bi bi-<%= icon_name %>"></i>
+      <i class="i-toggle i-open bi bi-<%= icon_name %>-fill"></i>
+      <span class="ps-2"><%= title %></span>
+    </h5>
+    <div class="pe-5 d-flex gap-5">
+      <div>
+        <% if money_amount %>
+          <span <%= tooltip("The total royalty earned for this SKU (click for details)") %>><%= money(money_amount) %></span>
+        <% end %>
       </div>
-    </button>
-  </h2>
-  <div id="ab-<%= id %>" class="collapse" aria-labelledby="ah-<%= id %>" data-bs-parent="#<%= parent %>">
-    <div class="accordion-body">
-      <%= yield %>
+      <div <%= tooltip("Start and end months of activity") %>>
+        <% if start_date && end_date %>
+          <%= start_date.strftime("%Y-%m") %> – <%= end_date.strftime("%Y-%m") %>
+      <% end %>
+      </div>
     </div>
-  </div>
-</div>
+  </summary>
+  <%= yield %>
+</details>
 

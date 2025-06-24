@@ -1,6 +1,6 @@
 
-    <div class="d-flex flex-wrap gap-4 justify-content-center align-items-start">
-    <table class="table" style="min-width: 20em; max-width: 26em;">
+    <div class="d-flex flex-wrap gap-2 justify-content-center align-items-start">
+      <table class="table table-borderless w-auto  border-end border-secondary ">
          <tr>
            <td class="text-muted" >Net sales:</td>
            <td class="text-end" ><%= money(item.paid_amount) %></td>
@@ -20,10 +20,10 @@
          <tr>
            <td>Net receipts:</td>
            <td  class="text-end" style="border-bottom: 4px solid #999"><%= money(item.net_royalty_based_on) %></td>
+           <td>&nbsp;</td>
          </tr>
     </table>
-
-    <table class="table h-auto" style="min-width: 20em; max-width: 26em;">
+    <table class="table h-auto w-auto ">
          <tr>
            <td class="text-muted" >Lifetime royalties earned:</td>
            <td class="text-end"><%= money(@rs.lifetime_royalties_earned) %></td>

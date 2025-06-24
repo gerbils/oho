@@ -11,16 +11,13 @@ class Royalties::Lp::StatementsController < ApplicationController
 
 
   def create
-    @upload = UploadWrapper.new(upload_params)
+    @upload_wrapper = UploadWrapper.create!(upload_params)
+    @statement = LpStatement.new_with_upload(@upload_wrapper)
+    @statement.save!    # we need this to attach errors to
 
+    Lp::UploadRoyaltyJob.new.perform(@statement.id, @upload_wrapper.id)
     respond_to do |format|
-      if @upload.save
-        # Lp::UploadRoyaltyJob.perform_later(@upload.id)
-        Lp::UploadRoyaltyJob.new.perform(@upload.id)
         format.html { redirect_to royalties_lp_statements_url, notice: "Upload initiated" }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-      end
     end
   end
 

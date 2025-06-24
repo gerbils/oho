@@ -1,19 +1,19 @@
 <div id="maybe-show-import-button">
-    <% if statement.imported_at? %>
-      <div class="alert alert-success">
-        <strong>Statement imported</strong>
-        <br/>
-        <%= statement.imported_at.strftime("%B %d %Y") %>
-      </div>
-    <% elsif statement.ready_to_import? %>
-        link_to "Import statement", import_revenue_lines_royalties_ips_statement_path(statement), method: :post, data: { turbo_confirm: "Are you sure you want to import this statement?" }
-        <%= link_to "Import statement", "#", class: "btn btn-primary" %>
-    <% else %>
-      <div class="alert alert-secondary mt-5 pe-4 rounded-end-pill">
-        Please upload detail sheets to get this statement ready to import…
-      </div>
-    <% end%>
+  <% if statement.imported_at? %>
+    <p></p>
+  <% elsif statement.ready_to_import? %>
+    <%= button_to("Import statement",
+                  import_royalties_ips_statement_path(statement),
+                  class: "btn btn-primary mt-5",
+                method: :put,
+                data: { turbo_confirm: "Are you sure you want to import this statement?" })
+              %>
+  <% else %>
+    <div class="alert alert-secondary mt-5 pe-4 rounded-end-pill">
+      Please upload detail sheets to get this statement ready to import…
+    </div>
+  <% end%>
 
- </div>
+</div>
 
 

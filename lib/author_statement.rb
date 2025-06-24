@@ -12,7 +12,10 @@ SkuDetail = Struct.new(
   :is_editor,
   :royalty_rate,
   :royalty_owed,
+  :signed_on,
 )
+
+DummyDate = DateTime.new(2000, 1, 1)
 
 class Report
   attr_reader :description
@@ -108,11 +111,16 @@ class Report
 
   def add_in_numbers(other)
     @free_units      += other.free_units
-    @paid_units      += other.paid_units
-    @paid_amount     += other.paid_amount
-    @return_units    += other.return_units
-    @return_amount   += other.return_amount
     @production_cost += other.production_cost
+    if other.paid_amount < 0 && other.return_amount.zero? && other.return_units.zero?
+      @return_units    += other.paid_units
+      @return_amount   += other.paid_amount
+    else
+      @paid_units      += other.paid_units
+      @paid_amount     += other.paid_amount
+      @return_units    += other.return_units
+      @return_amount   += other.return_amount
+    end
 
     if @paid_units > 0
       @basis = (@production_cost / @paid_units).round(10)
@@ -183,6 +191,7 @@ def per_sku_report(author, asr, start_of_month, start_of_next_month)
       royalty_owed: grand_totals.net_royalty_based_on * asr.royalty_percent,
       start_of_report: grand_totals.start_of_report,
       end_of_report:   grand_totals.end_of_report,
+      signed_on:       sku.product.signed_on || DummyDate
     )
   end
 end
@@ -232,8 +241,7 @@ class AuthorStatement
       end
       result
     end
-
-    @sku_details = @sku_details.sort_by {|sd| sd.end_of_report}.reverse
+    @sku_details = @sku_details.sort_by {|sd| sd.signed_on}.reverse
     @payments = author.royalties_paid_before(@end_of_month + 1).to_a
     @paid_to_date = @payments.reduce(BigDecimal("0.00", 2)) {|result, pay| result + pay.amount }
     @royalty_owed = @lifetime_royalties_earned - @paid_to_date

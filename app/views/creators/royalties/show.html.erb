@@ -3,7 +3,7 @@
       button_tag(
         type: "button",
         class: "btn btn-primary p-1",
-        "data-bs-toggle" => "modal", 
+        "data-bs-toggle" => "modal",
         "data-bs-target" => "##{target}",
         style: "line-height: 80%"
       ) do
@@ -16,8 +16,8 @@
 
 <section class="mt-4 card">
 
-  <%= render partial: "overall_statement_heading", 
-    :locals => { 
+  <%= render partial: "overall_statement_heading",
+    :locals => {
       :page => 1,
       :summary => true,
       :item   => @rs.all_titles
@@ -30,17 +30,17 @@
 </section>
 
 <section class="card">
-  <div class="card-header">
-    Payments and Per-Title Breakdown
+  <div class="card-header bg-secondary">
+    Payments and Per-Title Breakdown <span class="ms-5 text-secondary-emphasis">(click to expand)</span>
   </div>
   <div class="card-body">
-    <div class="accordion accordian-flush" id="royalty-details">
-      <%= render(layout: "accordian_item", 
-                 locals: { 
+    <div id="royalty-details">
+      <%= render(layout: "accordian_item",
+                 locals: {
                    icon_name: "piggy-bank",
-                   parent: "royalty_details", 
-                   id: "ptd", 
-                   page: 1, 
+                   parent: "royalty_details",
+                   id: "ptd",
+                   page: 1,
                    title: "Royalty payments sent to you through #{@rs.end_of_month}",
                    start_date: nil,
                    end_date: nil,
@@ -50,12 +50,12 @@
       <% end %>
 
     <% @rs.sku_details.each_with_index do |page, i| %>
-      <%= render(layout: "accordian_item", 
-                 locals: { 
-                   icon_name: "book", 
-                   parent: "royalty_details", 
-                   id: "st-#{i}", 
-                   page: i+2, 
+      <%= render(layout: "accordian_item",
+                 locals: {
+                   icon_name: "book",
+                   parent: "royalty_details",
+                   id: "st-#{i}",
+                   page: i+2,
                    title: page.title,
                    start_date: page.start_of_report,
                    end_date: page.end_of_report,

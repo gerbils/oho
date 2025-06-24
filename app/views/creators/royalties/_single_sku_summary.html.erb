@@ -25,16 +25,12 @@
 }
 
 .sku-summary thead th {
-  background-color: var(--bs-primary);
   border-bottom: none;
 }
 .sku-summary thead tr:nth-child(2) th {
   padding-top: 0;
 }
 
-.sku-summary tfoot * {
-  background-color: var(--bs-secondary);
-}
 </style>
 
 <%
@@ -51,32 +47,42 @@ that these could be resold, or at least donated, they typically come back in bad
 }
 
 tt_production_costs = %{
-There are two types of cost associated with your title; we call them production and fixed. A production cost 
+There are two types of cost associated with your title; we call them production and fixed. A production cost
 is a cost we incur when we sell a book. For example, every time we sell a paper book we pay to have it printed.
 A fixed cost is a one time expense. Typically this will include things such as copy editing and layout.
 }
 
  %>
 
-     <div class="d-flex justify-content-center">
+     <div class="d-flex justify-content-center mt-5">
       <h4 class="flex-fill text-center mb-3"><%= item.title %></h4>
      </div>
 
-     
 
-    <div class="d-flex flex-column align-items-center">
+
+    <div class="d-flex flex-column align-items-center mb-5">
       <div class="mb-3">
         <%= render partial: "single_sku_metadata", locals: { item: item } %>
       </div>
 
-      <table class="table sku-summary">
-        <thead>
+      <table class="table table-sm sku-summary w-auto">
+        <thead class="table-dark">
           <tr>
             <th scope="row"></th>
             <th scope="row"></th>
-            <th scope="row" colspan="2" class="text-end">Prior to <%= @rs.start_of_month.strftime("%Y-%m") %></th>
-            <th scope="row" colspan="2" class="text-end">Changes in <%= @rs.start_of_month.strftime("%B, %Y") %></th>
-            <th scope="row" colspan="2" class="text-end">Total as of <%= @rs.end_of_month %></th>
+            <th scope="row" colspan="2" class="text-center">Prior to <%= @rs.start_of_month.strftime("%Y-%m") %></th>
+            <th scope="row" colspan="2" class="text-center">Changes in <%= @rs.start_of_month.strftime("%B, %Y") %></th>
+            <th scope="row" colspan="2" class="text-center">Total as of <%= @rs.end_of_month %></th>
+          </tr>
+          <tr>
+            <th scope="row"></th>
+            <th scope="row"></th>
+            <th scope="row" class="text-end">Units</th>
+            <th scope="row" class="text-end">Amount</th>
+            <th scope="row" class="text-end">Units</th>
+            <th scope="row" class="text-end">Amount</th>
+            <th scope="row" class="text-end">Units</th>
+            <th scope="row" class="text-end">Amount</th>
           </tr>
         </thead>
 
@@ -87,7 +93,7 @@ A fixed cost is a one time expense. Typically this will include things such as c
 
           <td class="text-end" ><%= number_with_delimiter(item.month_totals.paid_units) %></td>
           <td class="text-end" ><%= money(item.month_totals.paid_amount) %></td>
-          
+
           <td class="text-end" ><%= number_with_delimiter(item.grand_totals.paid_units) %></td>
           <td class="text-end" ><%= money(item.grand_totals.paid_amount) %></td>
         </tr>
@@ -136,8 +142,8 @@ A fixed cost is a one time expense. Typically this will include things such as c
             <td class="text-end"><%= number_to_percentage(item.royalty_rate*100, strip_insignificant_zeros: true) %></td>
         </tr>
 
-        <tfoot>
-          <tr class="bg-info">
+        <tfoot class="table-dark">
+          <tr>
             <th colspan="7" scope="col" class="text-end">Total royalty earned</th>
             <td class="text-end"><%= money(item.royalty_rate * item.grand_totals.net_royalty_based_on) %></td>
           </tr>
@@ -151,21 +157,19 @@ A fixed cost is a one time expense. Typically this will include things such as c
         </div>
       <% else %>
         <h5 class="mt-4">Activity This Month</h5>
-        <table class="table sku-summary">
+        <table class="table sku-summary w-auto">
           <thead>
             <tr>
               <th scope="col"></th>
               <th scope="col"></th>
-              <th scope="col" class="text-end bl">Free</th>
-              <th scope="col" colspan="2" class="text-center bl">━━━ Paid ━━━</th>
-              <th scope="col" colspan="2" class="text-center bl">━━━ Return ━━━</th>
+              <th scope="col" colspan="2" class="text-center bl">━ Receipts ━</th>
+              <th scope="col" colspan="2" class="text-center bl">━ Expenses ━</th>
               <th scope="col" class="text-end br bl">Other</th>
             </tr>
             <tr>
               <th scope="col"></th>
               <th scope="col"></th>
-              <th scope="col" class="text-end bl bb">Units</th>
-              <th scope="col" class="text-end bl bb">Units</th>
+              <th scope="col" class="text-end bl bb">Units</t>
               <th scope="col" class="text-end bb">Amount</th>
               <th scope="col" class="text-end bl bb">Units</th>
               <th scope="col" class="text-end bl bb">Amount</th>
@@ -178,9 +182,6 @@ A fixed cost is a one time expense. Typically this will include things such as c
                   <td><%= rl.date.strftime("%F") %></td>
                   <td>
                     <%= rl.description %>
-                  </td>
-                  <td class="text-end bl">
-                    <%= rl.free_units %>
                   </td>
                   <td class="text-end bl bm">
                     <%= rl.paid_units %>
@@ -227,9 +228,6 @@ A fixed cost is a one time expense. Typically this will include things such as c
                   <th scope="row bt">
                     Totals for the month
                   </th>
-                  <td class="text-end bt">
-                    <%= mt.free_units %>
-                  </td>
                   <td class="text-end bt bl bm">
                     <%= mt.paid_units %>
                   </td>

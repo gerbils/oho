@@ -1,3 +1,4 @@
+require 'pry'
 module Royalties::Ips::ParseDetailLines
   extend self
   extend Royalties::Shared
@@ -61,7 +62,7 @@ module Royalties::Ips::ParseDetailLines
       description = "Direct Fulfillment"
       ean = nil
       title = nil
-      quantity = 0
+      quantity = row[14].value
       amount = BigDecimal(row[-1].cell_value)
       Detail.new(ean:, description:, title:, quantity:, amount:, content_type: "df_expense")
     end

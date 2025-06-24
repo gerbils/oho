@@ -1,3 +1,4 @@
+require 'test_helper'
 require 'bigdecimal'
 
 class LpUploadTest < ActiveSupport::TestCase
@@ -32,37 +33,34 @@ class LpUploadTest < ActiveSupport::TestCase
 
   def assert_bad_header(col, expected_header)
     s = LpStatement.new
-    result = Royalties::Lp::ParseStatement.parse(s, sheet("lp-bad-header-#{col}.xlsx"), "xlsx")
-    assert_equal(:error, result[:status])
-    assert_match(/\^#{expected_header}\$/, result[:message])
+    error = assert_raises(RuntimeError) do
+      Royalties::Lp::ParseStatement.parse(s, sheet("lp-bad-header-#{col}.xlsx"), "xlsx")
+    end
+    assert_match(/\^#{expected_header}\$/, error.message)
+  end
+
+  def assert_bad_parse(file, message)
+    s = LpStatement.new
+    error = assert_raises(StandardError) do
+      Royalties::Lp::ParseStatement.parse(s, sheet(file), "xlsx")
+    end
+    assert_match(message,  error.message)
   end
 
   test "detects bad title" do
-    s = LpStatement.new
-    result = Royalties::Lp::ParseStatement.parse(s, sheet("lp-no-title.xlsx"), "xlsx")
-    assert_equal(:error, result[:status])
-    assert_match(/Expected Statement Header but got "O'Reilly Quarterly Commission Statement Error"/,  result[:message])
+    assert_bad_parse("lp-no-title.xlsx", /Expected Statement Header but got "O'Reilly Quarterly Commission Statement Error"/)
   end
 
   test "detects bad subtitle" do
-    s = LpStatement.new
-    result = Royalties::Lp::ParseStatement.parse(s, sheet("lp-bad-subtitle.xlsx"), "xlsx")
-    assert_equal(:error, result[:status])
-    assert_match(/Expected .+O'Reilly Media, Inc/, result[:message])
+    assert_bad_parse("lp-bad-subtitle.xlsx", /Expected .+O'Reilly Media, Inc/)
   end
 
   test "detects bad statement_date" do
-    s = LpStatement.new
-    result = Royalties::Lp::ParseStatement.parse(s, sheet("lp-bad-statement-date.xlsx"), "xlsx")
-    assert_equal(:error, result[:status])
-    assert_match(/Expected .+Statement Date/, result[:message])
+    assert_bad_parse("lp-bad-statement-date.xlsx", /Expected .+Statement Date/)
   end
 
   test "detects bad statement_period" do
-    s = LpStatement.new
-    result = Royalties::Lp::ParseStatement.parse(s, sheet("lp-bad-statement-period.xlsx"), "xlsx")
-    assert_equal(:error, result[:status])
-    assert_match(/Expected Statement Period/, result[:message])
+    assert_bad_parse("lp-bad-statement-period.xlsx", /Expected Statement Period/)
   end
 
   test "detects bad column headers" do
@@ -78,17 +76,11 @@ class LpUploadTest < ActiveSupport::TestCase
   end
 
   test "detects incorrect payment due" do
-    s = LpStatement.new
-    result = Royalties::Lp::ParseStatement.parse(s, sheet("lp-bad-payment-due.xlsx"), "xlsx")
-    assert_equal(:error, result[:status])
-    assert_match(/\(10.68\) does not agree with batch total \(10.67\)/, result[:message])
+    assert_bad_parse("lp-bad-payment-due.xlsx", /\(10.68\) does not agree with batch total \(10.67\)/)
   end
 
   test "detects bad format payment due" do
-    s = LpStatement.new
-    result = Royalties::Lp::ParseStatement.parse(s, sheet("lp-bad-format-payment-due.xlsx"), "xlsx")
-    assert_equal(:error, result[:status])
-    assert_match(/invalid value for BigDecimal/, result[:message])
+    assert_bad_parse("lp-bad-format-payment-due.xlsx", /invalid value for BigDecimal/)
   end
 
 end

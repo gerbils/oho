@@ -61,6 +61,9 @@ class IpsStatement < ActiveRecord::Base
     STATUS_UPLOAD_PENDING,
   ]
 
+  MARKETING_AND_MISC = "Distribution: Marketing & Misc."
+
+
   # validates :month_ending,        presence: true
   validates :gross_sales_total,   numericality: true
   validates :gross_returns_total, numericality: true
@@ -161,6 +164,7 @@ class IpsStatement < ActiveRecord::Base
     result = Result.new
     accumulate_revenues(result)
     accumulate_expenses(result)
+    accumulate_non_sku_specific(result)
     result.flatten
   end
 
@@ -202,10 +206,59 @@ class IpsStatement < ActiveRecord::Base
           item_type:     RoyaltyItem::IPS_EXPENSE_TYPE,
           description:   channel,
           free_units:    0,
-          paid_units:    line.quantity,
-          paid_amount:   line.amount,
+          paid_units:    0,
+          paid_amount:   0,
+          return_units:  line.quantity,
+          return_amount: line.amount,
+          book_basis:    0,
+          date:          self.month_ending,
+          applies_to:    RoyaltyItem::APPLIES_TO_BOTH,
+          source_type:   self.class.name,
+          source_id:     self.id,
+        )
+
+        if proto_ri.return_amount > 0
+          proto_ri.paid_amount = proto_ri.return_amount
+          proto_ri.paid_units = proto_ri.return_units
+          proto_ri.return_amount = 0
+          proto_ri.return_units = 0
+          proto_ri.description += " (refund)"
+        end
+
+        result.add(proto_ri)
+      end
+    end
+  end
+
+  # look for details with no corresponding lines.
+  # these are usually totals, and we apportion them across
+  # the royalty items in the statement.
+
+  def accumulate_non_sku_specific(result)
+    total_misc = BigDecimal("0.0000")
+
+    details.each do |detail|
+      next if detail.ips_detail_lines.any?
+      total_misc += detail.due_this_month
+    end
+
+    return if total_misc.zero?
+
+    skus    = Set.new(ips_detail_lines.pluck(:sku_id).uniq)
+    per_sku = (total_misc / skus.size) #.round(2)
+    # delta   = ((per_sku * skus.size) - total_misc).round(2)
+    # fail "wrong sign for adjustment" unless per_sku <= 0 && delta <= 0
+
+    skus.each do |sku_id|
+        proto_ri = ProtoRoyaltyLine.new(
+          sku_id:        sku_id,
+          item_type:     RoyaltyItem::IPS_EXPENSE_TYPE,
+          description:   MARKETING_AND_MISC,
+          free_units:    0,
+          paid_units:    0,
+          paid_amount:   0,
           return_units:  0,
-          return_amount: 0,
+          return_amount: per_sku, # + delta,
           book_basis:    0,
           date:          self.month_ending,
           applies_to:    RoyaltyItem::APPLIES_TO_BOTH,
@@ -213,9 +266,10 @@ class IpsStatement < ActiveRecord::Base
           source_id:     self.id,
         )
         result.add(proto_ri)
+        delta = 0
       end
-    end
   end
+
 
 
   def revenue_channel_for(rev_detail)
@@ -256,7 +310,7 @@ class IpsStatement < ActiveRecord::Base
     when /lightning source/i
       "Printing costs"
     when /other fees/i
-      "Distribution: Marketing & Misc."
+      MARKETING_AND_MISC
     else
       raise ArgumentError, "Unknown expense category #{detail.subsection.inspect}"
     end

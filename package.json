@@ -6,6 +6,7 @@
     "autoprefixer": "^10.4.21",
     "bootstrap": "^5.3.6",
     "bootstrap-icons": "^1.13.1",
+    "bootstrap-print-css": "^1.0.1",
     "bootswatch": "^5.3.6",
     "nodemon": "^3.1.10",
     "postcss": "^8.5.3",

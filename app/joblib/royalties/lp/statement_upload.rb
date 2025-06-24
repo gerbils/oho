@@ -6,45 +6,29 @@ module Royalties::Lp::StatementUpload
   extend Royalties::Shared
 
 
-  def handle(statement)
-    step = 0
-    result = nil # for scoping
-    loop do   # Poor man's "do"
-      result = case step
-               when 0
-                 error = excel_file_attached?(statement.upload_wrapper.file)
-                 if error
-                   { status: :error, message: error }
-                 else
-                   { status: :ok, statement: }
-                 end
-                 ee
-               when 1
-                 Royalties::Lp::ParseStatement.parse(
-                   statement,
-                   statement.upload_wrapper.file.download,
-                   'xlsm')
-               when 2
-                 map_isbns_to_skus(statement)
-               when 3
-                 save_statement(statement)
-               when 4
-                 break
-
-               when :error
-                 record_error(statement, result[:message])
-                 break
-               end
-      if result[:status] == :ok
-        step += 1
-        statement = result[:statement]
-      else
-        step = :error
-      end
-    end
+  def handle(statement, upload_wrapper)
+    statement.clear_oho_errors
+    file = upload_wrapper.file
+    add_details_to_upload(upload_wrapper, file)
+    excel_file_attached?(file)
+    Royalties::Lp::ParseStatement.parse(
+      statement,
+      file.download,
+      'xlsm')
+    map_isbns_to_skus(statement)
+    save_statement(statement)
+  rescue StandardError => e
+    raise if ENV['debug']
+    error(statement, e.message)
+    statement.status = LpStatement::STATUS_FAILED_UPLOAD
+    statement.save!
   end
 
   private
+
+  def error(statement, message)
+    OhoError.create(owner: statement, label: "Error uploading LP statement", message: message, level: OhoError::ERROR)
+  end
 
   def map_isbns_to_skus(statement)
     lines = statement.lp_statement_lines
@@ -69,7 +53,7 @@ module Royalties::Lp::StatementUpload
       result
     end
 
-    errors = []
+    error_count = 0
     lines.each do |line|
       isbn = line.isbn
       if match = isbn_map[isbn]
@@ -77,25 +61,17 @@ module Royalties::Lp::StatementUpload
         if titles_similar(title, line.title)
           line.sku_id = sku_id
         else
-          errors << "Title mismatch #{isbn}: #{title.inspect} doesn't start with #{line.title.inspect}"
+          error(statement, "Title mismatch #{isbn}: #{title.inspect} doesn't start with #{line.title.inspect}")
+          error_count += 1
         end
       else
-        errors << "ISBN #{isbn} for #{line.title.inspect} not found in pip"
+        error(statement, "ISBN #{isbn} for #{line.title.inspect} not found in pip")
+        error_count += 1
       end
-      if errors.length > 9
-        errors << "Too many errors; stopping"
-        return { status: :error, message: errors.join("\n") }
+      if error_count.length > 9
+        fail "Too many errors; stopping"
       end
     end
-
-    if errors.empty?
-      { status: :ok, statement: statement }
-    else
-      { status: :error, message: errors.join("\n") }
-    end
-  rescue => e
-    raise if ENV['debug']
-    { status: :error, message: e.message }
   end
 
   def titles_similar(pip, lp)
@@ -109,7 +85,6 @@ module Royalties::Lp::StatementUpload
     statement.save!
     { status: :ok}
   rescue => e
-    raise if ENV['debug']
     msg = case e
           when ActiveRecord::RecordNotUnique
             statement.date_on_report = "dup #{upload.id}: #{upload.date_on_report}"
@@ -117,15 +92,7 @@ module Royalties::Lp::StatementUpload
           else
             e.message
           end
-
-    { status: :error, message: msg }
+    fail msg
   end
-
-  def record_error(statement, message)
-    statement.status_message = message
-    statement.status = LpStatement::STATUS_FAILED_UPLOAD
-    statement.save!
-  end
-
 
 end

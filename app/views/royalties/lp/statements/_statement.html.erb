@@ -25,13 +25,13 @@
     <% if statement.imported_at.present? %>
       <%= statement.imported_at&.strftime("%Y-%m-%d") %>
     <% elsif statement.status == LpStatement::STATUS_UPLOADED %>
-        <%= button_to 'Import now',
-                  import_royalties_lp_statement_path(statement),
-                  class: 'btn btn-success',
-                  method: :put,
-                  data: { "turbo-method": :put, turbo_confirm: 'This permanently adds royalty information to PIP. Continue? ' }
-                 %>
-    <% end %>
+      <%= button_to 'Import now',
+        import_royalties_lp_statement_path(statement),
+        class: 'btn btn-success',
+        method: :put,
+        data: { "turbo-method": :put, turbo_confirm: 'This permanently adds royalty information to PIP. Continue? ' }
+      %>
+  <% end %>
   </td>
 
   <td>
@@ -42,18 +42,16 @@
   </td>
 
   <td>
-
     <%= link_to('Delete',
-                  royalties_lp_statement_path(statement),
-                  class: 'btn btn-warning',
-                  method: :delete,
-                  data: { "turbo-method": :delete, turbo_confirm: 'Are you sure?' }
-                 ) if statement.imported_at.blank? %>
+                royalties_lp_statement_path(statement),
+                class: 'btn btn-warning',
+                method: :delete,
+                data: { "turbo-method": :delete, turbo_confirm: 'Are you sure?' }
+               ) if statement.imported_at.blank? %>
   </td>
 </tr>
-<% errors = OhoErrors.for(statement)
-fail
-  if unless errors.empty? %>
+<% errors = OhoError.for_object(statement) %>
+<% unless errors.empty? %>
   <tr class="table-warning">
     <td class="table-danger align-middle" colspan="2">Error on previous row</td>
     <td colspan="6" class="">
@@ -62,10 +60,8 @@ fail
           <li>
             <%= error.message %>
           </li>
-          </ul>
-      <span class="text-dark">
-        <%= statement.status_message.gsub(/\n/, "<br/>").html_safe %>
-      </span>
+        <% end %>
+      </ul>
     </td>
   </tr>
 <% end %>

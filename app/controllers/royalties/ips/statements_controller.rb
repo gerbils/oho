@@ -1,25 +1,7 @@
 require 'pry'
 
 class Royalties::Ips::StatementsController < ApplicationController
-  before_action :set_statement, only: %i[ show destroy upload_revenue_lines ]
-
-  def xxx
-    # @statement = IpsStatement.find(params.expect(:id))
-    # @detail =  @statement.details.find(357)
-    # if @detail.uploaded_at.present?
-    #   @detail.uploaded_at = nil
-    # else
-    #   @detail.uploaded_at = Time.current
-    # end
-    # @detail.save
-    # e = OhoError.new(owner: @statement, level: 1, label: "Test", display_tag: "unused", message: "Test message")
-    # e.save
-    s = IpsStatement.find(16)
-    s.imported_at = Time.now
-    s.save!
-    render html: "OK"
-
-  end
+  before_action :set_statement, only: %i[ show destroy import upload_revenue_lines ]
 
   def index
     @upload_wrapper ||= UploadWrapper.new
@@ -62,11 +44,10 @@ class Royalties::Ips::StatementsController < ApplicationController
   end
 
   def import
-    @upload = Upload.find(params[:id])
-    Ips::ImportRoyaltyJob.new.perform(@upload.id)
+    Ips::ImportRoyaltyJob.new.perform(@statement.id)
 
     respond_to do |format|
-      format.html { redirect_to royalties_ips_uploads_url, notice: "Import to PIP initiated" }
+      format.html { redirect_to royalties_ips_statements_url(@statement), notice: "Import to PIP initiated" }
     end
   end
 

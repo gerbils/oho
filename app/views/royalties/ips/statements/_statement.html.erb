@@ -5,16 +5,22 @@
 
 <tr id="<%= dom_id stmt %>" class="align-middle">
   <td>
+          <%= link_to royalties_ips_statement_path(stmt), class: "info-link ps-2" do %>
+            <i title="View individual line items" class="bi bi-eye fs-4"></i>
+          <% end %>
+  </td>
+
+  <td>
     <%= stmt.month_ending %>
   </td>
 
   <td>
-    <%= upload.uploaded_at&.strftime("%Y-%m-%d %H:%M") %>
+    <%= upload.uploaded_at&.strftime("%Y-%m-%d/%H:%M") %>
   </td>
 
   <td title="<%= stmt.imported_at&.to_fs(:oho_dt) %>">
     <% if stmt.imported_at.present? %>
-      <%= stmt.imported_at&.to_fs(:oho_md) %>
+      <%= stmt.imported_at&.strftime("%Y-%m-%d/%H:%M") %>
     <% elsif stmt.status == IpsStatement::STATUS_UPLOADED %>
         <%= button_to 'Import now',
                   import_royalties_ips_upload_path(stmt),

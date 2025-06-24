@@ -6,10 +6,16 @@
   <h1 class="h2">IPS Royalty Statements</h1>
 
   <div class="align-right py-3 px-5 mb-5 bg-secondary bg-gradient ">
-    <%=  bootstrap_form_with(model: @upload_wrapper, url: upload_royalties_ips_statements_path()) do |f| %>
-      <%= f.file_field :file, multiple: false, accept: ".xlsx", label: "(download Excel from IQ Statement)" %>
-      <%= f.submit "Upload new statement", class: "btn btn-primary mt-1 mb-4" %>
-    <% end %>
+    <%= render partial: "/shared/upload_form", locals: {
+      model: @upload_wrapper,
+      url: upload_royalties_ips_statements_path(),
+      title: "IPS Royalty Statement Download",
+      text: "Drop or select the IPS royalty statement spreadsheet here",
+      file_label: "&nbsp;".html_safe,
+      multiple: false,
+      accept: ".xlsx",
+      submit_label: "Upload statement"
+    } %>
   </div>
 </div>
 
@@ -18,6 +24,7 @@
 <table class="table table-striped">
   <thead>
     <tr>
+      <th>View</th>
       <th> Stmt date </th>
       <th> Uploaded </th>
       <th> Imported </th>

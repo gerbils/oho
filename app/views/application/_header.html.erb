@@ -1,16 +1,16 @@
-    <header class="container-fluid  bg-primary mb-5" data-bs-theme="dark"">
-      <div class="container px-0">
-      <%= render partial: "navbar" %>
-      <% if notice.present? %>
-        <div role="alert" class="alert alert-success" id="notice">
-          <%= notice %>
-        </div>
-      <% end %>
-      <% if alert.present? %>
-        <div role="alert" class="alert alert-danger" id="notice">
-          <%= alert %>
-        </div>
-      <% end %>
+<header class="container-fluid  bg-primary mb-5" data-bs-theme="dark">
+  <div class="container px-0">
+    <%= render partial: "navbar" %>
+    <% if notice.present? %>
+      <div role="alert" class="alert alert-success" id="notice">
+        <%= notice %>
       </div>
-    </header>
+    <% end %>
+    <% if alert.present? %>
+      <div role="alert" class="alert alert-danger" id="notice">
+        <%= alert %>
+      </div>
+    <% end %>
+  </div>
+</header>
 

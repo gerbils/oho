@@ -26,8 +26,8 @@ class LpStatement < ApplicationRecord
   STATUS_FAILED_IMPORT  = 'failed import'
   STATUS_FAILED_UPLOAD  = 'failed upload'
   STATUS_IMPORTED       = 'imported'
-  # STATUS_INCOMPLETE     = 'incomplete'
-  # STATUS_PENDING        = 'pending'
+  STATUS_INCOMPLETE     = 'incomplete'
+  STATUS_PENDING        = 'pending'
   STATUS_PROCESSING     = 'processing'
   STATUS_UPLOADED       = 'uploaded'
   STATUS_UPLOAD_PENDING = 'upload pending'
@@ -66,6 +66,10 @@ class LpStatement < ApplicationRecord
     connection.execute(query).map do |(count, total, status)|
       { count:, total:, status: }
     end
+  end
+
+  def clear_oho_errors
+    OhoError.clear_errors(self)
   end
 
 
