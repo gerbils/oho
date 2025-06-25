@@ -1,4 +1,4 @@
 css: yarn watch:css
 vite: bin/vite dev
-web: env RUBY_DEBUG_OPEN=true bin/rails server
+web: env RUBY_DEBUG_OPEN=true DEBUG=true bin/rails server
 

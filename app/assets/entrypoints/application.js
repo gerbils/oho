@@ -1,5 +1,7 @@
 console.log('Vite ⚡️ Rails')
 
+import "~/stylesheets/index.css"
+
 import "~/javascript/setup.js"
 import "~/javascript/controllers.js"
 import "~/javascript/app.js"

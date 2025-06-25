@@ -1,20 +1,25 @@
 class CreateIpsStatement < ActiveRecord::Migration[8.0]
   def change
     create_table :ips_statements do |t|
-      t.references :upload_wrapper,      null: false, foreign_key: true
-      t.string     :status,              null: false
+      t.references :upload_wrapper,       null: false, foreign_key: true
+      t.string     :status,               null: false
       t.string     :status_message
-      t.date       :month_ending,        default: '1000-01-01'
-      t.decimal    :revenue,             default: 0,  precision: 12, scale: 4    # sales + returns
-      t.decimal    :gross_sales_total,   default: 0,  precision: 12, scale: 4
-      t.decimal    :gross_returns_total, default: 0,  precision: 12, scale: 4
-      t.decimal    :net_sales,           default: 0,  precision: 12, scale: 4
-      t.decimal    :expenses,            default: 0,  precision: 12, scale: 4
-      t.decimal    :total_chargebacks,   default: 0,  precision: 12, scale: 4
-      t.decimal    :total_expenses,      default: 0,  precision: 12, scale: 4
-      t.decimal    :net_client_earnings, default: 0,  precision: 12, scale: 4
+      t.date       :month_ending,         default: '1000-01-01'
+      t.decimal    :revenue,              default: 0,  precision: 12, scale: 4    # sales + returns
+      t.decimal    :gross_sales_total,    default: 0,  precision: 12, scale: 4
+      t.decimal    :gross_returns_total,  default: 0,  precision: 12, scale: 4
+      t.decimal    :net_sales,            default: 0,  precision: 12, scale: 4
+      t.decimal    :expenses,             default: 0,  precision: 12, scale: 4
+      t.decimal    :total_chargebacks,    default: 0,  precision: 12, scale: 4
+      t.decimal    :total_expenses,       default: 0,  precision: 12, scale: 4
+      t.decimal    :net_client_earnings,  default: 0,  precision: 12, scale: 4
       t.datetime   :imported_at
-      t.integer    :ips_statement_details_count,       default: 0   # rails counter cache
+      t.integer    :import_free_units,    default: 0
+      t.integer    :import_paid_units,    default: 0
+      t.integer    :import_return_units,  default: 0
+      t.decimal    :import_paid_amount,   default: 0,  precision: 12, scale: 4
+      t.decimal    :import_return_amount, default: 0,  precision: 12, scale: 4
+      t.integer    :ips_statement_details_count, default: 0   # rails counter cache
       t.timestamps
     end
   end

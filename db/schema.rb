@@ -87,6 +87,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_12_174604) do
     t.decimal "total_expenses", precision: 12, scale: 4, default: "0.0"
     t.decimal "net_client_earnings", precision: 12, scale: 4, default: "0.0"
     t.datetime "imported_at"
+    t.integer "import_free_units", default: 0
+    t.integer "import_paid_units", default: 0
+    t.integer "import_return_units", default: 0
+    t.decimal "import_paid_amount", precision: 12, scale: 4, default: "0.0"
+    t.decimal "import_return_amount", precision: 12, scale: 4, default: "0.0"
     t.integer "ips_statement_details_count", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

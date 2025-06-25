@@ -15,16 +15,18 @@ class Ips::ImportRoyaltyJob < ApplicationJob
     statement.update!(status: IpsStatement::STATUS_PROCESSING, status_message: nil)
 
     begin
+
       Royalties::Ips::ImportHandler.import(statement)
-    rescue => e
-      Rails.logger.error("Error handling import: #{e.message}")
-      OhoError.create(
-        owner: statement,
-        label: "Importing #{statement.month_ending}",
-        message: e.message,
-        level: OhoError::ERROR
-      )
-      statement.update!(status: IpsStatement::STATUS_FAILED_IMPORT, status_message: e.message)
+
+    # rescue => e
+    #   Rails.logger.error("Error handling import: #{e.message}")
+    #   OhoError.create(
+    #     owner: statement,
+    #     label: "Importing #{statement.month_ending}",
+    #     message: e.message,
+    #     level: OhoError::ERROR
+    #   )
+    #   statement.update!(status: IpsStatement::STATUS_FAILED_IMPORT, status_message: e.message)
     end
     logger.info("finishing IPS job")
   end

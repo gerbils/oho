@@ -1,6 +1,19 @@
 <div id="maybe-show-import-button">
   <% if statement.imported_at? %>
-    <p></p>
+    <table class="table table-sm">
+      <tbody>
+        <tr>
+          <th class="text-secondary ps-0">Revenue:</th>
+          <td class="text-end"><%= statement.import_paid_units %></td>
+          <td class="text-end"><%= number_to_currency(statement.import_paid_amount) %></td>
+        </tr>
+        <tr>
+          <th class="text-secondary ps-0">Expenses:</th>
+          <td class="text-end"><%= statement.import_return_units %></td>
+          <td class="text-end"><%= number_to_currency(statement.import_return_amount) %></td>
+        </tr>
+      </tbody>
+    </table>
   <% elsif statement.ready_to_import? %>
     <%= button_to("Import statement",
                   import_royalties_ips_statement_path(statement),

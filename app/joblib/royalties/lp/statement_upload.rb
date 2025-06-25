@@ -68,7 +68,7 @@ module Royalties::Lp::StatementUpload
         error(statement, "ISBN #{isbn} for #{line.title.inspect} not found in pip")
         error_count += 1
       end
-      if error_count.length > 9
+      if error_count > 9
         fail "Too many errors; stopping"
       end
     end

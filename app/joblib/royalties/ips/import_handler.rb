@@ -31,12 +31,15 @@ module Royalties::Ips::ImportHandler
     RoyaltyItem.connection.transaction do
       RoyaltyItem.insert_all!(ri_values.map(&:to_h))
       statement.status = IpsStatement::STATUS_IMPORTED
-      statement.imported_at = now
-      statement.status_message = nil
+      statement.imported_at          = now
+      statement.import_free_units    = totals.free_units
+      statement.import_paid_units    = totals.paid_units
+      statement.import_return_units  = totals.return_units
+      statement.import_paid_amount   = totals.paid_amount
+      statement.import_return_amount = totals.return_amount
+      statement.status_message       = nil
       statement.save!
     end
-
-    totals
   end
 
   def accumulate_totals(ri_values)

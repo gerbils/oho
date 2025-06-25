@@ -1,0 +1,6 @@
+@import "bootswatch/dist/flatly/bootstrap.min.css";
+@import "bootstrap-icons";
+@import "./bootstrap-print.min.css";
+@import "./chart_modal.css";
+@import "./rails_bootstrap_forms.css";
+@import "./oho.css";
