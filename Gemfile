@@ -31,7 +31,7 @@ group :development do
 end
 
 # app gems
-gem "aws-sdk-s3", "~> 1.158"
+gem "aws-sdk-s3", "~> 1.191"
 gem "bootstrap_form", "~> 5.4"
 gem "chartkick", "~> 5.1"
 gem "csv", "~> 3.3"
