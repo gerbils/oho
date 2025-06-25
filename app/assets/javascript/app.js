@@ -1,3 +1,3 @@
-import "chartkick"
-import "chart.js"
+// import "chart.js"
+import "chartkick/chart.js"
 
