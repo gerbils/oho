@@ -2,8 +2,7 @@ class CreateIpsDetailLine < ActiveRecord::Migration[8.0]
   def change
     create_table :ips_detail_lines do |t|
       t.references :ips_statement_detail, null: true,  foreign_key: true
-      t.integer    :sku_id, null: false            # cross db fk
-
+      t.integer :sku_id, null: true   # optional SKU fk. Only set of EAN is not blank
       t.string  :content_type
       t.string  :description
       t.string  :title

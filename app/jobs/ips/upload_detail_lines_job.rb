@@ -19,12 +19,12 @@ class Ips::UploadDetailLinesJob < ApplicationJob
       detail.save!
       statement.save!
 
-    rescue => e
-      raise if ENV['debug']
-      Rails.logger.error("Error handling upload: #{e.message}")
-      statement.update!(status: IpsStatement::STATUS_FAILED_UPLOAD)
-      OhoError.create(owner: statement, level: OhoError::ERROR, label: "Uploading: #{upload.file.filename.to_s}", message: e.message)
-      File.open("/tmp/trace", "w") {|f| f.puts e.backtrace }
+    # rescue => e
+    #   raise if ENV['debug']
+    #   Rails.logger.error("Error handling upload: #{e.message}")
+    #   statement.update!(status: IpsStatement::STATUS_FAILED_UPLOAD)
+    #   OhoError.create(owner: statement, level: OhoError::ERROR, label: "Uploading: #{upload.file.filename.to_s}", message: e.message)
+    #   File.open("/tmp/trace", "w") {|f| f.puts e.backtrace }
     end
     logger.info("finishing details IPS upload job")
   end

@@ -59,16 +59,15 @@ end
   # destitute terminal emulator....
   class State
 
-    MAP_COLOR = {
-      "30" => "black",
-      "31" => "red",
-      "32" => "green",
-      "33" => "yellow",
-      "34" => "blue",
-      "35" => "magenta",
-      "36" => "cyan",
-      "37" => "white",
-      "39" => "inherit"
+    MAP_COLOR = {  # Catppuccin Machiato palette
+      "30" => "#5B6078",
+      "31" => "#ED8796",
+      "32" => "#A6DA95",
+      "33" => "#EED49F",
+      "34" => "#8AADF4",
+      "35" => "#F5BDE6",
+      "36" => "#8BD5CA",
+      "37" => "#A5ADCB",
     }
 
     def initialize()

@@ -52,6 +52,8 @@ module Royalties::Ips::ParseDetailLines
   module Type3
     # DFRegularFees.xlsx
     # DirectFulfillmentOrderFees.xlsx
+    # DirectFulfillmentUnitsFees.xlsx
+
     HEADINGS = [
       "Invoice Date", "Invoice Number", "Bill to Number", "Customer PO", "DF Name", "DF Address 1", "DF Address 2",
       "DF Address 3", "DF City", "DF State", "DF Zip", "PUB NUM", "Imprint", "Pub Alpha", "QTY", "Total List",
@@ -81,12 +83,15 @@ module Royalties::Ips::ParseDetailLines
       description = case row[1].value
                     when "Inv-PTO" then "Printing"
                     when "Inv-DS"  then "Drop Ship"
+                    when "CM"      then "Printing"
                     else
-                      raise "Unknown description4 invoice type: #{row[1].inspect}"
+                      raise "Type 4: Unknown invoice type: #{row[1].value}"
                     end
 
       ean = row[6].cell_value
-      title = row[7].cell_value
+      if ean
+        title = row[7].cell_value
+      end
       quantity = row[8].value
       amount = BigDecimal(row[-1].cell_value)
       Detail.new(ean:, description:, title:, quantity:, amount:, content_type: "lsi_expense")
@@ -94,8 +99,7 @@ module Royalties::Ips::ParseDetailLines
   end
 
   module Type5
-    # LSIChargesDropShipPrintUK.xlsx
-    # LSIChargesPrintToOrderPrinting.xlsx
+    # MiscExpense.xlsx
     HEADINGS = [
       "Year", "Period", "Misc Item Id", "Pub #", "Pub Name", "Pub Alpha", "Brand Category",
       "Imprint", "EAN", "Title", "Statement Section", "Statement Sub-Section", "Transaction Type",
@@ -149,11 +153,9 @@ module Royalties::Ips::ParseDetailLines
     sheet = open_spreadsheet(content, file_type)
     sheet.default_sheet = sheet.sheets.first
     next_row = sheet.first_row
-    end_row  = sheet.last_row
 
     headers = sheet.row(next_row)
     handler = find_handler_module(headers)
-    next_row += 1
     lines = []
 
     skip_header = true
@@ -169,6 +171,7 @@ module Royalties::Ips::ParseDetailLines
 
       lines << IpsDetailLine.new(
         ean: result.ean,
+        sku_id: map_ean_to_sku(result),
         content_type: result.content_type,
         title: result.title,
         description: result.description,
@@ -176,10 +179,47 @@ module Royalties::Ips::ParseDetailLines
         amount: result.amount,
         json: hash.to_json
       )
-
-      next_row += 1
     end
     lines
   end
+
+  ######################################################################
+
+  def map_ean_to_sku(row)
+    case  Product.product_and_sku_for_isbn(row.ean)
+
+    in [ nil, nil ]                  # non-specific expense
+      return nil
+
+    in [ Product => product, Sku => sku ]
+      if row.title.blank? || titles_similar(product.title, row.title)
+        return sku.id
+      end
+      raise("Title mismatch #{isbn}: #{product.title.inspect} " +
+            "doesn't start with #{row.title.inspect} " +
+            "(#{normalize(product.title)} vs. #{normalize(row.title)} )")
+    else
+      raise"ISBN #{isbn} not found"
+    end
+    raise "never get here"
+  end
+
+  def normalize(title)
+    title
+      .downcase
+      .tr("^a-z0-9", "")
+      .sub(/(2nd|3rd|4th|5th|6th|7th|8th|9th|second|third|fourth|fifth|sixth|seventh|eighth|ninth)ed(ition)?/, "")
+      .strip
+  end
+
+  def titles_similar(pip, ips)
+    pip = normalize(pip)
+    ips = normalize(ips)
+    len = [ pip.length, ips.length ].min
+    fail "zero length title" if len == 0
+    pip[0...len] == ips[0...len]
+  end
+
+
 end
 

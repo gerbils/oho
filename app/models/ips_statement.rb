@@ -162,9 +162,11 @@ class IpsStatement < ActiveRecord::Base
 
   def statement_lines
     result = Result.new
-    accumulate_revenues(result)
-    accumulate_expenses(result)
-    accumulate_non_sku_specific(result)
+    non_sku_total = BigDecimal("0.00")
+    non_sku_total += accumulate_revenues(result)
+    non_sku_total += accumulate_expenses(result)
+    non_sku_total += accumulate_non_sku_specific(result)
+    write_non_sku_values(non_sku_total, result) unless non_sku_total.zero?
     result.flatten
   end
 
@@ -174,65 +176,73 @@ class IpsStatement < ActiveRecord::Base
   # statement. Expense lines are accumulated in a single column, plus and minus
   #
   def accumulate_revenues(result)
+    non_sku_total = BigDecimal("0.00")
     revenues.each do |detail|
       channel = revenue_channel_for(detail)
       detail.ips_detail_lines.each do |line|
-        proto_ri = ProtoRoyaltyLine.new(
-          sku_id:        line.sku_id,
-          item_type:     RoyaltyItem::IPS_REVENUE_TYPE,
-          description:   channel,
-          free_units:    0,
-          paid_units:    line.amount > 0 ? line.quantity  : 0,
-          paid_amount:   line.amount > 0 ? line.amount    : 0,
-          return_units:  line.amount < 0 ? line.quantity  : 0,
-          return_amount: line.amount < 0 ? line.amount    : 0,
-          book_basis:    0,
-          date:          self.month_ending,
-          applies_to:    RoyaltyItem::APPLIES_TO_BOTH,
-          source_type:   self.class.name,
-          source_id:     self.id,
-        )
-        result.add(proto_ri)
+        if line.sku_id.blank?
+          non_sku_total += line.amount
+        else
+          proto_ri = ProtoRoyaltyLine.new(
+            sku_id:        line.sku_id,
+            item_type:     RoyaltyItem::IPS_REVENUE_TYPE,
+            description:   channel,
+            free_units:    0,
+            paid_units:    line.amount > 0 ? line.quantity  : 0,
+            paid_amount:   line.amount > 0 ? line.amount    : 0,
+            return_units:  line.amount < 0 ? line.quantity  : 0,
+            return_amount: line.amount < 0 ? line.amount    : 0,
+            book_basis:    0,
+            date:          self.month_ending,
+            applies_to:    RoyaltyItem::APPLIES_TO_BOTH,
+            source_type:   self.class.name,
+            source_id:     self.id,
+          )
+          result.add(proto_ri)
+        end
       end
     end
+    non_sku_total
   end
 
   def accumulate_expenses(result)
+    non_sku_total = BigDecimal("0.00")
     expenses.each do |detail|
       channel = expense_channel_for(detail)
       detail.ips_detail_lines.each do |line|
-        proto_ri = ProtoRoyaltyLine.new(
-          sku_id:        line.sku_id,
-          item_type:     RoyaltyItem::IPS_EXPENSE_TYPE,
-          description:   channel,
-          free_units:    0,
-          paid_units:    0,
-          paid_amount:   0,
-          return_units:  line.quantity,
-          return_amount: line.amount,
-          book_basis:    0,
-          date:          self.month_ending,
-          applies_to:    RoyaltyItem::APPLIES_TO_BOTH,
-          source_type:   self.class.name,
-          source_id:     self.id,
-        )
+        if line.sku_id.nil?
+          non_sku_total += line.amount
+        else
+          proto_ri = ProtoRoyaltyLine.new(
+            sku_id:        line.sku_id,
+            item_type:     RoyaltyItem::IPS_EXPENSE_TYPE,
+            description:   channel,
+            free_units:    0,
+            paid_units:    0,
+            paid_amount:   0,
+            return_units:  line.quantity,
+            return_amount: line.amount,
+            book_basis:    0,
+            date:          self.month_ending,
+            applies_to:    RoyaltyItem::APPLIES_TO_BOTH,
+            source_type:   self.class.name,
+            source_id:     self.id,
+          )
 
-        if proto_ri.return_amount > 0
-          proto_ri.paid_amount = proto_ri.return_amount
-          proto_ri.paid_units = proto_ri.return_units
-          proto_ri.return_amount = 0
-          proto_ri.return_units = 0
-          proto_ri.description += " (refund)"
+          if proto_ri.return_amount > 0
+            proto_ri.paid_amount = proto_ri.return_amount
+            proto_ri.paid_units = proto_ri.return_units
+            proto_ri.return_amount = 0
+            proto_ri.return_units = 0
+            proto_ri.description += " (refund)"
+          end
+
+          result.add(proto_ri)
         end
-
-        result.add(proto_ri)
       end
     end
+    non_sku_total
   end
-
-  # look for details with no corresponding lines.
-  # these are usually totals, and we apportion them across
-  # the royalty items in the statement.
 
   def accumulate_non_sku_specific(result)
     total_misc = BigDecimal("0.0000")
@@ -242,13 +252,14 @@ class IpsStatement < ActiveRecord::Base
       total_misc += detail.due_this_month
     end
 
-    return if total_misc.zero?
+    total_misc
+  end
 
-    skus    = Set.new(ips_detail_lines.pluck(:sku_id).uniq)
+  # Any amounts that are not associated with a specific sku are distributed across them all
+
+  def write_non_sku_values(total_misc, result)
+    skus    = Set.new(ips_detail_lines.where("sku_id is not null").pluck(:sku_id).uniq)
     per_sku = (total_misc / skus.size) #.round(2)
-    # delta   = ((per_sku * skus.size) - total_misc).round(2)
-    # fail "wrong sign for adjustment" unless per_sku <= 0 && delta <= 0
-
     skus.each do |sku_id|
         proto_ri = ProtoRoyaltyLine.new(
           sku_id:        sku_id,
@@ -266,7 +277,6 @@ class IpsStatement < ActiveRecord::Base
           source_id:     self.id,
         )
         result.add(proto_ri)
-        delta = 0
       end
   end
 

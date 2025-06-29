@@ -102,6 +102,9 @@ class Product < LegacyRecord
   ISBN_TO_SKU_MAP = {}
 
   def self.product_and_sku_for_isbn(isbn)
+
+    return [ nil, nil ] if isbn.blank?
+
     title, sku = ISBN_TO_SKU_MAP[isbn]
 
     unless title && sku

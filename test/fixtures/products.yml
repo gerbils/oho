@@ -5,7 +5,6 @@ trevan:
   code: trevan
   title: Driving Technical Change
   subtitle: Why People on Your Team Don't Act on Good Ideas, and How to Convince
-    Them They Should
   tagline: null
   highlight_description: If you work with people
   long_description: Finding cool languages, tools
@@ -78,22 +77,17 @@ pg_git:
   type: Title
   code: pg_git
   title: Pragmatic Guide to Git
-  subtitle:
-  tagline:
   highlight_description: Need to learn how to wrap
   long_description: Get up to speed on Git
   author: Travis Swicegood
   author_bio: Travis Swicegood i
-  series:
   pubdate: 2010-11-01
   sales_conf_date: NULL
   announced_on_date: NULL
   isbn13: 9781934356722
   edition: 1
-  upc:
   bisac1: COM051440 COMPUTERS / Software Development & Engineering / Tools
   bisac2: COM052000 COMPUTERS / Reference
-  bisac3: NULL
   page_count: 160
   keywords: git, svn, subversion, version control, dvcs, versioning, development, tools
   trim_size: 6x9
@@ -102,7 +96,6 @@ pg_git:
   shelving: Software Tools
   user_level: Intermediate
   background_info: Git enables you
-  was_previous_edition:
   summary_feature_points: Find what you need
   market_description: This book
   key_selling_points: Two page spreads
@@ -112,7 +105,6 @@ pg_git:
   copies_per_case: 48
   spine_thickness: NULL
   print_status: In Print
-  contents_and_extracts:
   code_available: 0
   beta: 0
   hidden: 0
@@ -128,20 +120,157 @@ pg_git:
   release_to_intl_partners_at: 2010-09-20 18:00:00
   signed_on: 2009-07-17
   cover_image_uploaded_at: 2011-02-24 23:25:26
-  youtube_code:
-  youtube_width: NULL
-  youtube_height: NULL
-  prerequisites:
   color: 0
   kindle_edition_isbn: 9781937785116
   show_to_partners: 1
   is_distribution_only: 0
-  web_highlight:
   safari_isbn: 9781680500028
   skill_level_low: NULL
   skill_level_high: NULL
-  one_line_description:
   channel_epub_isbn: 9781680504163
   channel_pdf_isbn: 9781680504170
-  hardcover_isbn:
   vat_tax_category: professional
+
+rails72:
+  id: 787
+  type: "Title"
+  code: "rails72"
+  title: "Agile Web Development with Rails 7.2"
+  subtitle: ""
+  tagline: ""
+  highlight_description: "Rails 7.2 completely redefined what it means to pr..."
+  long_description: "Ruby on Rails helps you produce high-quality beau..."
+  author: "Sam Ruby"
+  author_bio: "*Sam Ruby* is a Rails Specialist at Fly.io and pr..."
+  pubdate: "2025-02-10"
+  sales_conf_date: nil
+  announced_on_date: nil
+  isbn13: "9798888651049"
+  edition: 1
+  bisac1: "COM051410"
+  bisac2: "COM051230"
+  bisac3: "COM061000"
+  page_count: 465
+  keywords: "rails rails 7.2 ruby ror ruby on rails webpac..."
+  trim_size: "7.5x9.25"
+  channel_price_usd: 0.6795e2
+  channel_price_cad: 0.8495e2
+  shelving: "Web Programming"
+  user_level: "Intermediate"
+  background_info: "Ruby on Rails helps you produce high-quality beau..."
+  was_previous_edition: nil
+  summary_feature_points: "* Follow along with an extended tutorial as we wri..."
+  market_description: "Programmers looking to build and deploy modern web..."
+  key_selling_points: "* Incorporates new JavaScript technologies: Turbo..."
+  related_titles: "https://pragprog.com/categories/ruby-and-rails/"
+  will_sell_like: "Previous editions of Agile Web Development with Ra..."
+  competing_titles: " * Ruby on Rails Tutorial\r\n * The Rails 5 Way\r\n * ..."
+  copies_per_case: nil
+  spine_thickness: nil
+  print_status: "Not Yet Printed (NYP)"
+  contents_and_extracts: "\"Introduction\":http://media.pragprog.com/titles/ra..."
+  code_available: true
+  beta: true
+  hidden: false
+  available_on: "2025-02-10"
+  ora_category: ""
+  url_title: "agile-web-development-with-rails-7-2"
+  template_name: "show"
+  layout_name: "application"
+  errata_locked: nil
+  beta_page_count: nil
+  efile_password: nil
+  previous_edition_id: nil
+  release_to_intl_partners_at: nil
+  signed_on: "2024-07-12"
+  cover_image_uploaded_at: "2024-07-10 22:04:25.000000000 +0000"
+  youtube_code: ""
+  youtube_width: nil
+  youtube_height: nil
+  prerequisites: "All you need is a Windows Mac OS X or Linux mach..."
+  color: false
+  kindle_edition_isbn: ""
+  show_to_partners: true
+  is_distribution_only: false
+  web_highlight: "---\r\n\r\nh4. This purchase includes the Rails 7 book..."
+  safari_isbn: ""
+  skill_level_low: 2
+  skill_level_high: 6
+  one_line_description: "Get the comprehensive insider information you nee..."
+  channel_epub_isbn: ""
+  channel_pdf_isbn: ""
+  hardcover_isbn: ""
+  vat_tax_category: "professional"
+
+tpdsl:
+  id: 160
+  type: "Title"
+  code: "tpdsl"
+  title: "Language Implementation Patterns"
+  subtitle: "Create Your Own Domain-Specific and General Progra..."
+  tagline: ""
+  highlight_description: "Learn to build configuration file readers data re..."
+  long_description: "Knowing how to create domain-specific languages (D..."
+  author: "Terence Parr"
+  author_bio: "Terence Parr is a professor of computer science an..."
+  series: ""
+  pubdate: "2009-12-28"
+  sales_conf_date: nil
+  announced_on_date: "2009-06-01"
+  isbn13: "9781934356456"
+  edition: 1
+  upc: "852766001858"
+  bisac1: "COM010000 COMPUTERS / Compilers"
+  bisac2: "COM051230 COMPUTERS / Software Development & Engin..."
+  bisac3: "COM051000 COMPUTERS / Programming / General"
+  page_count: 378
+  keywords: "pattern design patterns DSL domain specific lan..."
+  trim_size: "7.5x9"
+  channel_price_usd: 0.3495e2
+  channel_price_cad: 0.4395e2
+  shelving: "Programming"
+  user_level: "Intermediate"
+  background_info: "Programmers typically develop software by writing ..."
+  was_previous_edition: ""
+  summary_feature_points: "* Implement scripting language interpreters\r\n* Bui..."
+  market_description: "This book is intended for practicing software deve..."
+  key_selling_points: "* Programmers rarely build compilers but most lang..."
+  related_titles: "The Definitive ANTLR Reference\r\n\r\n"
+  will_sell_like: ""
+  competing_titles: "* Compilers: Principles Techniques and Tools (2n..."
+  copies_per_case: 10
+  spine_thickness: nil
+  print_status: "In Print"
+  contents_and_extracts: "\"Full Table of Contents\":http://media.pragprog.com..."
+  code_available: true
+  beta: false
+  hidden: false
+  available_on: "2010-01-04"
+  ora_category: "Design Patterns"
+  url_title: "language-implementation-patterns"
+  template_name: "show"
+  layout_name: "application"
+  errata_locked: false
+  beta_page_count: nil
+  efile_password: "[FILTERED]"
+  previous_edition_id: nil
+  release_to_intl_partners_at: "2010-09-20 18:00:00.000000000 +0000"
+  signed_on: "2007-12-19"
+  cover_image_uploaded_at: "2011-02-24 23:24:26.000000000 +0000"
+  youtube_code: ""
+  youtube_width: nil
+  youtube_height: nil
+  prerequisites: ""
+  color: false
+  kindle_edition_isbn: "9781937785109"
+  show_to_partners: true
+  is_distribution_only: false
+  web_highlight: ""
+  safari_isbn: "9781680500097"
+  skill_level_low: 5
+  skill_level_high: 8
+  one_line_description: ""
+  channel_epub_isbn: "9781680503746"
+  channel_pdf_isbn: "9781680503753"
+  hardcover_isbn: ""
+  vat_tax_category: "professional"

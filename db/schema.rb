@@ -41,7 +41,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_12_174604) do
 
   create_table "ips_detail_lines", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "ips_statement_detail_id"
-    t.integer "sku_id", null: false
+    t.integer "sku_id"
     t.string "content_type"
     t.string "description"
     t.string "title"

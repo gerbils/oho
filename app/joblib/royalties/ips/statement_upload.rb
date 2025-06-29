@@ -20,11 +20,11 @@ module Royalties::Ips::StatementUpload
     save_statement(statement)
     # update_show_page(statement)
 
-  rescue StandardError => e
-    raise if ENV['debug']
-    OhoError.create(owner: statement, label: "Error uploading IPS statement", message: e.message, level: OhoError::ERROR)
-    statement.status = IpsStatement::STATUS_FAILED_UPLOAD
-    statement.save!
+  # rescue StandardError => e
+  #   raise if ENV['debug']
+  #   OhoError.create(owner: statement, label: "Error uploading IPS statement", message: e.message, level: OhoError::ERROR)
+  #   statement.status = IpsStatement::STATUS_FAILED_UPLOAD
+  #   statement.save!
   end
 
   private

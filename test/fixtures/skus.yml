@@ -65,3 +65,45 @@ pg_git_p:
   duration: NULL
   released_on: 2009-08-24
   media: electronic_book
+
+rails72_b:
+    id: 1432
+    sku: "RAILS72-B-00"
+    price: 0.5695e2
+    basis_price: 0.521e1
+    weight: 28
+    fulfill_state: "NO_LONGER_OFFERED"
+    product_id: 787
+    part_name: nil
+    duration: nil
+    released_on: nil
+    media: "printed_book"
+    does_not_participate_in_coupons: false
+
+rails72_p:
+    id: 1433
+    sku: "RAILS72-P-00"
+    price: 0.3995e2
+    basis_price: 0.0
+    weight: 0
+    fulfill_state: "SHIPPABLE"
+    product_id: 787
+    part_name: nil
+    duration: nil
+    released_on: nil
+    media: "electronic_book"
+    does_not_participate_in_coupons: false
+
+tpdsl_b_00:
+   id: 239
+   sku: "TPDSL-B-00"
+   price: 0.3495e2
+   basis_price: 0.426e1
+   weight: 23
+   fulfill_state: "SHIPPABLE"
+   product_id: 160
+   part_name: ""
+   duration: nil
+   released_on: "2009-12-14"
+   media: "printed_book"
+   does_not_participate_in_coupons: falseV

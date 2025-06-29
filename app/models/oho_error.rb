@@ -1,4 +1,5 @@
 class OhoError < ActiveRecord::Base
+  include ActionView::RecordIdentifier   # for dom_id
       # t.string  :owner_dom_id
       # t.string  :display_tag, null: true
       # t.integer :level,       null: false, default: 0

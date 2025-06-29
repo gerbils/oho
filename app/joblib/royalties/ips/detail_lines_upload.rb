@@ -31,12 +31,18 @@ module Royalties::Ips::DetailLinesUpload
     rows.each do |row|
       isbn = row.ean
       case  Product.product_and_sku_for_isbn(isbn)
+
+      in [ nil, nil ]                  # non-specific expense
+        row.sku_id = nil
+
       in [ Product => product, Sku => sku ]
         if row.title.blank? ||titles_similar(product.title, row[:title])
           row.sku_id = sku.id
         else
           errors << "Title mismatch #{isbn}: #{product.title.inspect} doesn't start with #{row[:title].inspect} (#{normalize(product.title)} vs. #{normalize(row[:title])} )"
         end
+      else
+        errors << "ISBN #{isbn} not found"
       end
 
       if errors.length > 0
