@@ -25,7 +25,7 @@ class Royalties::Ips::StatementsController < ApplicationController
 
   def upload_revenue_lines
     @upload_files = UploadFiles.new(files: params.dig(:upload_files, :files))
-
+    @statement.clear_oho_errors
     @upload_files.files.each do |file|
       next if file.blank?    # no idea why thwe first entry is an empty string...
       upload_wrapper = UploadWrapper.create!(file: file, ips_statement: @statement)

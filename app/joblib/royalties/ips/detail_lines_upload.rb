@@ -88,6 +88,12 @@ module Royalties::Ips::DetailLinesUpload
 
     when 1
       detail = details.first
+
+      unless detail.ips_detail_lines.empty?
+        raise("Duplicate upload of details speadsheet for `#{detail.detail}' (total #{"%9.2f" % [total]})\n" +
+              "files #{upload.file.filename} and #{detail.upload_wrapper.file.filename}")
+      end
+
       detail.upload_wrapper = upload
 
       rows.each do |row|

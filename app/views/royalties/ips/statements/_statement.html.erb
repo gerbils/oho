@@ -23,7 +23,7 @@
       <%= stmt.imported_at&.strftime("%Y-%m-%d/%H:%M") %>
     <% elsif stmt.status == IpsStatement::STATUS_UPLOADED %>
         <%= button_to 'Import now',
-                  import_royalties_ips_upload_path(stmt),
+                  import_royalties_ips_statement_path(stmt),
                   class: 'btn btn-success',
                   method: :put,
                   data: { "turbo-method": :put, turbo_confirm: 'This permanently adds royalty information to PIP. Continue? ' }

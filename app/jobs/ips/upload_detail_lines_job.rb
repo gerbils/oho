@@ -10,7 +10,6 @@ class Ips::UploadDetailLinesJob < ApplicationJob
     end
 
     statement = IpsStatement.find(statement_id)
-    statement.clear_oho_errors
 
     upload.update!(status: UploadWrapper::STATUS_PROCESSING, status_message: nil)
 
@@ -18,6 +17,10 @@ class Ips::UploadDetailLinesJob < ApplicationJob
       detail = Royalties::Ips::DetailLinesUpload.handle(statement, upload)
       detail.save!
       statement.save!
+
+      if statement.ready_to_import?
+        statement.update!(status: IpsStatement::STATUS_UPLOADED)
+      end
 
     # rescue => e
     #   raise if ENV['debug']
