@@ -8,3 +8,6 @@ application.register("dark-light-toggle", DarkLightController)
 
 import FileUploadController from "./controllers/file_upload_controller"
 application.register("file-upload", FileUploadController)
+
+import PopoverController from "./controllers/popover_controller"
+application.register("popover", PopoverController)

@@ -112,6 +112,10 @@ class IpsStatement < ActiveRecord::Base
     !self.imported_at? && details.all?(&:ready_to_import?)
   end
 
+  def estimated_royalties
+    IpsUploadEstimate.estimate(self)
+  end
+
   def oho_errors
     OhoError.for_object(self)
   end

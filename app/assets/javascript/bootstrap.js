@@ -8,5 +8,8 @@ window.oho_bs = bootstrap;
 
 document.addEventListener('turbo:load', () => {
   document.querySelectorAll('[data-toggle="tooltip"]').forEach(t => t.tooltip())
-  document.querySelectorAll('[data-toggle="popover"]').forEach(t => t.popover())
+  document.querySelectorAll('[data-toggle="popover"]').forEach(t => {
+    console.log(t);
+    t.popover()
+})
 })
