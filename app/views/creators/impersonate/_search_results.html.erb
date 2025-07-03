@@ -1,0 +1,11 @@
+  <div class="mt-5 container">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
+      <% creators.each do |creator| %>
+        <div class="col">
+          <%= button_to creators_become_path(creator.id), class: "w-100 mb-1 btn btn-dark" do %>
+            <%= creator.name %><br/><span class="text-small text-muted"><%= creator.email %></span>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+

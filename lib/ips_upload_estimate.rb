@@ -30,7 +30,7 @@ module IpsUploadEstimate
     end
 
     # apportion extra based on ratios of net. This will be negative
-    extra = amounts_by_sku[nil]
+    extra = amounts_by_sku[nil] || 0
     total = totals_by_code.values.map {|s| s[:base] }.sum
     totals_by_code.each do |code, amt|
       amt[:extra] = (extra*amt[:base]/total)

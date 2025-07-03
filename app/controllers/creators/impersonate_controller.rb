@@ -1,11 +1,11 @@
 class Creators::ImpersonateController < Creators::CreatorsBaseController
   def index
-    @search = params[:search]
-    @creators = if !@search || @search.empty?
-                  []
-                else
-                  Authors::Search.all_creators_like(@search)
-                end
+    @creators = search_for_creators
+  end
+
+  def incremental_search
+    creators = search_for_creators
+
   end
 
   def become
@@ -15,4 +15,12 @@ class Creators::ImpersonateController < Creators::CreatorsBaseController
     redirect_to "/"
   end
 
+  def search_for_creators
+    @search = params[:search]
+    if !@search || @search.empty?
+      []
+    else
+      Authors::Search.all_creators_like(@search)
+    end
+  end
 end

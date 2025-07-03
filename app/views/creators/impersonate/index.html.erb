@@ -1,15 +1,10 @@
 <h1 class="mt-5 mb-3">Become an author or editor</h1>
+<div data-controller="author-search">
+  <%= bootstrap_form_with(url: creators_impersonate_path, method: :get, data: { author_search_target: "form" } ) do |form| %>
+    <%= form.search_field :search, value: @search, autofocus: true, class: 'form-control', data: { author_search_target: "input", action: "input->author-search#search"}, placeholder: "Search for name or email" %>
+  <% end %>
 
-<%= bootstrap_form_with(url: creators_impersonate_path, method: :get) do |form| %>
-  <%= form.search_field :search, class: 'form-control', placeholder: "Search for Name" %>
-<% end %>
-
-<div class="mt-5 container">
-  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
-    <% @creators.each do |creator| %>
-      <div class="col">
-        <%= button_to creator.name, creators_become_path(creator.id), class: "w-100 mb-1 btn btn-dark" %>
-      </div>
-    <% end %>
+  <div data-author-search-target="results">
+    <%= render partial: "search_results", locals: { creators: @creators } %>
   </div>
 </div>

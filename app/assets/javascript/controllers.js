@@ -1,5 +1,8 @@
 import { application } from "./controllers/application.js"
 
+import AuthorSearchController from "./controllers/author_search_controller"
+application.register("author-search", AuthorSearchController)
+
 import ChartsController from "./controllers/charts_controller"
 application.register("charts", ChartsController)
 
