@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_30_154008) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_05_172259) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -159,6 +159,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_30_154008) do
     t.integer "count"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "thema_codes", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "code", limit: 20, null: false
+    t.string "description"
+    t.string "related1", limit: 20
+    t.string "related2", limit: 20
+    t.string "related3", limit: 20
+    t.string "related4", limit: 20
+    t.string "related5", limit: 20
+    t.string "related6", limit: 20
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_thema_codes_on_code", unique: true
   end
 
   create_table "upload_wrappers", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
