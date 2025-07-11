@@ -1,0 +1,10 @@
+<tr>
+  <td>
+    <%= link_to royalties_ips_payment_path(payment), class: "info-link ps-2" do %>
+      <i title="View "payment details" class="bi bi-eye fs-4"></i>
+    <% end %>
+  </td>
+  <td><%= payment.payment_date %></td>
+  <td><%= payment.payment_reference%></td>
+  <td class="text-end"><%= number_to_currency(payment.total_amount) %></td>
+</tr>

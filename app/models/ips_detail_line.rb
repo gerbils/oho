@@ -12,6 +12,7 @@ class IpsDetailLine < ApplicationRecord
         :json,
        presence: true)
 
+
   def from_json()
     @parsed_json ||= JSON.parse(json)
   end
@@ -20,4 +21,5 @@ class IpsDetailLine < ApplicationRecord
     @parsed_json = obj
     super(obj)
   end
+
 end

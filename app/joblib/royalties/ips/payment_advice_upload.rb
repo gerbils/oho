@@ -1,0 +1,40 @@
+require_relative './parse_statement'
+require 'pry'
+
+module Royalties::Ips; end
+module Royalties::Ips::PaymentAdviceUpload
+  extend self
+  extend Royalties::Shared
+
+
+  def handle(payment, upload_wrapper)
+    payment.clear_oho_errors
+    file = upload_wrapper.file
+    excel_file_attached?(file)
+    add_details_to_upload(upload_wrapper, file)
+
+    payment =  Royalties::Ips::ParsePaymentAdvice.parse(
+      payment,
+      upload_wrapper.file.download,
+      'xlsx')
+    save_payment(payment)
+  end
+
+  private
+
+  def save_payment(payment)
+    payment.save!
+    # IpsStatement.transaction do
+    #   save_details = statement.expenses + statement.revenues
+    #   statement.expenses = []
+    #   statement.revenues = []
+    #   statement.status = IpsStatement::STATUS_INCOMPLETE   # still need details uploaded
+    #   statement.save!
+    #
+    #   save_details.each do |detail|
+    #     detail.ips_statement = statement
+    #     detail.save!
+    #   end
+    # end
+  end
+end

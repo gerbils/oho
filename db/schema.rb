@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_05_172259) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_09_221723) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -54,6 +54,36 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_05_172259) do
     t.index ["ips_statement_detail_id"], name: "index_ips_detail_lines_on_ips_statement_detail_id"
   end
 
+  create_table "ips_payment_advice_lines", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "ips_payment_advice_id", null: false
+    t.bigint "ips_statement_detail_id"
+    t.string "invoice_number"
+    t.date "invoice_date"
+    t.string "voucher_id"
+    t.string "status"
+    t.decimal "gross_amount", precision: 10, scale: 2
+    t.decimal "discount_taken", precision: 10, scale: 2
+    t.decimal "paid_amount", precision: 10, scale: 2
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ips_payment_advice_id"], name: "index_ips_payment_advice_lines_on_ips_payment_advice_id"
+    t.index ["ips_statement_detail_id"], name: "index_ips_payment_advice_lines_on_ips_statement_detail_id"
+  end
+
+  create_table "ips_payment_advices", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "upload_wrapper_id"
+    t.string "pay_cycle"
+    t.string "pay_cycle_seq_number"
+    t.string "payment_reference"
+    t.date "payment_date"
+    t.decimal "total_amount", precision: 10, scale: 2
+    t.string "status", default: "pending", null: false
+    t.string "status_message"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["upload_wrapper_id"], name: "index_ips_payment_advices_on_upload_wrapper_id"
+  end
+
   create_table "ips_statement_details", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "ips_statement_id", null: false
     t.bigint "upload_wrapper_id"
@@ -67,6 +97,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_05_172259) do
     t.decimal "basis_for_charge", precision: 12, scale: 4, null: false
     t.decimal "factor_or_rate", precision: 6, scale: 4, null: false
     t.decimal "due_this_month", precision: 12, scale: 4, null: false
+    t.boolean "reconciled", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["ips_statement_id"], name: "index_ips_statement_details_on_ips_statement_id"
@@ -74,7 +105,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_05_172259) do
   end
 
   create_table "ips_statements", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "upload_wrapper_id", null: false
+    t.bigint "upload_wrapper_id"
     t.string "status", null: false
     t.string "status_message"
     t.date "month_ending", default: "1000-01-01"
@@ -127,15 +158,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_05_172259) do
     t.index ["upload_wrapper_id"], name: "index_lp_statements_on_upload_wrapper_id"
   end
 
-  create_table "notices", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.integer "level"
-    t.string "owning_class"
-    t.integer "owner_id"
-    t.text "message"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "oho_errors", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "owner_dom_id", null: false
     t.string "display_tag"
@@ -161,20 +183,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_05_172259) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "thema_codes", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "code", limit: 20, null: false
-    t.string "description"
-    t.string "related1", limit: 20
-    t.string "related2", limit: 20
-    t.string "related3", limit: 20
-    t.string "related4", limit: 20
-    t.string "related5", limit: 20
-    t.string "related6", limit: 20
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["code"], name: "index_thema_codes_on_code", unique: true
-  end
-
   create_table "upload_wrappers", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.datetime "uploaded_at"
     t.integer "size"
@@ -190,6 +198,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_05_172259) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "ips_detail_lines", "ips_statement_details"
+  add_foreign_key "ips_payment_advice_lines", "ips_payment_advices"
+  add_foreign_key "ips_payment_advice_lines", "ips_statement_details"
+  add_foreign_key "ips_payment_advices", "upload_wrappers"
   add_foreign_key "ips_statement_details", "ips_statements"
   add_foreign_key "ips_statement_details", "upload_wrappers"
   add_foreign_key "ips_statements", "upload_wrappers"

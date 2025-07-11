@@ -1,7 +1,7 @@
 class CreateIpsStatement < ActiveRecord::Migration[8.0]
   def change
     create_table :ips_statements do |t|
-      t.references :upload_wrapper,       null: false, foreign_key: true
+      t.references :upload_wrapper,       null: Rails.env.test?, foreign_key: true
       t.string     :status,               null: false
       t.string     :status_message
       t.date       :month_ending,         default: '1000-01-01'

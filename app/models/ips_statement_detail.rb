@@ -27,6 +27,8 @@
 class IpsStatementDetail < ActiveRecord::Base
 
   include ActionView::RecordIdentifier   # for dom_id
+  extend  Helpers::DateTime
+  include Helpers::DateTime
 
   SECTION_REVENUE = "REVENUE"
   SECTION_EXPENSE = "EXPENSE"
@@ -35,6 +37,7 @@ class IpsStatementDetail < ActiveRecord::Base
   belongs_to :upload_wrapper, optional: true
   belongs_to :ips_statement, counter_cache: true
   has_many   :ips_detail_lines, dependent: :destroy
+  has_one    :ips_payment_advice_line, dependent: :nullify
 
   validates :section, inclusion: { in: SECTIONS }
   validates :subsection, presence: true
@@ -44,15 +47,37 @@ class IpsStatementDetail < ActiveRecord::Base
   validates :factor_or_rate,   numericality: true
   validates :due_this_month,   numericality: true
 
+  before_save :normalize_date
+  after_save :maybe_update_status
+
+  def self.match_with_payment(invoice_date, invoice_number, paid_amount)
+    date = first_of_month(invoice_date)
+    possibles = where(
+      month_due:      date,
+      due_this_month: paid_amount,
+    )
+    return possibles if possibles.length <= 1
+
+    # given multiple matches, we might try top match on the description (switch in the advice
+    # is called the invoice_number). However, the names are different.
+    # "Direct Fulfillment Carton Fees" in the statement is "S330 Direct Fulfillment Freigh" (sic) in
+    # the advice.
+    # Let's see if this is ever needed; for now return multiple results and let our caller work it
+    # out
+    possibles
+  end
+
 
   def ready_to_import?
     self.uploaded_at? || self.detail == "Co-Op"   # ugly, but there's no upload for co-op
   end
 
-
   private
 
-  after_save :maybe_update_status
+  def normalize_date
+    self.month_due = first_of_month(self.month_due) if self.month_due
+  end
+
   def maybe_update_status
     if saved_change_to_uploaded_at?
        broadcast_replace_to(

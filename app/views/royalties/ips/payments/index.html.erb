@@ -1,0 +1,40 @@
+<% content_for :title, "IPS Payment Advice" %>
+
+<div class="mt-5 mb-3 d-flex align-items-start justify-content-between gap-5 border-bottom border-secondary">
+  <h1 class="h2">IPS Payment Advice</h1>
+
+  <div class="align-right py-3 px-5 mb-5 bg-secondary bg-gradient ">
+    <%= render partial: "/shared/upload_form", locals: {
+      model: @upload_wrapper,
+      url: upload_royalties_ips_payments_path(),
+      title: "Record IPS Payment Receipt",
+      text: "Drop or select the IPS payment advice spreadsheet here",
+      file_label: "&nbsp;".html_safe,
+      multiple: false,
+      accept: ".xlsx",
+      submit_label: "Upload payment advice"
+    } %>
+  </div>
+</div>
+
+<%= turbo_stream_from "ips-payment-index" %>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>View</th>
+      <th> Payment date </th>
+      <th> Reference </th>
+      <th> Amount </th>
+      <th> Uploaded file </th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="upload-list">
+    <% @payments.each do |payment| %>
+      <%= render partial: "payment", object: payment %>
+    <% end %>
+  </tbody>
+</table>
+
+<%= pagy_bootstrap_nav(@pagy).html_safe %>

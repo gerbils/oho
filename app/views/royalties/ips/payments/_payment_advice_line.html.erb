@@ -1,0 +1,10 @@
+<tr id="<%= dom_id(line) %>">
+  <td class="pe-4"><%= line.invoice_date.strftime("%Y-%m-%d") %></td>
+  <td class="pe-4"><%= line.invoice_number %></td>
+  <td class="pe-4"><%= line.voucher_id %></td>
+  <% if discounts_taken %>
+    <td class="text-end pe-4"><%= number_to_currency(line.gross_amount) %></td>
+    <td class="text-end pe-4"><%= number_to_currency(line.discount_taken) %></td>
+  <% end %>
+  <td class="text-end pe-4"><%= number_to_currency(line.gross_amount) %></td>
+</tr>

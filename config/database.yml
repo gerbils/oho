@@ -1,4 +1,4 @@
-connection: &connection
+mysql: &mysql
   adapter: mysql2
   encoding: utf8mb4
   socket: /tmp/mysql.sock
@@ -9,7 +9,7 @@ sqlite: &sqlite
   timeout: 5000
 
 main_db: &main_db
-  <<: *connection
+  <<: *mysql
   username: <%= Rails.application.credentials.dig(:db, :primary, :username) %>
   password: <%= Rails.application.credentials.dig(:db, :primary, :password) %>
   host:     <%= Rails.application.credentials.dig(:db, :primary, :host) %>
@@ -20,7 +20,7 @@ config: &config
     <<: *main_db
     database: <%= Rails.application.credentials.dig(:db, :primary, :database) %>
   legacy:
-    <<: *connection
+    <<: *mysql
     database_tasks: false
     database: <%= Rails.application.credentials.dig(:db, :legacy, :database) %>
     username: <%= Rails.application.credentials.dig(:db, :legacy, :username) %>
