@@ -41,10 +41,10 @@ module Royalties::Ips::ParseDetailLines
     def self.extract(row)
 
       description = "Distribution fee"
-      ean = row[0].cell_value
-      title = row[1].cell_value
+      ean      = row[0].cell_value
+      title    = row[1].cell_value
       quantity = row[13].value
-      amount = BigDecimal(row[15].cell_value)
+      amount   = BigDecimal(row[15].cell_value)
       Detail.new(ean:, description:, title:, quantity:, amount:, content_type: "expense1")
     end
   end
@@ -62,10 +62,10 @@ module Royalties::Ips::ParseDetailLines
     ]
     def self.extract(row)
       description = "Direct Fulfillment"
-      ean = nil
-      title = nil
+      ean      = nil
+      title    = nil
       quantity = row[14].value
-      amount = BigDecimal(row[-1].cell_value)
+      amount   = BigDecimal(row[-1].cell_value)
       Detail.new(ean:, description:, title:, quantity:, amount:, content_type: "df_expense")
     end
   end
@@ -82,6 +82,7 @@ module Royalties::Ips::ParseDetailLines
     def self.extract(row)
       description = case row[1].value
                     when "Inv-PTO" then "Printing"
+                    when "Inv-TS"  then "Printing"
                     when "Inv-DS"  then "Drop Ship"
                     when "CM"      then "Printing"
                     else
@@ -108,10 +109,29 @@ module Royalties::Ips::ParseDetailLines
 
     def self.extract(row)
       description = row[13].value
-      ean = row[8]&.cell_value
-      title = row[9]&.cell_value
+      ean      = row[8]&.cell_value
+      title    = row[9]&.cell_value
       quantity = row[-3].value
-      amount = BigDecimal(row[-1].cell_value)
+      amount   = BigDecimal(row[-1].cell_value)
+      Detail.new(ean:, description:, title:, quantity:, amount:, content_type: "misc_expense")
+    end
+  end
+
+  module Type6
+    # Global connect
+    HEADINGS = [
+      "Year", "Period", "Org Id", "Channel Customer Number", "Pub Id", "Bus DD Roll Sequence",
+      "Transaction Type", "Order Type", "Transaction Currency Code", "EAN", "Title", "Pub Alpha",
+      "Brand Category", "Imprint", "Customer Name", "Inventory Item Id", "Pub Num", "Units Ordered",
+      "Gross Sales Dollars", "Net Sales Dollars", "Gross Sales USD", "Amount"
+    ]
+
+    def self.extract(row)
+      description = "#{row[6].value}: #{row[14].value}"
+      ean      = nil
+      title    = nil
+      quantity = row[17].value
+      amount   = BigDecimal(row[-1].cell_value)
       Detail.new(ean:, description:, title:, quantity:, amount:, content_type: "misc_expense")
     end
   end
@@ -135,7 +155,7 @@ module Royalties::Ips::ParseDetailLines
     end
   end
 
-  ALL_TYPES = [ Type1, Type2, Type3, Type4, Type5, AllRevenues ]
+  ALL_TYPES = [ Type1, Type2, Type3, Type4, Type5, Type6, AllRevenues ]
 
   def find_handler_module(headers)
     ALL_TYPES.find do |type|
@@ -186,13 +206,16 @@ module Royalties::Ips::ParseDetailLines
   ######################################################################
 
   def map_ean_to_sku(row)
+    fail row.
+    return nil if row.ean.nil?
+
     case  Product.product_and_sku_for_isbn(row.ean)
 
     in [ nil, nil ]                  # non-specific expense
       return nil
 
     in [ Product => product, Sku => sku ]
-      if row.title.blank? || titles_similar(product.title, row.title)
+      if row.title.blank? || row.title.start_with?("Revision") || titles_similar(product.title, row.title)
         return sku.id
       end
       raise("Title mismatch #{isbn}: #{product.title.inspect} " +

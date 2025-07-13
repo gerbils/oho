@@ -3,35 +3,70 @@
 <%= turbo_stream_from dom_id(@payment, :show) %>
 <%= turbo_stream_from dom_id(@payment, :errors) %>
 
-    <h1>IPS Payment Advice</h1>
+<h1>IPS Payment Advice</h1>
 
-    <table class="table table-sm w-auto mt-4">
-      <tbody>
-        <tr class="align-middle">
-          <th class="text-secondary ps-0">Payment amount:</th>
-          <td style="font-size: 1.5em;"><%= number_to_currency(@payment.total_amount) %></td>
-        </tr>
+<div class="d-flex gap-5 align-items-center">
+  <table class="table table-sm w-auto mt-4">
+    <tbody>
+      <tr class="align-middle">
+        <th class="text-secondary ps-0">Payment amount:</th>
+        <td class="text-primary fs-3"><%= number_to_currency(@payment.total_amount) %></td>
+      </tr>
+      <tr>
+        <th class="text-secondary ps-0">Status:</th>
+        <td><%= @payment.status %></td>
+      </tr>
+      <tr>
+        <th class="text-secondary ps-0">Payment date:</th>
+        <td><%= @payment.payment_date.strftime("%B %d %Y") %></td>
+      </tr>
+      <tr>
+        <th class="text-secondary ps-0">Payment reference:</th>
+        <td><%= @payment.payment_reference %></td>
+      </tr>
+      <tr>
         <tr>
-          <th class="text-secondary ps-0">Payment date:</th>
-          <td><%= @payment.payment_date.strftime("%B %d %Y") %></td>
+          <th class="text-secondary ps-0">Pay Cycle:</th>
+          <td><%= @payment.pay_cycle %></td>
         </tr>
-        <tr>
-          <th class="text-secondary ps-0">Payment reference:</th>
-          <td><%= @payment.payment_reference %></td>
-        </tr>
-        <tr>
-       <tr>
-         <th class="text-secondary ps-0">Pay Cycle:</th>
-         <td><%= @payment.pay_cycle %></td>
-       </tr>
         <tr>
           <th class="text-secondary ps-0">Pay Cycle Seq Number:</th>
           <td><%= @payment.pay_cycle_seq_number %></td>
         </tr>
-      </tbody>
-    </table>
-
-  <%= link_to "Back to all payments", royalties_ips_payments_path, class: "text-secondary my-3" %>
+    </tbody>
+  </table>
+  <div class="card" style="max-width: 20em">
+      <div class="card-header">
+        <h4 class="text-secondary">Step one</h5>
+      </div>
+      <div class="card-body">
+        <p class="card-text">First, click here to reconcile these line items with existing IPS statements.</p>
+        <%= link_to(reconcile_royalties_ips_payment_path(@payment),
+                    class: "btn btn-primary",
+                    method: :put,
+                    data: { turbo_method: :put,
+                            # turbo_confirm: "Are you sure you want to reconcile this payment? This action cannot be undone."
+                    }) do %>
+            <i class="bi bi-arrow-repeat pe-2"></i>
+            Reconcile
+          <% end %>
+      </div>
+    </div>
+    <div class="card" style="max-width: 20em">
+      <div class="card-header">
+        <h4 class="text-secondary">Step two</h5>
+      </div>
+      <div class="card-body">
+        <p class="card-text">Next, click here to import this payment into the royalty system.</p>
+        <h5 class="mb-0">
+          <button class="btn btn-primary">
+            Import royalties
+          </button>
+        </h5>
+      </div>
+    </div>
+</div>
+<%= link_to "Back to all payments", royalties_ips_payments_path, class: "text-secondary my-3" %>
 
 <%= render partial: "shared/oho_errors_list", locals: { object: @payment, errors: OhoError.for_object(@payment) } %>
 
@@ -52,8 +87,8 @@
   </thead>
   <tbody>
     <% @payment.ips_payment_advice_lines.each do |line| %>
-        <%= render partial: "payment_advice_line", locals: { line:, discounts_taken:  } %>
-      <% end %>
+      <%= render partial: "payment_advice_line", locals: { line:, discounts_taken:  } %>
+    <% end %>
   </tbody>
 </table>
 

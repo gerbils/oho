@@ -46,10 +46,6 @@
     <%= number_to_currency(stmt.net_client_earnings) %>
   </td>
 
-  <td class="text-end pe-3">
-    <% if stmt.status == IpsStatement::STATUS_UPLOADED %>
-      <%= render partial: "estimated_royalty", locals: { statement: stmt } %>
-    <% end %>
   <td>
     <!-- link_to upload.uploaded_file.filename, upload.uploaded_file if upload.uploaded_file.attached? -->
     <%= upload.file.filename if upload.file.attached? %>

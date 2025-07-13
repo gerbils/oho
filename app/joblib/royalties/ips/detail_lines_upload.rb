@@ -36,7 +36,7 @@ module Royalties::Ips::DetailLinesUpload
         row.sku_id = nil
 
       in [ Product => product, Sku => sku ]
-        if row.title.blank? ||titles_similar(product.title, row[:title])
+        if row.title.blank? ||row.title.start_with?("Revision") || titles_similar(product.title, row[:title])
           row.sku_id = sku.id
         else
           errors << "Title mismatch #{isbn}: #{product.title.inspect} doesn't start with #{row[:title].inspect} (#{normalize(product.title)} vs. #{normalize(row[:title])} )"

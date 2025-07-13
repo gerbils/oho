@@ -1,10 +1,22 @@
+# == Schema Information
+#
+# Table name: oho_errors
+#
+#  id           :bigint           not null, primary key
+#  display_tag  :string(255)
+#  label        :string(255)      not null
+#  level        :integer          default(0), not null
+#  message      :string(2048)
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  owner_dom_id :string(255)      not null
+#
+# Indexes
+#
+#  index_oho_errors_on_owner_dom_id  (owner_dom_id)
+#
 class OhoError < ActiveRecord::Base
   include ActionView::RecordIdentifier   # for dom_id
-      # t.string  :owner_dom_id
-      # t.string  :display_tag, null: true
-      # t.integer :level,       null: false, default: 0
-      # t.string  :label,       null: false
-      # t.string  :message,     limit: 2048
 
   SUCCESS = 0
   INFO    = 1

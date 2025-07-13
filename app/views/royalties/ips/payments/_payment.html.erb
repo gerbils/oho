@@ -1,10 +1,29 @@
-<tr>
+<tr id="<%= dom_id(payment)%>">
   <td>
     <%= link_to royalties_ips_payment_path(payment), class: "info-link ps-2" do %>
       <i title="View "payment details" class="bi bi-eye fs-4"></i>
     <% end %>
   </td>
   <td><%= payment.payment_date %></td>
+  <td><%= payment.status %></td>
   <td><%= payment.payment_reference%></td>
   <td class="text-end"><%= number_to_currency(payment.total_amount) %></td>
+  <td>
+    <%=
+      name = payment.upload_wrapper.filename
+      if payment.upload_wrapper.file.attached?
+        name
+      else
+  %{<span class="text-secondary fst-italic">No file</span>}.html_safe
+ end %>
+  </td>
+    <td>
+    <%= link_to('Delete',
+                royalties_ips_payment_path(payment),
+                class: 'btn btn-warning',
+                method: :delete,
+                data: { "turbo-method": :delete, turbo_confirm: 'Are you sure?' }
+               ) if payment.id %>
+  </td>
+
 </tr>

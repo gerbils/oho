@@ -1,4 +1,33 @@
+# == Schema Information
+#
+# Table name: ips_payment_advice_lines
+#
+#  id                      :bigint           not null, primary key
+#  discount_taken          :decimal(10, 2)
+#  gross_amount            :decimal(10, 2)
+#  invoice_date            :date
+#  invoice_number          :string(255)
+#  paid_amount             :decimal(10, 2)
+#  status                  :string(255)
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  ips_payment_advice_id   :bigint           not null
+#  ips_statement_detail_id :bigint
+#  voucher_id              :string(255)
+#
+# Indexes
+#
+#  index_ips_payment_advice_lines_on_ips_payment_advice_id    (ips_payment_advice_id)
+#  index_ips_payment_advice_lines_on_ips_statement_detail_id  (ips_statement_detail_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (ips_payment_advice_id => ips_payment_advices.id)
+#  fk_rails_...  (ips_statement_detail_id => ips_statement_details.id)
+#
 class IpsPaymentAdviceLine < ApplicationRecord
+  include ActionView::RecordIdentifier   # for dom_id
+
   STATUS_UNRECONCILED = 'Unreconciled'
   STATUS_RECONCILED = 'Reconciled'
   STATUS_TOO_MANY_MATCHES = 'Too many matches'
@@ -8,6 +37,8 @@ class IpsPaymentAdviceLine < ApplicationRecord
     STATUS_TOO_MANY_MATCHES
   ]
 
+  after_save :maybe_update_status
+  after_save :update_parent_discounts_flag, if: :saved_change_to_discount_taken?
 
   belongs_to :ips_payment_advice
   belongs_to :ips_statement_detail, optional: true
@@ -22,5 +53,19 @@ class IpsPaymentAdviceLine < ApplicationRecord
 
   def reconciled?
     ips_statement_detail.present?
+  end
+
+  private
+
+  def maybe_update_status
+      broadcast_replace_to(
+        dom_id(ips_payment_advice, :show),
+        target: dom_id(self),
+        partial: "royalties/ips/payments/payment_advice_line", locals: { line: self, discounts_taken: ips_payment_advice.discounts_taken }
+      )
+  end
+
+  def update_parent_discounts_flag
+    ips_payment_advice.update!(discounts_taken: true) unless discount_taken.zero?
   end
 end

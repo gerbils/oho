@@ -3,24 +3,32 @@
 #
 # Table name: ips_statement_details
 #
-#  id               :bigint           not null, primary key
-#  basis            :string(255)
-#  basis_for_charge :decimal(10, 2)   not null
-#  detail           :string(255)      not null
-#  due_this_month   :decimal(10, 2)   not null
-#  factor_or_rate   :decimal(6, 4)    not null
-#  month_due        :date
-#  section          :string(255)      not null
-#  subsection       :string(255)      not null
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
-#  ips_statement_id :bigint           not null
+#  id                     :bigint           not null, primary key
+#  basis                  :string(255)
+#  basis_for_charge       :decimal(12, 4)   not null
+#  detail                 :string(255)      not null
+#  due_this_month         :decimal(12, 4)   not null
+#  factor_or_rate         :decimal(6, 4)    not null
+#  ips_detail_lines_count :integer          default(0), not null
+#  month_due              :date
+#  reconciled             :boolean          default(FALSE)
+#  section                :string(255)      not null
+#  subsection             :string(255)      not null
+#  uploaded_at            :datetime
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  ips_statement_id       :bigint           not null
+#  upload_wrapper_id      :bigint
 #
 # Indexes
 #
-#  inde_ips_statement_details_on_ips_statement_id  (ips_statement_id)
+#  index_ips_statement_details_on_ips_statement_id   (ips_statement_id)
+#  index_ips_statement_details_on_upload_wrapper_id  (upload_wrapper_id)
 #
 # Foreign Keys
+#
+#  fk_rails_...  (ips_statement_id => ips_statements.id)
+#  fk_rails_...  (upload_wrapper_id => upload_wrappers.id)
 #
 #  fk_rails_...  (ips_statement_id => ips_statements.id)
 
@@ -53,18 +61,21 @@ class IpsStatementDetail < ActiveRecord::Base
   def self.match_with_payment(invoice_date, invoice_number, paid_amount)
     date = first_of_month(invoice_date)
     possibles = where(
-      month_due:      date,
       due_this_month: paid_amount,
+      reconciled:     false,
     )
     return possibles if possibles.length <= 1
 
-    # given multiple matches, we might try top match on the description (switch in the advice
-    # is called the invoice_number). However, the names are different.
-    # "Direct Fulfillment Carton Fees" in the statement is "S330 Direct Fulfillment Freigh" (sic) in
-    # the advice.
-    # Let's see if this is ever needed; for now return multiple results and let our caller work it
-    # out
-    possibles
+    # given multiple matches, try using the month due. (This isn't in the original search because
+    # they sometimes slip a month).
+
+    maybe = possibles.where(month_due: date)
+    if maybe.length == 1
+      maybe
+    else
+      possibles
+    end
+
   end
 
 

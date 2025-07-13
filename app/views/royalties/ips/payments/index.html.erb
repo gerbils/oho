@@ -19,13 +19,14 @@
 
 <%= turbo_stream_from "ips-payment-index" %>
 
-<table class="table table-striped">
+<table class="table table-striped w-auto">
   <thead>
     <tr>
       <th>View</th>
       <th> Payment date </th>
+      <th> Status </th>
       <th> Reference </th>
-      <th> Amount </th>
+      <th class="text-end"> Amount </th>
       <th> Uploaded file </th>
       <th></th>
     </tr>

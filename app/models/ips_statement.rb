@@ -3,22 +3,28 @@
 #
 # Table name: ips_statements
 #
-#  id                  :bigint           not null, primary key
-#  expenses            :decimal(10, 2)   default(0.0)
-#  gross_returns_total :decimal(10, 2)   default(0.0)
-#  gross_sales_total   :decimal(10, 2)   default(0.0)
-#  imported_at         :datetime
-#  month_ending        :date             not null
-#  net_client_earnings :decimal(10, 2)   default(0.0)
-#  net_sales           :decimal(10, 2)   default(0.0)
-#  revenue             :decimal(10, 2)   default(0.0)
-#  status              :string(255)      not null
-#  status_message      :string(255)
-#  total_chargebacks   :decimal(10, 2)   default(0.0)
-#  total_expenses      :decimal(10, 2)   default(0.0)
-#  created_at          :datetime         not null
-#  updated_at          :datetime         not null
-#  upload_wrapper_id   :bigint           not null
+#  id                          :bigint           not null, primary key
+#  expenses                    :decimal(12, 4)   default(0.0)
+#  gross_returns_total         :decimal(12, 4)   default(0.0)
+#  gross_sales_total           :decimal(12, 4)   default(0.0)
+#  import_free_units           :integer          default(0)
+#  import_paid_amount          :decimal(12, 4)   default(0.0)
+#  import_paid_units           :integer          default(0)
+#  import_return_amount        :decimal(12, 4)   default(0.0)
+#  import_return_units         :integer          default(0)
+#  imported_at                 :datetime
+#  ips_statement_details_count :integer          default(0)
+#  month_ending                :date             default(Mon, 01 Jan 1000)
+#  net_client_earnings         :decimal(12, 4)   default(0.0)
+#  net_sales                   :decimal(12, 4)   default(0.0)
+#  revenue                     :decimal(12, 4)   default(0.0)
+#  status                      :string(255)      not null
+#  status_message              :string(255)
+#  total_chargebacks           :decimal(12, 4)   default(0.0)
+#  total_expenses              :decimal(12, 4)   default(0.0)
+#  created_at                  :datetime         not null
+#  updated_at                  :datetime         not null
+#  upload_wrapper_id           :bigint           not null
 #
 # Indexes
 #
@@ -110,10 +116,6 @@ class IpsStatement < ActiveRecord::Base
 
   def ready_to_import?
     !self.imported_at? && details.all?(&:ready_to_import?)
-  end
-
-  def estimated_royalties
-    IpsUploadEstimate.estimate(self)
   end
 
   def oho_errors

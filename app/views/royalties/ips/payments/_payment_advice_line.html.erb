@@ -7,4 +7,10 @@
     <td class="text-end pe-4"><%= number_to_currency(line.discount_taken) %></td>
   <% end %>
   <td class="text-end pe-4"><%= number_to_currency(line.gross_amount) %></td>
+
+  <% if line.reconciled? %>
+    <td class="text-success text-center pe-4"><i class="bi bi-check-circle-fill" title="Reconciled"></i></td>
+  <% else %>
+    <td class="text-secondary text-center pe-4"><i class="bi bi-x-circle" title="Not reconciled"></i></td>
+  <% end %>
 </tr>
