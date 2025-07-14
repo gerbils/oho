@@ -10,6 +10,7 @@ class Royalties::Ips::StatementsController < ApplicationController
 
   def show
     @upload_files ||= UploadFiles.new
+    @focus_line = params[:focus_line]&.to_i
   end
 
   def create

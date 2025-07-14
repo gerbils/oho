@@ -8,6 +8,7 @@ class Royalties::Ips::PaymentsController < ApplicationController
 
   def show
     @payment = IpsPaymentAdvice.find(params[:id])
+    @focus_line = params[:focus_line]&.to_i
   end
 
   def create

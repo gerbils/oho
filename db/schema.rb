@@ -71,7 +71,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_09_221723) do
   end
 
   create_table "ips_payment_advices", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "upload_wrapper_id"
+    t.bigint "upload_wrapper_id", null: false
     t.string "pay_cycle"
     t.string "pay_cycle_seq_number"
     t.string "payment_reference"
@@ -79,6 +79,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_09_221723) do
     t.decimal "total_amount", precision: 10, scale: 2
     t.string "status", default: "pending", null: false
     t.string "status_message"
+    t.boolean "discounts_taken", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["upload_wrapper_id"], name: "index_ips_payment_advices_on_upload_wrapper_id"
@@ -105,7 +106,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_09_221723) do
   end
 
   create_table "ips_statements", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.bigint "upload_wrapper_id"
+    t.bigint "upload_wrapper_id", null: false
     t.string "status", null: false
     t.string "status_message"
     t.date "month_ending", default: "1000-01-01"

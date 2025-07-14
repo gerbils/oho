@@ -39,6 +39,7 @@ class IpsPaymentAdviceLine < ApplicationRecord
 
   after_save :maybe_update_status
   after_save :update_parent_discounts_flag, if: :saved_change_to_discount_taken?
+  after_destroy :update_corresponding_detail_line
 
   belongs_to :ips_payment_advice
   belongs_to :ips_statement_detail, optional: true
@@ -58,11 +59,23 @@ class IpsPaymentAdviceLine < ApplicationRecord
   private
 
   def maybe_update_status
+    broadcast_replace_to(
+      dom_id(ips_payment_advice, :show),
+      target: dom_id(self),
+      partial: "royalties/ips/payments/payment_advice_line", locals: { line: self, discounts_taken: ips_payment_advice.discounts_taken }
+    )
+
       broadcast_replace_to(
         dom_id(ips_payment_advice, :show),
-        target: dom_id(self),
-        partial: "royalties/ips/payments/payment_advice_line", locals: { line: self, discounts_taken: ips_payment_advice.discounts_taken }
+        target: "next-steps",
+        partial: "royalties/ips/payments/next_steps", locals: { payment: ips_payment_advice }
       )
+  end
+
+  def update_corresponding_detail_line
+    if ips_statement_detail
+      ips_statement_detail.update!(reconciled: false)
+    end
   end
 
   def update_parent_discounts_flag

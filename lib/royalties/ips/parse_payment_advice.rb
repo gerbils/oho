@@ -89,13 +89,17 @@ module Royalties::Ips::ParsePaymentAdvice
       line.gross_amount   = BigDecimal(sheet.excelx_value('G', row))
       line.discount_taken = BigDecimal(sheet.excelx_value('L', row))
       line.paid_amount    = BigDecimal(sheet.excelx_value('R', row))
-
+      line.status = IpsPaymentAdviceLine::STATUS_UNRECONCILED
       row += 1
     end
     advice
   end
 
   def reconcile(advice)
+    advice.ips_payment_advice_lines.each do |line|
+      Rails.logger.error(line.errors.full_messages.join(", ")) unless line.valid?
+    end
+
     sum = advice.ips_payment_advice_lines.sum(BigDecimal("0.00")) { |l| l.paid_amount }
     unless sum == advice.total_amount
       raise "Total Amount does not match sum of lines: #{advice.total_amount} != #{sum}"

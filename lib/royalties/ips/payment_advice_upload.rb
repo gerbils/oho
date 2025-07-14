@@ -1,4 +1,3 @@
-require_relative './parse_statement'
 require 'pry'
 
 module Royalties::Ips; end
@@ -13,28 +12,17 @@ module Royalties::Ips::PaymentAdviceUpload
     excel_file_attached?(file)
     add_details_to_upload(upload_wrapper, file)
 
-    payment =  Royalties::Ips::ParsePaymentAdvice.parse(
+    payment = Royalties::Ips::ParsePaymentAdvice.parse(
       payment,
       upload_wrapper.file.download,
       'xlsx')
-    save_payment(payment)
-  end
+    payment.status =
+      if payment.valid?
+        IpsPaymentAdvice::STATUS_UPLOADED
+      else
+        IpsPaymentAdvice::STATUS_FAILED_UPLOAD
+      end
 
-  private
-
-  def save_payment(payment)
-    payment.save!
-    # IpsStatement.transaction do
-    #   save_details = statement.expenses + statement.revenues
-    #   statement.expenses = []
-    #   statement.revenues = []
-    #   statement.status = IpsStatement::STATUS_INCOMPLETE   # still need details uploaded
-    #   statement.save!
-    #
-    #   save_details.each do |detail|
-    #     detail.ips_statement = statement
-    #     detail.save!
-    #   end
-    # end
+    payment
   end
 end

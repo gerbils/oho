@@ -81,6 +81,9 @@ class IpsPaymentAdvice < ApplicationRecord
     end
   end
 
+  def all_reconciled?
+    ips_payment_advice_lines.where(ips_statement_detail_id: nil).count.zero?
+  end
 
   def oho_errors
     OhoError.for_object(self)

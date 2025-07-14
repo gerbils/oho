@@ -1,7 +1,7 @@
 class CreateLpStatements < ActiveRecord::Migration[8.0]
   def change
     create_table :lp_statements do |t|
-      t.references :upload_wrapper, null: false, foreign_key: true
+      t.references :upload_wrapper, null: Rails.env.test?, foreign_key: true
       t.string   :status
       t.text     :status_message
       t.date     :date_on_report

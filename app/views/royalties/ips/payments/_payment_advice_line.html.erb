@@ -1,4 +1,5 @@
-<tr id="<%= dom_id(line) %>">
+<tr id="<%= dom_id(line) %>"
+  class="<%= "table-secondary" if line.id == focus_line %>">
   <td class="pe-4"><%= line.invoice_date.strftime("%Y-%m-%d") %></td>
   <td class="pe-4"><%= line.invoice_number %></td>
   <td class="pe-4"><%= line.voucher_id %></td>
@@ -9,7 +10,16 @@
   <td class="text-end pe-4"><%= number_to_currency(line.gross_amount) %></td>
 
   <% if line.reconciled? %>
-    <td class="text-success text-center pe-4"><i class="bi bi-check-circle-fill" title="Reconciled"></i></td>
+    <td class="text-success text-center pe-4">
+      <i class="bi bi-check-circle-fill pe-2" title="Reconciled"></i>
+      <%= link_to(focus_line_royalties_ips_statement_path(
+        line.ips_statement_detail.ips_statement,
+        line.ips_statement_detail,
+        anchor: dom_id(line.ips_statement_detail)
+      ), class: "info-link ps-2", title: "View payment") do %>
+          <i class="bi bi-eye fs-4"></i>
+        <% end %>
+    </td>
   <% else %>
     <td class="text-secondary text-center pe-4"><i class="bi bi-x-circle" title="Not reconciled"></i></td>
   <% end %>

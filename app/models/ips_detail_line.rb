@@ -27,6 +27,7 @@ class IpsDetailLine < ApplicationRecord
   self.inheritance_column = :_none   # disable STI  TODO: needed?
 
   belongs_to :ips_statement_detail, optional: true, counter_cache: true
+  belongs_to :sku
 
   validates(
         :ips_statement_detail_id,

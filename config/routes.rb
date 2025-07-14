@@ -40,12 +40,14 @@ Rails.application.routes.draw do
     namespace :ips do
       resources :statements, only: [ :index, :show, :update, :destroy ] do
         post "upload", on: :collection, to: "statements#create", as: :upload
-        put  "import", on: :member
         post "upload_revenue_lines", on: :member, to: "statements#upload_revenue_lines", as: :upload_revenue_lines
         get  "detail/:revenue_line_id", on: :member, to: "statements#detail", as: :detail
+        get  "focus_line/:focus_line", on: :member, to: "statements#show", as: :focus_line
       end
       resources :payments, only: [ :index, :show, :destroy ] do
+        get "focus_line/:focus_line", on: :member, to: "payments#show", as: :focus_line
         post "upload", on: :collection, to: "payments#create", as: :upload
+        put "reconcile", on: :member, to: "payments#reconcile", as: :reconcile
       end
     end
     namespace :lp do

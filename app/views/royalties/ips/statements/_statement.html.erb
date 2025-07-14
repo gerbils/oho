@@ -18,26 +18,6 @@
     <%= upload.uploaded_at&.strftime("%Y-%m-%d/%H:%M") %>
   </td>
 
-  <td title="<%= stmt.imported_at&.to_fs(:oho_dt) %>">
-    <% if stmt.imported_at.present? %>
-      <%= stmt.imported_at&.strftime("%Y-%m-%d/%H:%M") %>
-    <% elsif stmt.status == IpsStatement::STATUS_UPLOADED %>
-        <%= button_to 'Import now',
-                  import_royalties_ips_statement_path(stmt),
-                  class: 'btn btn-success',
-                  method: :put,
-                  data: { "turbo-method": :put, turbo_confirm: 'This permanently adds royalty information to PIP. Continue? ' }
-                 %>
-    <% elsif stmt.status == IpsStatement::STATUS_INCOMPLETE %>
-        <%= link_to 'Add Details',
-                  royalties_ips_statement_path(stmt),
-                  class: 'btn btn-success'
-                 %>
-     <% else %>
-        <i>initializing</i>
-     <% end %>
-  </td>
-
   <td>
     <%= stmt.status %>
   </td>

@@ -75,7 +75,6 @@ class IpsStatementDetail < ActiveRecord::Base
     else
       possibles
     end
-
   end
 
 

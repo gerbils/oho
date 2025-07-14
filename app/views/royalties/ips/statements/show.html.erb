@@ -37,7 +37,7 @@ end
 
     <h4 class="text-secondary mt-3">Pragmatic Programmers LLC</h4>
     <h5 class="text-secondary">Client Statement</h5>
-    <table class="table table-sm">
+    <table class="table table-sm mb-5">
       <tbody>
         <tr>
           <th class="text-secondary ps-0">Month ending:</th>
@@ -47,16 +47,10 @@ end
           <th class="text-secondary ps-0">Uploaded:</th>
           <td><%= @statement.created_at&.strftime("%B %d %Y") %></td>
         </tr>
-        <tr>
-          <th class="text-secondary ps-0">Imported:</th>
-          <td><%= @statement.imported_at&.strftime("%B %d %Y") %></td>
-        </tr>
       </tbody>
     </table>
 
-  <%= render partial: "maybe_show_import_button", locals: { statement: @statement } %>
-
-  <%= link_to "Back to statements", royalties_ips_statements_path, class: "text-secondary my-3" %>
+  <%= link_to "Back to statements", royalties_ips_statements_path, class: "text-secondary pt-5 mt-5 mb-3" %>
  </div>
 
  <div class="bg-secondary bg-gradient text-center align-self-center p-5">
@@ -81,29 +75,40 @@ end
   <% @statement.revenues.group_by(&:section).each do |section, sections| %>
     <thead>
       <tr class="bg-secondary">
-        <th colspan="4"></th>
+        <th colspan="5"></th>
         <th scope="col" class="text-end">Basis for charge</th>
         <th scope="col" class="text-end ps-4">Factor</th>
         <th scope="col" class="text-end ps-4">Due this month</th>
         <th scope="col" class="text-center ps-4">Uploaded</th>
+        <th scope="col" class="text-center ps-4">Paid</th>
       </tr>
     </thead>
     <tbody>
       <% sections.group_by(&:subsection).each do |subsection, details| %>
         <tr class="bg-light">
-          <td colspan="8"><strong><%= subsection.upcase %></strong></td>
+          <td colspan="10"><strong><%= subsection.upcase %></strong></td>
         </tr>
         <% details.each do |item| %>
-          <tr>
+          <tr id="<%= dom_id(item) %>" class="<%= 'table-secondary' if item.id == @focus_line %>">
             <td></td>
+            <td>
+              <% if item.uploaded_at? %>
+                <%= link_to detail_royalties_ips_statement_path(@statement, item), class: "info-link ps-2" do %>
+                  <i title="View individual line items" class="bi bi-eye fs-4"></i>
+                <% end %>
+              <% end %>
+            </td>
             <td><%= item.detail %></td>
             <td><%= item.month_due ? item.month_due.strftime("%B %Y") : "" %></td>
             <td class="text-end"><%= item.basis %></td>
             <td class="text-end"><%= number_to_currency(item.basis_for_charge) %></td>
             <td class="text-end"><%= number_to_percentage(item.factor_or_rate*10000, precision: 0) %></td>
             <td class="text-end"><%= number_to_currency(item.due_this_month) %></td>
-            <td class="text-start ps-4" style="max-height: 1rem; text-overflow: hidden">
+            <td class="text-center ps-4" style="max-height: 1rem; text-overflow: hidden">
               <%= render partial: "detail_status", locals: { statement: @statement, item: item } %>
+            </td>
+            <td class="text-start ps-4" style="max-height: 1rem; text-overflow: hidden">
+              <%= render partial: "detail_imported", locals: { statement: @statement, item: item } %>
             </td>
           </tr>
         <% end %>
@@ -119,31 +124,43 @@ end
   <% @statement.expenses.group_by(&:section).each do |section, sections| %>
     <thead>
       <tr class="bg-secondary">
-        <th colspan="3"></th>
+        <th colspan="4"></th>
         <th scope="col">Month Due</th>
         <th scope="col" class="text-center px-3">Basis</th>
         <th scope="col" class="text-end ps-3">Basis for charge</th>
         <th scope="col" class="text-end ps-3">Factor/rate</th>
         <th scope="col" class="text-end ps-3">Due this month</th>
+        <th scope="col" class="text-center ps-4">Uploaded</th>
+        <th scope="col" class="text-center ps-4">Paid</th>
       </tr>
     </thead>
     <tbody>
       <% sections.group_by(&:subsection).each do |subsection, details| %>
         <tr class="bg-light">
-          <td colspan="3" class="text-uppercase mt-2"><strong><%= subsection %></strong></td>
+          <td colspan="11" class="text-uppercase mt-2"><strong><%= subsection %></strong></td>
         </tr>
         <% details.each do |item| %>
-          <tr>
+          <tr id="<%= dom_id(item) %>" class="<%= 'table-secondary' if item.id == @focus_line %>">
             <td></td>
             <td></td>
+            <td>
+              <% if item.uploaded_at? %>
+                <%= link_to detail_royalties_ips_statement_path(@statement, item), class: "info-link ps-2" do %>
+                  <i title="View individual line items" class="bi bi-eye fs-4"></i>
+                <% end %>
+              <% end %>
+            </td>
             <td><%= item.detail %></td>
             <td><%= item.month_due ? item.month_due.strftime("%B %Y") : "" %></td>
             <td class="text-center px-3"><%= item.basis %></td>
             <td class="text-end"><%= charge_basis(item) %></td>
             <td class="text-end"><%= charge_factor(item) %></td>
             <td class="text-end"><%= number_to_currency(item.due_this_month) %></td>
-            <td class="text-start ps-4" style="max-height: 1rem; text-overflow: hidden">
+            <td class="text-center ps-4" style="max-height: 1rem; text-overflow: hidden">
               <%= render partial: "detail_status", locals: { statement: @statement, item: item } %>
+            </td>
+            <td class="text-start ps-4" style="max-height: 1rem; text-overflow: hidden">
+              <%= render partial: "detail_imported", locals: { statement: @statement, item: item } %>
             </td>
           </tr
         <% end %>

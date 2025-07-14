@@ -10,7 +10,9 @@ class CreateIpsPaymentAdvice < ActiveRecord::Migration[8.0]
 
       t.string  :status, null: false, default: 'pending'
       t.string  :status_message
+      t.boolean :discounts_taken, default: false
       t.timestamps
     end
+    add_index :ips_payment_advices, :payment_date
   end
 end

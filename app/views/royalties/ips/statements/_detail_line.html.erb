@@ -8,8 +8,8 @@
 <%##  value                     :decimal(8, 2)%>
 <tr class="border-secondary">
   <td>
-    <%= line.sku.sku %><br/>
-    <span class="small"><%= line.ean %></span>
+    <%= line.sku.sku if line.sku %><br/>
+    <span class="small"><%= line.ean if line.ean %></span>
   </td>
   <td class="text-end"><%= line.quantity %></td>
   <td class="text-end border-end border-secondary ps-3"><%= number_to_currency(line.amount) %></td>

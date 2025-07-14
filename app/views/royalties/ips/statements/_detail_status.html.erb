@@ -2,13 +2,8 @@
   <% if item.ready_to_import? %>
     <div style="max-height: 1rem; position: relative; top: -.7rem;" class="p-0">
       <span title="This detail is ready to be imported">
-        <i class="bi bi-check-circle text-success fs-4"></i>
+        <i class="bi bi-arrow-up-circle-fill text-success fs-4"></i>
 
-        <% if item.uploaded_at? %>
-          <%= link_to detail_royalties_ips_statement_path(statement, item), class: "info-link ps-4" do %>
-            <i title="View individual line items" class="bi bi-eye fs-4"></i>
-          <% end %>
-        <% end %>
       </span>
     <% else %>
       <span class="text-warning fs-6 ">
