@@ -1,12 +1,12 @@
 
-<div class="d-flex gap-4 my-4 flex-wrap" id="next-steps">
+<div class="d-flex gap-4 my-4 align-items-stretch flex-wrap" id="next-steps">
   <% reconciled = payment.all_reconciled? %>
   <div class="card <%= reconciled && 'opacity-50'%>" style="max-width: 20em">
-    <div class="card-header">
-      <h4 class="text-secondary">Step one</h5>
-    </div>
-    <div class="card-body">
+    <div class="card-body d-flex align-items-center gap-4">
+      <h1 class="text-info m-0 p-0"><i class="bi bi-1-circle-fill"></i></h1>
       <p class="card-text">First, click here to reconcile these line items with existing IPS statements.</p>
+    </div>
+    <div class="card-footer">
       <%= link_to(reconcile_royalties_ips_payment_path(payment),
                   class: "w-100 btn btn-primary#{' pe-none' if reconciled}",
                   method: :put,
@@ -19,11 +19,14 @@
   </div>
 
   <div class="card <%=  !reconciled && 'opacity-50'%>" style="max-width: 20em">
-    <div class="card-header">
-      <h4 class="text-secondary">Step two</h5>
+    <div class="card-body d-flex align-items-center gap-4">
+      <h1 class="text-info m-0 p-0"><i class="bi bi-2-circle-fill"></i></h1>
+      <p class="card-text">
+      Next, click here to import this payment into the royalty system.
+      <i class="ps-2">(This can only be done once all line items are reconciled.)</i>
+      </p>
     </div>
-    <div class="card-body">
-      <p class="card-text">Next, click here to import this payment into the royalty system.</p>
+    <div class="card-footer">
       <%= link_to(reconcile_royalties_ips_payment_path(payment),
                   class: "w-100 btn btn-primary#{' pe-none' unless reconciled}",
                   method: :put,
