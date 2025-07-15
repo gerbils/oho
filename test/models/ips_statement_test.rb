@@ -38,76 +38,36 @@ require "pry"
 
 class IpsStatementTest < ActiveSupport::TestCase
 
-  @@id = 0
-
-  def mock_statement(net)
-    @@id += 1
-    IpsStatement.new(
-      id:                          @@id,
-      upload_wrapper:              mock_upload_wrapper,
-      status:                      IpsStatement::STATUS_UPLOADED,
-      status_message:              nil,
-      month_ending:                "2025-04-30",
-      gross_sales_total:           500,
-      gross_returns_total:         0,
-      net_sales:                   500,
-      total_chargebacks:           0,
-      total_expenses:              0,
-      net_client_earnings:         net,
-      imported_at:                 nil,
-      ips_statement_details_count: 0,
-    )
+  def mock_statement(net_client_earnings)
+    statement = ips_statement!(net_client_earnings:)
+    statement.save!
+    statement
   end
 
-  def mock_detail(section:, subsection:, detail:, gross:, rate:, due:, ips_statement: nil, basis: nil)
-    @@id += 1
-    IpsStatementDetail.new(
-      id: @@id,
-      ips_statement:,
-      uploaded_at: Time.now,
-      section:,
-      subsection:,
-      detail:,
-      month_due: "2025-04-01",
-      basis: basis,
-      basis_for_charge: gross,
-      factor_or_rate: rate,
-      due_this_month: due,
-      created_at: "2025-06-15 18:04:38.403136000 +0000",
-      updated_at: "2025-06-16 18:16:01.761187000 +0000")
+  def mock_detail(**args)
+    ips_statement_detail!(**args)
   end
 
-  def mock_line(content_type:, description:, quantity:, amount:, ean: "12345",
-                sku:, title: "Test Book")
-    @@id += 1
-    IpsDetailLine.new(
-      id: @@id,
-      sku_id: sku ? skus(sku).id : nil,
-      ean:,
-      title:,
-      content_type:,
-      description:,
-      quantity:,
-      amount:,
-      json: { dummy: 99 }
-    )
+  def mock_line(ean: "12345", title: "Test Book", **args)
+    ips_detail_line!(**args, ean:, title:)
   end
 
   def mock_upload_wrapper
-    uw = UploadWrapper.new
-    uw.file.attach(io: StringIO.new("mock file content"), filename: "mock_file.txt")
+    uw = upload_wrapper!
     uw
   end
 
   def build_statement(net, details)
     statement = mock_statement(net)
+    statement.save!
     details.each {|detail| statement.details << detail }
     statement.save || flunk(statement.errors.full_messages.to_sentence)
     statement
   end
 
   def detail(section, subsection, detail, gross, rate, due, lines)
-    detail = mock_detail(section:, subsection:, detail:, gross:, rate:, due:)
+    detail = mock_detail(section:, subsection:, detail:, basis_for_charge: gross, factor_or_rate: rate, due_this_month: due)
+    detail.save!
     lines.each {|line| detail.ips_detail_lines << line }
     detail
   end
@@ -139,6 +99,7 @@ class IpsStatementTest < ActiveSupport::TestCase
   end
 
   def assert_royalty_calculated(expected, statement)
+    binding.irb
     result = statement.statement_lines
     binding.pry if expected.size != result.size
     assert_equal expected.size, result.size, "calculated result size"

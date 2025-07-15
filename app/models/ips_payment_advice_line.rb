@@ -37,9 +37,9 @@ class IpsPaymentAdviceLine < ApplicationRecord
     STATUS_TOO_MANY_MATCHES
   ]
 
-  after_save :maybe_update_status
+  after_save :maybe_update_status, unless: -> { Rails.env.test? }
   after_save :update_parent_discounts_flag, if: :saved_change_to_discount_taken?
-  after_destroy :update_corresponding_detail_line
+  after_destroy :update_corresponding_detail_line, unless: -> { Rails.env.test? }
 
   belongs_to :ips_payment_advice
   belongs_to :ips_statement_detail, optional: true

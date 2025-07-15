@@ -9,6 +9,12 @@ module Royalties::Ips::ReconcilePayments
     payment_advice.ips_payment_advice_lines.each do |line|
       reconcile_line(line) unless line.reconciled?
     end
+
+    if payment_advice.all_reconciled?
+      payment_advice.update!(status: IpsPaymentAdvice::STATUS_RECONCILED, status_message: nil)
+    else
+      payment_advice.update!(status: IpsPaymentAdvice::STATUS_PARTIALLY_RECONCILED, status_message: "Some lines could not be reconciled")
+    end
   end
 
 

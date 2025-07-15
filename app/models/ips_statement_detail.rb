@@ -42,7 +42,7 @@ class IpsStatementDetail < ActiveRecord::Base
   SECTION_EXPENSE = "EXPENSE"
   SECTIONS = [SECTION_REVENUE, SECTION_EXPENSE]
 
-  belongs_to :upload_wrapper, optional: true
+  belongs_to :upload_wrapper, optional: false
   belongs_to :ips_statement, counter_cache: true
   has_many   :ips_detail_lines, dependent: :destroy
   has_one    :ips_payment_advice_line, dependent: :nullify

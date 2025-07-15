@@ -29,6 +29,12 @@ class Royalties::Ips::PaymentsController < ApplicationController
     Ips::ReconcilePaymentJob.perform_later(@payment.id)
   end
 
+  def import
+    @payment = IpsPaymentAdvice.find(params[:id])
+    Royalties::Ips::Import.import_royalties_from_details(@payment)
+    @payment.reload
+    render action: :show
+  end
 
   def destroy
     @payment = IpsPaymentAdvice.find(params[:id])

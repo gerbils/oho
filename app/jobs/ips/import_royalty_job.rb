@@ -1,32 +1,33 @@
 class Ips::ImportRoyaltyJob < ApplicationJob
   queue_as :default
 
-  def perform(statement_id)
+  def perform(payment_id)
     logger.info("starting IPS import job")
-    statement = IpsStatement.find(statement_id)
-    OhoError.clear_errors(statement)
+    payment = IpsPaymentAdvice.find(payment_id)
+    OhoError.clear_errors(payment)
 
-    unless statement.ready_to_import?
-      logger.error("statement #{statement.id} is not ready to be imported")
-      statement.update!(status: IpsStatement::STATUS_IMPORT_FAILED, status_message: "statement is not ready for import")
+    unless payment.status == IpsSaymentAdvice::STATUS_RECONCILED
+      logger.error("payment #{payment.id} is not ready to be imported")
+      payment.update!(status: IpsPayment::STATUS_IMPORT_FAILED, status_message: "payment is not ready for import")
       return
     end
 
-    statement.update!(status: IpsStatement::STATUS_PROCESSING, status_message: nil)
+    payment.update!(status: Ipspayment::STATUS_PROCESSING, status_message: nil)
 
     begin
 
-      Royalties::Ips::ImportHandler.import(statement)
+      Royalties::Ips::ImportHandler.import(payment)
 
-    # rescue => e
-    #   Rails.logger.error("Error handling import: #{e.message}")
-    #   OhoError.create(
-    #     owner: statement,
-    #     label: "Importing #{statement.month_ending}",
-    #     message: e.message,
-    #     level: OhoError::ERROR
-    #   )
-    #   statement.update!(status: IpsStatement::STATUS_FAILED_IMPORT, status_message: e.message)
+    rescue => e
+      raise if Env["debug"]
+      Rails.logger.error("Error handling import: #{e.message}")
+      OhoError.create(
+        owner: payment,
+        label: "Importing #{payment.payment_date}",
+        message: e.message,
+        level: OhoError::ERROR
+      )
+      payment.update!(status: Ipspayment::STATUS_FAILED_IMPORT, status_message: e.message)
     end
     logger.info("finishing IPS job")
   end

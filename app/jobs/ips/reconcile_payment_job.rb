@@ -6,9 +6,9 @@ class Ips::ReconcilePaymentJob < ApplicationJob
     payment = IpsPaymentAdvice.find(payment_id)
     OhoError.clear_errors(payment)
 
-    unless payment.status == IpsPaymentAdvice::STATUS_UPLOADED
-      logger.error("payment #{payment.id} status #{payment.status} and cannot be reconciled yet")
-      payment.update!(status_message: "payment is not ready to be reconciled (status is #{payment.status})")
+    unless payment.status in [ IpsPaymentAdvice::STATUS_UPLOADED, IpsPaymentStatus::STATUS_PARTIALLY_RECONCILED ]
+      logger.error("payment #{payment.id} status #{payment.status} and cannot be reconciled")
+      payment.update!(status_message: "payment is not in the correct state to be reconciled (status is #{payment.status})")
       return
     end
 

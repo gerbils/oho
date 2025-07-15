@@ -24,7 +24,6 @@
 #  fk_rails_...  (ips_statement_detail_id => ips_statement_details.id)
 #
 class IpsDetailLine < ApplicationRecord
-  self.inheritance_column = :_none   # disable STI  TODO: needed?
 
   belongs_to :ips_statement_detail, optional: true, counter_cache: true
   belongs_to :sku

@@ -206,7 +206,6 @@ module Royalties::Ips::ParseDetailLines
   ######################################################################
 
   def map_ean_to_sku(row)
-    fail row.
     return nil if row.ean.nil?
 
     case  Product.product_and_sku_for_isbn(row.ean)

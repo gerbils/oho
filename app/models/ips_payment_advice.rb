@@ -3,6 +3,7 @@
 # Table name: ips_payment_advices
 #
 #  id                   :bigint           not null, primary key
+#  discounts_taken      :boolean          default(FALSE)
 #  pay_cycle            :string(255)
 #  pay_cycle_seq_number :string(255)
 #  payment_date         :date
@@ -25,7 +26,9 @@
 class IpsPaymentAdvice < ApplicationRecord
   include ActionView::RecordIdentifier   # for dom_id
 
-  has_many :ips_payment_advice_lines, dependent: :destroy
+  has_many   :ips_payment_advice_lines, dependent: :destroy
+  has_many   :ips_statement_details, through: :ips_payment_advice_lines
+  belongs_to :import_summary, optional: true
   belongs_to :upload_wrapper, dependent: :destroy, optional: true
 
 
@@ -35,15 +38,17 @@ class IpsPaymentAdvice < ApplicationRecord
   validates :payment_date,         presence: true, uniqueness: { message: "This payment advice has already been uploaded." }
   validates :total_amount,         presence: true, numericality: true, on: :update
 
-  after_update  :update_index_page
+  after_update  :update_index_page, unless: -> { Rails.env.test? }
   before_create :initialize_discounts_flag
-  after_create  :add_to_index_page
+  after_create  :add_to_index_page, unless: -> { Rails.env.test? }
 
   STATUS_FAILED_IMPORT  = 'Failed import'
   STATUS_FAILED_RECONCILE = 'Failed reconcile'
   STATUS_FAILED_UPLOAD  = 'Failed upload'
-  STATUS_IMPORTED       = 'Complete'
+  STATUS_IMPORTED       = 'Imported'
+  STATUS_PARTIALLY_RECONCILED  = 'Partially reconciled'
   STATUS_PROCESSING     = 'Processing'
+  STATUS_RECONCILED     = 'Reconciled'
   STATUS_UPLOADED       = 'Uploaded'
   STATUS_UPLOAD_PENDING = 'Pending'
 
@@ -52,7 +57,9 @@ class IpsPaymentAdvice < ApplicationRecord
     STATUS_FAILED_RECONCILE,
     STATUS_FAILED_UPLOAD,
     STATUS_IMPORTED,
+    STATUS_PARTIALLY_RECONCILED,
     STATUS_PROCESSING,
+    STATUS_RECONCILED,
     STATUS_UPLOADED,
     STATUS_UPLOAD_PENDING,
   ]

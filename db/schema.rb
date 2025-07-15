@@ -39,6 +39,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_09_221723) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "import_summaries", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "imported_at"
+    t.string "import_class"
+    t.integer "import_class_id"
+    t.decimal "import_amount", precision: 10, scale: 2
+    t.string "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "ips_detail_lines", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "ips_statement_detail_id"
     t.integer "sku_id"
@@ -72,6 +82,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_09_221723) do
 
   create_table "ips_payment_advices", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "upload_wrapper_id", null: false
+    t.bigint "import_summary_id"
     t.string "pay_cycle"
     t.string "pay_cycle_seq_number"
     t.string "payment_reference"
@@ -82,6 +93,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_09_221723) do
     t.boolean "discounts_taken", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["import_summary_id"], name: "index_ips_payment_advices_on_import_summary_id"
+    t.index ["payment_date"], name: "index_ips_payment_advices_on_payment_date"
     t.index ["upload_wrapper_id"], name: "index_ips_payment_advices_on_upload_wrapper_id"
   end
 
@@ -196,11 +209,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_09_221723) do
     t.datetime "updated_at", null: false
   end
 
-  add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "ips_detail_lines", "ips_statement_details"
   add_foreign_key "ips_payment_advice_lines", "ips_payment_advices"
   add_foreign_key "ips_payment_advice_lines", "ips_statement_details"
+  add_foreign_key "ips_payment_advices", "import_summaries"
   add_foreign_key "ips_payment_advices", "upload_wrappers"
   add_foreign_key "ips_statement_details", "ips_statements"
   add_foreign_key "ips_statement_details", "upload_wrappers"

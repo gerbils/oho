@@ -4,8 +4,14 @@ require 'bigdecimal'
 class IpsPaymentReconcileTest < ActiveSupport::TestCase
 
   def assert_reconciles(detail_attrs, payment_line_attrs)
-    details = detail_attrs.map { |attrs| create(:ips_statement_detail, attrs) }
-    payment_lines = payment_line_attrs.map { |attrs| create(:ips_payment_advice_line, attrs) }
+    statement = ips_statement!
+    details = detail_attrs.map { |attrs| ips_statement_detail!({ips_statement: statement}.merge(attrs)) }
+    details.each(&:save!)
+
+    advice = ips_payment_advice!
+    payment_lines = payment_line_attrs.map { |attrs| ips_payment_advice_line!({ips_payment_advice: advice}.merge(attrs)) }
+    payment_lines.each(&:save!)
+
     payment_lines.each do |line|
       Royalties::Ips::ReconcilePayments.reconcile_line(line)
     end
@@ -15,8 +21,12 @@ class IpsPaymentReconcileTest < ActiveSupport::TestCase
   end
 
   test "matches a single detail" do
-    details       = [ { month_due: "2025-05-15", due_this_month: BigDecimal("100.00") } ]
-    payment_lines = [ { invoice_date: "2025-05-20", paid_amount: BigDecimal("100.00") } ]
+    details       = [
+      { month_due: "2025-05-15", due_this_month: BigDecimal("100.00") }
+    ]
+    payment_lines = [
+      { invoice_date: "2025-05-20", paid_amount: BigDecimal("100.00") }
+    ]
     assert_reconciles(details, payment_lines) do |details, payment_lines|
       assert payment_lines[0].reconciled?, "Payment line should be reconciled"
       assert_equal details[0], payment_lines[0].ips_statement_detail, "Payment line should be linked to detail"
