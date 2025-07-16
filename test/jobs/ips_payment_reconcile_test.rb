@@ -4,7 +4,8 @@ require 'bigdecimal'
 class IpsPaymentReconcileTest < ActiveSupport::TestCase
 
   def assert_reconciles(detail_attrs, payment_line_attrs)
-    statement = ips_statement!
+    statement = ips_statement!({})
+    statement.save!
     details = detail_attrs.map { |attrs| ips_statement_detail!({ips_statement: statement}.merge(attrs)) }
     details.each(&:save!)
 

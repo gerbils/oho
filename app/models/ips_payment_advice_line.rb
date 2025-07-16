@@ -62,7 +62,7 @@ class IpsPaymentAdviceLine < ApplicationRecord
     broadcast_replace_to(
       dom_id(ips_payment_advice, :show),
       target: dom_id(self),
-      partial: "royalties/ips/payments/payment_advice_line", locals: { line: self, discounts_taken: ips_payment_advice.discounts_taken }
+      partial: "royalties/ips/payments/payment_advice_line", locals: { line: self, discounts_taken: ips_payment_advice.discounts_taken, focus_line: self.id }
     )
 
       broadcast_replace_to(

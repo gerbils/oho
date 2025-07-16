@@ -34,16 +34,20 @@ require "pry"
 
 class IpsStatementDetailTest < ActiveSupport::TestCase
 
-  test "date due is normalized to first of month" do
-    stmt = ips_statement_detail!(month_due: Date.new(2024, 5, 15))
+  def make_detail(month_due)
+    stmt = ips_statement!({})
     stmt.save!
-    assert_equal Date.new(2024, 5, 1), stmt.month_due
+    detail = ips_statement_detail!(ips_statement: stmt, month_due:)
+    detail.save!
+    detail
+  end
+
+  test "date due is normalized to first of month" do
+    assert_equal Date.new(2024, 5, 1), make_detail(Date.new(2024, 5, 15)).month_due
   end
 
   test "date due is unchanged if first of month" do
-    stmt = ips_statement_detail!(month_due: Date.new(2024, 5, 1))
-    stmt.save!
-    assert_equal Date.new(2024, 5, 1), stmt.month_due
+    assert_equal Date.new(2024, 5, 1), make_detail(Date.new(2024, 5, 1)).month_due
   end
 end
 

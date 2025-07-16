@@ -108,7 +108,7 @@ class IpsPaymentAdvice < ApplicationRecord
     broadcast_prepend_to(
       "ips-payment-index",
       target: "payment-list",
-      partial: "royalties/ips/payments/payment", locals: { payment: self }
+      partial: "royalties/ips/payments/payment", locals: { payment: self, focus_line: nil }
     )
   end
 
@@ -117,7 +117,7 @@ class IpsPaymentAdvice < ApplicationRecord
     broadcast_replace_to(
       "ips-payment-index",
       target: dom_id(self),
-      partial: "royalties/ips/payments/payment", locals: { payment: self }
+      partial: "royalties/ips/payments/payment", locals: { payment: self, focus_line: nil }
     )
   end
 

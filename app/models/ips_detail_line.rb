@@ -26,7 +26,7 @@
 class IpsDetailLine < ApplicationRecord
 
   belongs_to :ips_statement_detail, optional: true, counter_cache: true
-  belongs_to :sku
+  belongs_to :sku, optional: true
 
   validates(
         :ips_statement_detail_id,

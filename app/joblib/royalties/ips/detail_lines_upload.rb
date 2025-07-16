@@ -36,6 +36,7 @@ module Royalties::Ips::DetailLinesUpload
         row.sku_id = nil
 
       in [ Product => product, Sku => sku ]
+        Rails.logger.error("Found product #{product.id} #{product.title.inspect}  #{sku.sku} for #{isbn}")
         if row.title.blank? ||row.title.start_with?("Revision") || titles_similar(product.title, row[:title])
           row.sku_id = sku.id
         else
@@ -100,6 +101,15 @@ module Royalties::Ips::DetailLinesUpload
         detail.ips_detail_lines << row
       end
 
+      rows.each do |row|
+        unless row.valid?
+          Rails.logger.error("Error saving detail line for detail #{detail.id} (total #{total.to_f}): #{row.errors.full_messages.to_sentence}")
+        end
+      end
+
+      unless detail.update(uploaded_at: Time.now)
+        Rails.logger.error("Error saving detail lines for detail #{detail.id} (total #{total.to_f}): #{detail.errors.full_messages.to_sentence}")
+      end
       detail.update!(uploaded_at: Time.now)
       return detail
 

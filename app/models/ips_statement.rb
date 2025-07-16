@@ -49,7 +49,8 @@ class IpsStatement < ActiveRecord::Base
   SECTION_EXPENSE = "EXPENSE"
   SECTIONS = [SECTION_REVENUE, SECTION_EXPENSE]
 
-  STATUS_IMPORTED       = 'Complete'
+  STATUS_IMPORTED       = 'Imported'
+  STATUS_PARTIALLY_IMPORTED = 'Partially imported'
   STATUS_FAILED_IMPORT  = 'Failed import'
   STATUS_FAILED_UPLOAD  = 'Failed upload'
   STATUS_INCOMPLETE     = 'Incomplete'
@@ -62,6 +63,7 @@ class IpsStatement < ActiveRecord::Base
     STATUS_FAILED_UPLOAD,
     STATUS_IMPORTED,
     STATUS_INCOMPLETE,
+    STATUS_PARTIALLY_IMPORTED,
     STATUS_PROCESSING,
     STATUS_UPLOADED,
     STATUS_UPLOAD_PENDING,
@@ -102,6 +104,26 @@ class IpsStatement < ActiveRecord::Base
       status: STATUS_UPLOAD_PENDING,
       status_message: nil
     )
+  end
+
+  def may_be_deleted?
+    ![STATUS_PARTIALLY_IMPORTED, STATUS_IMPORTED].include?(status)
+  end
+
+  def status
+    case current_status = super()
+    when STATUS_UPLOADED
+      split = details.group(:reconciled).count
+      if (split[true] || 0).zero?
+        STATUS_UPLOADED
+      elsif (split[false] || 0).zero?
+        STATUS_IMPORTED
+      else
+        STATUS_PARTIALLY_IMPORTED
+      end
+    else
+      current_status
+    end
   end
 
   def self.stats

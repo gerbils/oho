@@ -32,12 +32,14 @@
   </td>
 
   <td>
-    <%= link_to('Delete',
+    <% if stmt.may_be_deleted? %>
+      <%= link_to('Delete',
                   royalties_ips_statement_path(stmt),
                   class: 'btn btn-warning',
                   method: :delete,
                   data: { "turbo-method": :delete, turbo_confirm: 'Are you sure?' }
-                 ) if stmt.imported_at.blank? %>
+                 ) %>
+             <% end %>
   </td>
 </tr>
 <% errors = OhoError.for_object(statement)
