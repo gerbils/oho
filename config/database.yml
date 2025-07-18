@@ -52,6 +52,20 @@ test:
 staging:
   <<: *config
 
+  queue:
+    <<: *sqlite
+    database:         <%= ENV["SOLID_ROOT"]%>/oho_solid_queue.sqlite
+    migrations_paths: db/queue_migrate
+
+  cable:
+    <<: *sqlite
+    database:         <%= ENV["SOLID_ROOT"]%>/oho_solid_cable.sqlite
+    migrations_paths: db/cable_migrate
+
+  cache:
+    <<: *sqlite
+    database:         <%= ENV["SOLID_ROOT"]%>/oho_solid_cache.sqlite
+    migrations_paths: db/cache_migrate
 production:
   <<: *config
 
