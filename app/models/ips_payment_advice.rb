@@ -88,6 +88,12 @@ class IpsPaymentAdvice < ApplicationRecord
     end
   end
 
+  def revenues_and_expenses
+    result = ips_statement_details.group(:section).sum(:due_this_month)
+    result["ACCURATE"] = all_reconciled?
+    result
+  end
+
   def all_reconciled?
     ips_payment_advice_lines.where(ips_statement_detail_id: nil).count.zero?
   end

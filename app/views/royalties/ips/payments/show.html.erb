@@ -8,9 +8,17 @@
 <div class="d-flex gap-5 justify-content-between align-items-center">
   <table class="table table-sm w-auto mt-4 mb-5">
     <tbody>
+      <tr ">
+        <th class="border-0 text-secondary ps-0">Revenue:</th>
+        <td class="fs-4 text-end border border-0"><%= number_to_currency(@revenues_and_expenses[IpsStatementDetail::SECTION_REVENUE]) %></td>
+      </tr>
+      <tr>
+        <th class="text-secondary ps-0">Costs:</th>
+        <td class="fs-4 text-end"><%= number_to_currency(@revenues_and_expenses[IpsStatementDetail::SECTION_EXPENSE]) %></td>
+      </tr>
       <tr class="align-middle">
         <th class="text-secondary ps-0">Payment amount:</th>
-        <td class="fs-3"><%= number_to_currency(@payment.total_amount) %></td>
+        <td class="fs-3 text-end"><%= number_to_currency(@payment.total_amount) %></td>
       </tr>
       <tr>
         <th class="text-secondary ps-0">Status:</th>
@@ -27,11 +35,10 @@
       <tr>
         <tr>
           <th class="text-secondary ps-0">Pay Cycle:</th>
-          <td><%= @payment.pay_cycle %></td>
-        </tr>
-        <tr>
-          <th class="text-secondary ps-0">Pay Cycle Seq Number:</th>
-          <td><%= @payment.pay_cycle_seq_number %></td>
+          <td>
+            <%= @payment.pay_cycle %> /
+            <%= @payment.pay_cycle_seq_number %>
+          </td>
         </tr>
     </tbody>
   </table>

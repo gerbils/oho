@@ -9,7 +9,9 @@ export default defineConfig({
       $: 'jquery',
       jQuery: 'jquery',
     }),
-
     RubyPlugin(),
   ],
+    build: {
+      sourcemap: true,
+    },
 })
