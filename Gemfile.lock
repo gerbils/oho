@@ -358,7 +358,7 @@ DEPENDENCIES
   bootsnap
   bootstrap_form (~> 5.4)
   brakeman
-  chartkick (~> 5.1)
+  chartkick (~> 5.2)
   csv (~> 3.3)
   debug
   groupdate (~> 6.6)
