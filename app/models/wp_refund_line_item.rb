@@ -32,7 +32,7 @@ require 'bigdecimal'
  #  ],
 
 WpRefundLineItem = Struct.new(
-  "WpLineItem",
+  "WpRefundLineItem",
   :line_item_id,
   :sku,
   :quantity,
