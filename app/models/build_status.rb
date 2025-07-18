@@ -12,7 +12,7 @@
 class BuildStatus < LegacyRecord
   STATUSES = %w(started updating building uploading succeeded failed)
 
-  CONFIG = Rails.application.credentials[:s3_authors] || fail("no credentials fopr s3_authors in build_status model")
+  CONFIG = Rails.application.credentials[:s3_authors] || fail("no credentials for s3_authors in build_status model")
 
   ENV["AWS_ACCESS_KEY_ID"] =  CONFIG[:aws_access_key]
   ENV["AWS_SECRET_ACCESS_KEY"] =  CONFIG[:aws_secret_access_key]
