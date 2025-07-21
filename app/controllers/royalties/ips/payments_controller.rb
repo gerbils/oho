@@ -33,8 +33,7 @@ class Royalties::Ips::PaymentsController < ApplicationController
   def import
     @payment = IpsPaymentAdvice.find(params[:id])
     Royalties::Ips::Import.build_royalties_from_details(@payment)
-    @payment.reload
-    render action: :show
+    redirect_to action: :show, id: @payment.id
   end
 
   def destroy
