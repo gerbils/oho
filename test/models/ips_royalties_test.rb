@@ -67,12 +67,12 @@ class IpsRoyaltiesTest < ActiveSupport::TestCase
     statements = [
       { attrs: {},          # statement
         details: [
-                   {
-                     attrs: { detail: "Domestic Gross Sales Excluding Canada", subsection: "Gross Sales", month_due: Date.new(2025, 4, 1) },
-                     lines: [
-                       { sku: :trevan_b, content_type: "all_revenues", description: "Test Royalty", quantity: 2, amount: 500 },
-                     ],
-                   },
+          {
+            attrs: { detail: "Domestic Gross Sales Excluding Canada", subsection: "Gross Sales", month_due: Date.new(2025, 4, 1) },
+            lines: [
+              { sku: :trevan_b, content_type: "all_revenues", description: "Test Royalty", quantity: 2, amount: 500 },
+            ],
+          },
         ],
       }
     ]
