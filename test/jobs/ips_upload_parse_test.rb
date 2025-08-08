@@ -94,6 +94,18 @@ class IpsUploadParseTest < ActiveSupport::TestCase
     ])
   end
 
+  test "detects type 7 files" do
+    assert_parse("ips_type_7_ok", [
+      { ean: "9781680501025",
+        content_type: "misc_expense",
+        title: "Driving Technical Change",
+        description: "Amazon EBook CoOp",
+        quantity: 15,
+        amount: "-13.9425",
+      },
+    ])
+  end
+
   test "detects revenue files" do
     assert_parse("ips_revenue_ok", [
       { ean: "9798888651049",

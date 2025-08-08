@@ -190,7 +190,7 @@ class IpsRoyaltiesTest < ActiveSupport::TestCase
 
     assert_equal 1, RoyaltyItem.count
     ri = RoyaltyItem.first
-    binding.irb
+    # binding.irb
     assert_ri(ri, :trevan_b, "IPS-R", "Distribution: Domestic Sales (Mar '25)", 5, 500, '2025-04-01', detail)
   end
 
@@ -243,7 +243,7 @@ class IpsRoyaltiesTest < ActiveSupport::TestCase
 
     ri = RoyaltyItem.first
 
-    assert_ri(ri, :trevan_b, "IPS-R", "Distribution: Domestic Sales (Mar '25)", 5, 500, '2025-04-01', detail1)
+    assert_ri(ri, :trevan_b, "IPS-R", "Distribution: Domestic Sales (Mar '25)", 5, 500, '2025-04-01', detail2)
   end
 
   #  # ######################################################################

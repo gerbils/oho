@@ -136,6 +136,25 @@ module Royalties::Ips::ParseDetailLines
     end
   end
 
+  module Type7
+    # EBook Amazon Coop
+    HEADINGS = [
+      "Period", "Year", "Channel Customer Name", "Channel Customer Number", "Territory", "Pub Id",
+      "EAN", "Title", "Pub Alpha", "Brand Category", "Imprint", "Units Ordered", "Net Amount",
+      "Factor", "Rate Type", "Charge",
+    ]
+
+    def self.extract(row)
+      description = "Amazon EBook CoOp"
+      ean      = row[6].cell_value
+      title    = row[7].cell_value
+      quantity = row[11].value
+      amount   = BigDecimal(row[-1].cell_value)
+      Detail.new(ean:, description:, title:, quantity:, amount:, content_type: "misc_expense")
+    end
+  end
+
+
   module AllRevenues
 
     HEADINGS = [
@@ -155,7 +174,7 @@ module Royalties::Ips::ParseDetailLines
     end
   end
 
-  ALL_TYPES = [ Type1, Type2, Type3, Type4, Type5, Type6, AllRevenues ]
+  ALL_TYPES = [ Type1, Type2, Type3, Type4, Type5, Type6, Type7, AllRevenues ]
 
   def find_handler_module(headers)
     ALL_TYPES.find do |type|
