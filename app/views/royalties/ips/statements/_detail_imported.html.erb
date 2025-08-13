@@ -4,15 +4,17 @@
       <span title="This detail has been imported">
         <i class="bi bi-check-circle-fill text-success fs-4"></i>
 
-        <%= link_to(focus_line_royalties_ips_payment_path(
-          item.ips_payment_advice_line.ips_payment_advice,
-          item.ips_payment_advice_line,
-          anchor: dom_id(item.ips_payment_advice_line)
-        ),
-        class: "info-link ps-2"
-                   ) do %>
-                   <i title="View payment" class="bi bi-eye fs-4"></i>
-                 <% end %>
+        <% for line in item.ips_payment_advice_lines %>
+          <%= link_to(focus_line_royalties_ips_payment_path(
+            line.ips_payment_advice,
+            line,
+            anchor: dom_id(line)
+          ),
+          class: "info-link ps-2"
+                     ) do %>
+                     <i title="View payment" class="bi bi-eye fs-4"></i>
+                   <% end %>
+         <% end %>
       </span>
     <% else %>
       <span class="text-warning fs-6 ">

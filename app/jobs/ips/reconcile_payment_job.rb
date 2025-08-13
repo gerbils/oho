@@ -20,11 +20,11 @@ class Ips::ReconcilePaymentJob < ApplicationJob
       Rails.logger.error("Error handling reconciliation: #{e.message}")
       OhoError.create(
         owner: payment,
-        label: "Error reconciling payment #{payment.paymnt_date}",
+        label: "Error reconciling payment #{payment.payment_date}",
         message: e.message,
         level: OhoError::ERROR
       )
-      payment.update!(status: Ipspayment::STATUS_FAILED_RECONCILE, status_message: e.message)
+      payment.update!(status: IpsPaymentAdvice::STATUS_FAILED_RECONCILE, status_message: e.message)
     end
     logger.info("finishing IPS reconcile payment job")
   end

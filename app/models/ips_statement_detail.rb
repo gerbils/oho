@@ -83,7 +83,15 @@ class IpsStatementDetail < ActiveRecord::Base
   # This is used for co-op payments, where we don't have a statement line.
 
   def self.match_with_combinations(invoice_date, invoice_number, paid_amount)
-    possibles = where("due_this_month < ? AND not reconciled", paid_amount).to_a
+    statement = IpsStatement.find_by_month_ending(invoice_date)
+    fail("Can't find statement for month ending #{invoice_date}") unless statement
+
+    # we don't want to match against reconciled lines, so we filter those out.
+    # We also filter out lines that are not due this month.
+    #
+    # NOTE: It's greater than because the amounts are negative
+    possibles = statement.details.where("due_this_month > ? AND not reconciled", paid_amount).to_a
+
     # no ability to create combinations.
     return [] if possibles.length < 2
 
