@@ -42,7 +42,8 @@ class IpsPaymentAdviceLine < ApplicationRecord
   after_destroy :update_corresponding_detail_line, unless: -> { Rails.env.test? }
 
   belongs_to :ips_payment_advice
-  belongs_to :ips_statement_detail, optional: true
+  has_many   :ips_reconciliations, dependent: :destroy
+  has_many   :ips_statement_details, through: :ips_reconciliations
 
   validates_presence_of :invoice_number
   validates_presence_of :invoice_date
@@ -53,7 +54,7 @@ class IpsPaymentAdviceLine < ApplicationRecord
   validates             :status, inclusion: { in: STATII }
 
   def reconciled?
-    ips_statement_detail.present?
+    ips_reconciliations.present?
   end
 
   private

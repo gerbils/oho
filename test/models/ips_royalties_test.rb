@@ -90,7 +90,7 @@ class IpsRoyaltiesTest < ActiveSupport::TestCase
 
     payment_line = payment.ips_payment_advice_lines.first
     assert_equal payment_line.status, IpsPaymentAdviceLine::STATUS_RECONCILED, "Payment line should be reconciled"
-    assert_equal detail.id, payment_line.ips_statement_detail_id, "Payment line should be linked to detail"
+    assert_equal detail, payment_line.ips_statement_details[0], "Payment line should be linked to detail"
 
     Royalties::Ips::Import.build_royalties_from_details(payment)
 
@@ -134,7 +134,7 @@ class IpsRoyaltiesTest < ActiveSupport::TestCase
 
     payment_line = payment.ips_payment_advice_lines.first
     assert_equal payment_line.status, IpsPaymentAdviceLine::STATUS_RECONCILED, "Payment line should be reconciled"
-    assert_equal detail.id, payment_line.ips_statement_detail_id, "Payment line should be linked to detail"
+    assert_equal detail, payment_line.ips_statement_details[0], "Payment line should be linked to detail"
 
     Royalties::Ips::Import.build_royalties_from_details(payment)
 
@@ -184,7 +184,7 @@ class IpsRoyaltiesTest < ActiveSupport::TestCase
 
     payment_line = payment.ips_payment_advice_lines.first
     assert_equal payment_line.status, IpsPaymentAdviceLine::STATUS_RECONCILED, "Payment line should be reconciled"
-    assert_equal detail.id, payment_line.ips_statement_detail_id, "Payment line should be linked to detail"
+    assert_equal detail, payment_line.ips_statement_details[0], "Payment line should be linked to detail"
 
     Royalties::Ips::Import.build_royalties_from_details(payment)
 
@@ -233,11 +233,11 @@ class IpsRoyaltiesTest < ActiveSupport::TestCase
 
     payment_line = payment.ips_payment_advice_lines.first
     assert_equal payment_line.status, IpsPaymentAdviceLine::STATUS_RECONCILED, "Payment line should be reconciled"
-    assert_equal detail2.id, payment_line.ips_statement_detail_id, "Payment line should be linked to detail"
+    assert_equal detail2, payment_line.ips_statement_details[0], "Payment line should be linked to detail"
 
     payment_line = payment.ips_payment_advice_lines.last
     assert_equal payment_line.status, IpsPaymentAdviceLine::STATUS_RECONCILED, "Payment line should be reconciled"
-    assert_equal detail1.id, payment_line.ips_statement_detail_id, "Payment line should be linked to detail"
+    assert_equal detail1, payment_line.ips_statement_details[0], "Payment line should be linked to detail"
 
     Royalties::Ips::Import.build_royalties_from_details(payment)
 
@@ -289,11 +289,11 @@ class IpsRoyaltiesTest < ActiveSupport::TestCase
 
     payment_line = payment.ips_payment_advice_lines.first
     assert_equal payment_line.status, IpsPaymentAdviceLine::STATUS_RECONCILED, "Payment line should be reconciled"
-    assert_equal detail1.id, payment_line.ips_statement_detail_id, "Payment line should be linked to detail"
+    assert_equal detail1, payment_line.ips_statement_details[0], "Payment line should be linked to detail"
 
     payment_line = payment.ips_payment_advice_lines.last
     assert_equal payment_line.status, IpsPaymentAdviceLine::STATUS_RECONCILED, "Payment line should be reconciled"
-    assert_equal detail2.id, payment_line.ips_statement_detail_id, "Payment line should be linked to detail"
+    assert_equal detail2, payment_line.ips_statement_details[0], "Payment line should be linked to detail"
 
     Royalties::Ips::Import.build_royalties_from_details(payment)
 

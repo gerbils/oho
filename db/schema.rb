@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_09_221723) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_12_214608) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -96,6 +96,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_09_221723) do
     t.index ["import_summary_id"], name: "index_ips_payment_advices_on_import_summary_id"
     t.index ["payment_date"], name: "index_ips_payment_advices_on_payment_date"
     t.index ["upload_wrapper_id"], name: "index_ips_payment_advices_on_upload_wrapper_id"
+  end
+
+  create_table "ips_reconciliations", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "ips_statement_detail_id", null: false
+    t.bigint "ips_payment_advice_line_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ips_payment_advice_line_id"], name: "index_ips_reconciliations_on_ips_payment_advice_line_id"
+    t.index ["ips_statement_detail_id"], name: "index_ips_reconciliations_on_ips_statement_detail_id"
   end
 
   create_table "ips_statement_details", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -215,6 +224,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_09_221723) do
   add_foreign_key "ips_payment_advice_lines", "ips_statement_details"
   add_foreign_key "ips_payment_advices", "import_summaries"
   add_foreign_key "ips_payment_advices", "upload_wrappers"
+  add_foreign_key "ips_reconciliations", "ips_payment_advice_lines"
+  add_foreign_key "ips_reconciliations", "ips_statement_details"
   add_foreign_key "ips_statement_details", "ips_statements"
   add_foreign_key "ips_statement_details", "upload_wrappers"
   add_foreign_key "ips_statements", "upload_wrappers"

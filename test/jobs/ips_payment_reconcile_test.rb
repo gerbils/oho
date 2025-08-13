@@ -23,14 +23,14 @@ class IpsPaymentReconcileTest < ActiveSupport::TestCase
 
   test "matches a single detail" do
     details       = [
-      { month_due: "2025-05-15", due_this_month: BigDecimal("100.00") }
+      { month_due: "2025-05-31", due_this_month: BigDecimal("100.00") }
     ]
     payment_lines = [
       { invoice_date: "2025-05-20", paid_amount: BigDecimal("100.00") }
     ]
     assert_reconciles(details, payment_lines) do |details, payment_lines|
       assert payment_lines[0].reconciled?, "Payment line should be reconciled"
-      assert_equal details[0], payment_lines[0].ips_statement_detail, "Payment line should be linked to detail"
+      assert_equal details[0], payment_lines[0].ips_statement_details[0], "Payment line should be linked to detail"
     end
   end
 
@@ -44,7 +44,7 @@ class IpsPaymentReconcileTest < ActiveSupport::TestCase
     ]
     assert_reconciles(details, payment_lines) do |details, payment_lines|
       assert payment_lines[0].reconciled?, "Payment line should be reconciled"
-      assert_equal details[1], payment_lines[0].ips_statement_detail, "Payment line should be linked to detail"
+      assert_equal details[1], payment_lines[0].ips_statement_details[0], "Payment line should be linked to detail"
     end
   end
 
@@ -58,7 +58,7 @@ class IpsPaymentReconcileTest < ActiveSupport::TestCase
     ]
     assert_reconciles(details, payment_lines) do |details, payment_lines|
       assert payment_lines[0].reconciled?, "Payment line should be reconciled"
-      assert_equal details[0], payment_lines[0].ips_statement_detail, "Payment line should be linked to detail"
+      assert_equal details[0], payment_lines[0].ips_statement_details[0], "Payment line should be linked to detail"
     end
   end
 
@@ -74,8 +74,8 @@ class IpsPaymentReconcileTest < ActiveSupport::TestCase
     assert_reconciles(details, payment_lines) do |details, payment_lines|
       assert payment_lines[0].reconciled?, "Payment line should be reconciled"
       assert payment_lines[1].reconciled?, "Payment line should be reconciled"
-      assert_equal details[1], payment_lines[0].ips_statement_detail, "Payment line should be linked to detail"
-      assert_equal details[0], payment_lines[1].ips_statement_detail, "Payment line should be linked to detail"
+      assert_equal details[1], payment_lines[0].ips_statement_details[0], "Payment line should be linked to detail"
+      assert_equal details[0], payment_lines[1].ips_statement_details[0], "Payment line should be linked to detail"
     end
   end
 
@@ -85,7 +85,7 @@ class IpsPaymentReconcileTest < ActiveSupport::TestCase
     payment_lines = [ { invoice_date: "2025-05-20", paid_amount: BigDecimal("100.00") } ]
     assert_reconciles(details, payment_lines) do |details, payment_lines|
       refute payment_lines[0].reconciled?, "Payment line should be reconciled"
-      assert_nil payment_lines[0].ips_statement_detail, "No detail is linked"
+      assert_equal 0, payment_lines[0].ips_statement_details.count, "No detail is linked"
     end
   end
 
@@ -97,9 +97,69 @@ class IpsPaymentReconcileTest < ActiveSupport::TestCase
     ]
     assert_reconciles(details, payment_lines) do |details, payment_lines|
       assert payment_lines[0].reconciled?, "Payment line should be reconciled"
-      assert_equal details[0], payment_lines[0].ips_statement_detail, "Payment line should be linked to detail"
+      assert_equal details[0], payment_lines[0].ips_statement_details[0], "Payment line should be linked to detail"
       refute payment_lines[1].reconciled?, "The second payment line should not be reconciled"
-      assert_nil payment_lines[1].ips_statement_detail, "And no detail is linked"
+      assert_equal 0,payment_lines[1].ips_statement_details.count, "And no detail is linked"
+    end
+  end
+
+  test "matches when a payment matches the sum of two detail" do
+    details       = [
+      { month_due: "2025-05-15", due_this_month: BigDecimal("100.00") },
+      { month_due: "2025-05-15", due_this_month: BigDecimal("200.00") },
+    ]
+    payment_lines = [
+      { invoice_date: "2025-05-20", paid_amount: BigDecimal("300.00") },
+    ]
+    assert_reconciles(details, payment_lines) do |details, payment_lines|
+      assert payment_lines[0].reconciled?, "Payment line should be reconciled"
+      assert_equal details[0], payment_lines[0].ips_statement_details[0], "Payment line should be linked to detail"
+      assert_equal details[1], payment_lines[0].ips_statement_details[1], "Payment line should be linked to detail"
+    end
+  end
+
+  test "flags an error if multiple combinations match" do
+    details       = [
+      { month_due: "2025-05-15", due_this_month: BigDecimal("100.00") },
+      { month_due: "2025-05-15", due_this_month: BigDecimal("200.00") },
+      { month_due: "2025-05-15", due_this_month: BigDecimal("100.00") },
+    ]
+    payment_lines = [
+      { invoice_date: "2025-05-20", paid_amount: BigDecimal("300.00") },
+    ]
+    assert_reconciles(details, payment_lines) do |details, payment_lines|
+      refute payment_lines[0].reconciled?, "Payment line should not be reconciled"
+      assert_equal "Too many matches", payment_lines[0].status, "Payment line should have an error status"
+    end
+  end
+
+  test "flags an error if no combinations match" do
+    details       = [
+      { month_due: "2025-05-15", due_this_month: BigDecimal("100.00") },
+      { month_due: "2025-05-15", due_this_month: BigDecimal("400.00") },
+      { month_due: "2025-05-15", due_this_month: BigDecimal("100.00") },
+    ]
+    payment_lines = [
+      { invoice_date: "2025-05-20", paid_amount: BigDecimal("300.00") },
+    ]
+    assert_reconciles(details, payment_lines) do |details, payment_lines|
+      refute payment_lines[0].reconciled?, "Payment line should not be reconciled"
+      assert_equal "Unreconciled", payment_lines[0].status, "Payment line should have an error status"
+    end
+  end
+
+  test "finds the simple match in preference to s combination" do
+    details       = [
+      { month_due: "2025-05-15", due_this_month: BigDecimal("100.00") },
+      { month_due: "2025-05-15", due_this_month: BigDecimal("200.00") },
+      { month_due: "2025-05-15", due_this_month: BigDecimal("300.00") },
+    ]
+    payment_lines = [
+      { invoice_date: "2025-05-20", paid_amount: BigDecimal("300.00") },
+    ]
+    assert_reconciles(details, payment_lines) do |details, payment_lines|
+      assert payment_lines[0].reconciled?, "Payment line should be reconciled"
+      assert_equal details[2], payment_lines[0].ips_statement_details[0], "Payment line should be linked to detail"
     end
   end
 

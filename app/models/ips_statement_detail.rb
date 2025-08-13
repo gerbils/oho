@@ -45,7 +45,8 @@ class IpsStatementDetail < ActiveRecord::Base
   belongs_to :upload_wrapper, optional: true
   belongs_to :ips_statement, counter_cache: true
   has_many   :ips_detail_lines, dependent: :destroy
-  has_one    :ips_payment_advice_line, dependent: :nullify
+  has_many   :ips_reconciliations, dependent: :destroy
+  has_many   :ips_payment_advice_lines, through: :ips_reconciliations
 
   validates :section, inclusion: { in: SECTIONS }
   validates :subsection, presence: true
@@ -77,6 +78,38 @@ class IpsStatementDetail < ActiveRecord::Base
     end
   end
 
+  # This gets called when we have a payment that doesn't match a statement
+  # line. We look for combinations od lines that add up to the paid amount.
+  # This is used for co-op payments, where we don't have a statement line.
+
+  def self.match_with_combinations(invoice_date, invoice_number, paid_amount)
+    possibles = where("due_this_month < ? AND not reconciled", paid_amount).to_a
+    # no ability to create combinations.
+    return [] if possibles.length < 2
+
+    # this is O(N^2), but we're probably looking at at most 20 lines, and its
+    # all in memory
+    # we return all possible combinations that match and let God sort them out.
+    matches = []
+    while possibles.length > 1
+      first = possibles.shift
+      possibles.each do |second|
+        if first.due_this_month + second.due_this_month == paid_amount
+          matches << [first, second]
+        end
+      end
+    end
+
+    matches
+  end
+
+  def self.revenue_details
+    where(section: SECTION_REVENUE)
+  end
+
+  def self.expense_details
+    where(section: SECTION_EXPENSE)
+  end
 
   def ready_to_import?
     self.uploaded_at? || self.detail == "Co-Op"   # ugly, but there's no upload for co-op
