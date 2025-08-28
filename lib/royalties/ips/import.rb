@@ -165,6 +165,7 @@ module Royalties::Ips::Import
     return if skus.size.zero?
 
     a_detail = statement_details.first
+    first_of_this_month = Date.today.beginning_of_month
     per_sku = (total_misc / skus.size) #.round(2)
     skus.each do |sku_id|
       proto_ri = ProtoRoyaltyLine.new(
@@ -177,7 +178,7 @@ module Royalties::Ips::Import
         return_units:  0,
         return_amount: per_sku, # + delta,
         book_basis:    0,
-        date:          a_detail.month_due,
+        date:          a_detail.month_due || first_of_this_month,
         applies_to:    RoyaltyItem::APPLIES_TO_BOTH,
         source_type:   a_detail.class.name,
         source_id:     a_detail.id,
