@@ -95,7 +95,11 @@ class IpsPaymentAdvice < ApplicationRecord
   end
 
   def all_reconciled?
-    ips_payment_advice_lines.where(ips_statement_detail_id: nil).count.zero?
+    # we're reconciled if there are no payment advice lines that are missing a reconciliation
+    ips_payment_advice_lines
+      .where(%{ not exists (select 1 from ips_reconciliations where ips_payment_advice_line_id = ips_payment_advice_lines.id) })
+      .count
+      .zero?
   end
 
   def oho_errors
