@@ -1,10 +1,12 @@
 require 'test_helper'
 require 'bigdecimal'
+require 'pry'
 
 class IpsPaymentReconcileTest < ActiveSupport::TestCase
 
   def assert_reconciles(detail_attrs, payment_line_attrs)
-    statement = ips_statement!({})
+    statement_date = detail_attrs.shift
+    statement = ips_statement!({ month_ending: statement_date })
     statement.save!
     details = detail_attrs.map { |attrs| ips_statement_detail!({ips_statement: statement}.merge(attrs)) }
     details.each(&:save!)
@@ -23,6 +25,7 @@ class IpsPaymentReconcileTest < ActiveSupport::TestCase
 
   test "matches a single detail" do
     details       = [
+      "2025-03-31",
       { month_due: "2025-05-31", due_this_month: BigDecimal("100.00") }
     ]
     payment_lines = [
@@ -36,6 +39,7 @@ class IpsPaymentReconcileTest < ActiveSupport::TestCase
 
   test "matches one out of two details with same month but different amount" do
     details = [
+      "2025-03-31",
       { month_due: "2025-05-15", due_this_month: BigDecimal("200.00") },
       { month_due: "2025-05-15", due_this_month: BigDecimal("100.00") },
     ]
@@ -50,6 +54,7 @@ class IpsPaymentReconcileTest < ActiveSupport::TestCase
 
   test "matches one out of two details with different month but same amount" do
     details = [
+      "2025-03-31",
       { month_due: "2025-05-15", due_this_month: BigDecimal("100.00") },
       { month_due: "2025-04-15", due_this_month: BigDecimal("100.00") },
     ]
@@ -64,6 +69,7 @@ class IpsPaymentReconcileTest < ActiveSupport::TestCase
 
   test "two payments match two details" do
     details = [
+      "2025-03-31",
       { month_due: "2025-05-15", due_this_month: BigDecimal("200.00") },
       { month_due: "2025-05-15", due_this_month: BigDecimal("100.00") },
     ]
@@ -81,8 +87,8 @@ class IpsPaymentReconcileTest < ActiveSupport::TestCase
 
 
   test "fails to match if details wrong" do
-    details       = [ { month_due: "2025-05-15", due_this_month: BigDecimal("100.99") } ]
-    payment_lines = [ { invoice_date: "2025-05-20", paid_amount: BigDecimal("100.00") } ]
+    details       = [ "2025-03-31", { month_due: "2025-05-15", due_this_month: BigDecimal("100.99") } ]
+    payment_lines = [ { invoice_date: "2025-03-31", paid_amount: BigDecimal("100.00") } ]
     assert_reconciles(details, payment_lines) do |details, payment_lines|
       refute payment_lines[0].reconciled?, "Payment line should be reconciled"
       assert_equal 0, payment_lines[0].ips_statement_details.count, "No detail is linked"
@@ -90,10 +96,10 @@ class IpsPaymentReconcileTest < ActiveSupport::TestCase
   end
 
   test "doesn't match a second payment to the same detail as the first" do
-    details       = [ { month_due: "2025-05-15", due_this_month: BigDecimal("100.00") } ]
+    details       = [ "2025-03-31", { month_due: "2025-05-15", due_this_month: BigDecimal("100.00") } ]
     payment_lines = [
-      { invoice_date: "2025-05-20", paid_amount: BigDecimal("100.00") },
-      { invoice_date: "2025-05-20", paid_amount: BigDecimal("100.00") },
+      { invoice_date: "2025-03-31", paid_amount: BigDecimal("100.00") },
+      { invoice_date: "2025-03-31", paid_amount: BigDecimal("100.00") },
     ]
     assert_reconciles(details, payment_lines) do |details, payment_lines|
       assert payment_lines[0].reconciled?, "Payment line should be reconciled"
@@ -105,11 +111,12 @@ class IpsPaymentReconcileTest < ActiveSupport::TestCase
 
   test "matches when a payment matches the sum of two detail" do
     details       = [
+      "2025-03-31",
       { month_due: "2025-05-15", due_this_month: BigDecimal("100.00") },
       { month_due: "2025-05-15", due_this_month: BigDecimal("200.00") },
     ]
     payment_lines = [
-      { invoice_date: "2025-05-20", paid_amount: BigDecimal("300.00") },
+      { invoice_date: "2025-03-31", paid_amount: BigDecimal("300.00") },
     ]
     assert_reconciles(details, payment_lines) do |details, payment_lines|
       assert payment_lines[0].reconciled?, "Payment line should be reconciled"
@@ -120,12 +127,13 @@ class IpsPaymentReconcileTest < ActiveSupport::TestCase
 
   test "flags an error if multiple combinations match" do
     details       = [
+      "2025-03-31",
       { month_due: "2025-05-15", due_this_month: BigDecimal("100.00") },
       { month_due: "2025-05-15", due_this_month: BigDecimal("200.00") },
       { month_due: "2025-05-15", due_this_month: BigDecimal("100.00") },
     ]
     payment_lines = [
-      { invoice_date: "2025-05-20", paid_amount: BigDecimal("300.00") },
+      { invoice_date: "2025-03-31", paid_amount: BigDecimal("300.00") },
     ]
     assert_reconciles(details, payment_lines) do |details, payment_lines|
       refute payment_lines[0].reconciled?, "Payment line should not be reconciled"
@@ -135,12 +143,13 @@ class IpsPaymentReconcileTest < ActiveSupport::TestCase
 
   test "flags an error if no combinations match" do
     details       = [
+      "2025-03-31",
       { month_due: "2025-05-15", due_this_month: BigDecimal("100.00") },
       { month_due: "2025-05-15", due_this_month: BigDecimal("400.00") },
       { month_due: "2025-05-15", due_this_month: BigDecimal("100.00") },
     ]
     payment_lines = [
-      { invoice_date: "2025-05-20", paid_amount: BigDecimal("300.00") },
+      { invoice_date: "2025-03-31", paid_amount: BigDecimal("300.00") },
     ]
     assert_reconciles(details, payment_lines) do |details, payment_lines|
       refute payment_lines[0].reconciled?, "Payment line should not be reconciled"
@@ -150,12 +159,13 @@ class IpsPaymentReconcileTest < ActiveSupport::TestCase
 
   test "finds the simple match in preference to s combination" do
     details       = [
+      "2025-03-31",
       { month_due: "2025-05-15", due_this_month: BigDecimal("100.00") },
       { month_due: "2025-05-15", due_this_month: BigDecimal("200.00") },
       { month_due: "2025-05-15", due_this_month: BigDecimal("300.00") },
     ]
     payment_lines = [
-      { invoice_date: "2025-05-20", paid_amount: BigDecimal("300.00") },
+      { invoice_date: "2025-03-31", paid_amount: BigDecimal("300.00") },
     ]
     assert_reconciles(details, payment_lines) do |details, payment_lines|
       assert payment_lines[0].reconciled?, "Payment line should be reconciled"

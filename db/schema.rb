@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_12_214608) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_16_174156) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -216,6 +216,27 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_12_214608) do
     t.integer "id_of_created_object"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "wc_import_status", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.datetime "last_fetched_gmt", default: "2000-01-01 00:00:00", null: false
+    t.datetime "last_imported_gmt"
+    t.boolean "fetch_in_progress", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "wc_item_details", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "woo_order_id", limit: 20, null: false
+    t.integer "sku_id", null: false
+    t.integer "quantity", null: false
+    t.decimal "amount", precision: 10, scale: 2, null: false
+    t.boolean "imported", default: false, null: false
+    t.datetime "order_created_gmt"
+    t.datetime "order_modified_gmt"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["woo_order_id", "sku_id"], name: "index_wc_item_details_on_woo_order_id_and_sku_id"
   end
 
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"

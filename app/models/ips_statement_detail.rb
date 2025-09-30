@@ -89,8 +89,7 @@ class IpsStatementDetail < ActiveRecord::Base
     # we don't want to match against reconciled lines, so we filter those out.
     # We also filter out lines that are not due this month.
     #
-    # NOTE: It's greater than because the amounts are negative
-    possibles = statement.details.where("due_this_month > ? AND not reconciled", paid_amount).to_a
+    possibles = statement.details.where("not reconciled").to_a
 
     # no ability to create combinations.
     return [] if possibles.length < 2
