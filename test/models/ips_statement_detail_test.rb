@@ -34,10 +34,10 @@ require "pry"
 
 class IpsStatementDetailTest < ActiveSupport::TestCase
 
-  def make_detail(month_due)
+  def make_detail(month_due, due_this_month: "0.00")
     stmt = ips_statement!({})
     stmt.save!
-    detail = ips_statement_detail!(ips_statement: stmt, month_due:)
+    detail = ips_statement_detail!(ips_statement: stmt, month_due:, due_this_month:)
     detail.save!
     detail
   end
@@ -49,6 +49,47 @@ class IpsStatementDetailTest < ActiveSupport::TestCase
   test "date due is unchanged if first of month" do
     assert_equal Date.new(2024, 5, 1), make_detail(Date.new(2024, 5, 1)).month_due
   end
+
+  # test reconcilkiation of combos of multiple details against a single sum
+
+  def combo_test(detail_amounts, target_sum, expected_count)
+    details = detail_amounts.map { |amt| make_detail(Date.new(2024, 5, 1), due_this_month: amt) }
+    matches = IpsStatementDetail.look_for_combinations(details, BigDecimal("350.00"))
+    assert_equal expected_count, matches.length
+    target = BigDecimal(target_sum)
+    matches.each do |match|
+      assert_equal target, match.sum(&:due_this_month)
+    end
+  end
+
+  test "Simple combo of 2 details matches" do
+    combo_test(%w{ 100.00 250.00 }, "350.00", 1)
+  end
+
+  test "Simple combo of 2 details matches regardless of order" do
+    combo_test(%w{ 250.00 100.00 }, "350.00", 1)
+  end
+
+  test "Finds a combo of 2 in 4 details" do
+    combo_test(%w{ 100.00 200.00 250.00 275.00 }, "350.00", 1)
+  end
+
+  test "Finds a combo of 3 in 4 details" do
+    combo_test(%w{ 100.00 200.00 275.00 50.00 }, "350.00", 1)
+  end
+
+  test "Finds a combo of 3 in 4 details where a value is negative" do
+    combo_test(%w{ 100.00 200.00 275.00 -25.00 }, "350.00", 1)
+  end
+
+  test "Find two combo of 2 in 4 details" do
+    combo_test(%w{ 100.00 400.00 250.00 -50.00 }, "350.00", 2)
+  end
+
+  test "Find no combos in empty list" do
+    combo_test(%w{}, "0", 0)
+  end
+
 end
 
 

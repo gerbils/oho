@@ -86,28 +86,21 @@ class IpsStatementDetail < ActiveRecord::Base
     statement = IpsStatement.find_by_month_ending(invoice_date)
     fail("Can't find statement for month ending #{invoice_date}") unless statement
 
-    # we don't want to match against reconciled lines, so we filter those out.
-    # We also filter out lines that are not due this month.
-    #
     possibles = statement.details.where("not reconciled").to_a
+    look_for_combinations(possibles, paid_amount)
+  end
 
-    # no ability to create combinations.
-    return [] if possibles.length < 2
-
-    # this is O(N^2), but we're probably looking at at most 20 lines, and its
-    # all in memory
-    # we return all possible combinations that match and let God sort them out.
-    matches = []
-    while possibles.length > 1
-      first = possibles.shift
-      possibles.each do |second|
-        if first.due_this_month + second.due_this_month == paid_amount
-          matches << [first, second]
+  def self.look_for_combinations(possibles, paid_amount)
+    results = []
+    (2..possibles.length).each do |n|
+      possibles.combination(n).each do |combo|
+        combo_sum = combo.reduce(BigDecimal("0.00")) { |sum, detail| sum + detail.due_this_month }
+        if combo_sum == paid_amount
+          results << combo
         end
       end
     end
-
-    matches
+    results
   end
 
   def self.revenue_details
