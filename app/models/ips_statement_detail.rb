@@ -118,7 +118,7 @@ class IpsStatementDetail < ActiveRecord::Base
   ]
 
   def ready_to_import?
-    self.uploaded_at? || KNOWM_NO_DETAILS.include?(self.detail)   # ugly, but there's no upload for co-op etc
+    self.uploaded_at? || KNOWN_NO_DETAILS.include?(self.detail)   # ugly, but there's no upload for co-op etc
   end
 
   private
