@@ -111,8 +111,14 @@ class IpsStatementDetail < ActiveRecord::Base
     where(section: SECTION_EXPENSE)
   end
 
+  KNOWN_NO_DETAILS = [
+    "Co-Op",
+    "Consumer Returns Processing - Loose",
+    "LSI Adjustment",
+  ]
+
   def ready_to_import?
-    self.uploaded_at? || self.detail == "Co-Op"   # ugly, but there's no upload for co-op
+    self.uploaded_at? || KNOWM_NO_DETAILS.include?(self.detail)   # ugly, but there's no upload for co-op etc
   end
 
   private
