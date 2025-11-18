@@ -74,8 +74,8 @@ class IpsPaymentAdviceLine < ApplicationRecord
   end
 
   def update_corresponding_detail_line
-    if ips_statement_detail
-      ips_statement_detail.update!(reconciled: false)
+    if ips_statement_details.any?
+      ips_statement_details.update!(reconciled: false)
     end
   end
 
