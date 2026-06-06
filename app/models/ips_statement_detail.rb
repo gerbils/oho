@@ -115,6 +115,7 @@ class IpsStatementDetail < ActiveRecord::Base
     "Co-Op",
     "Consumer Returns Processing - Loose",
     "LSI Adjustment",
+    "Excess Inventory > 1 yr and <= 5 yr",
   ]
 
   def ready_to_import?
