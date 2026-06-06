@@ -92,7 +92,8 @@ class IpsStatementDetail < ActiveRecord::Base
 
   def self.look_for_combinations(possibles, paid_amount)
     results = []
-    (2..possibles.length).each do |n|
+    max_to_combine = [5, possibles.length].min
+    (2..max_to_combine).each do |n|
       possibles.combination(n).each do |combo|
         combo_sum = combo.reduce(BigDecimal("0.00")) { |sum, detail| sum + detail.due_this_month }
         if combo_sum == paid_amount
