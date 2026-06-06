@@ -57,4 +57,6 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  mount MissionControl::Jobs::Engine, at: "/j-o-b-s"
 end
