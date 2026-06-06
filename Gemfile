@@ -1,6 +1,7 @@
 source "https://rubygems.org"
 
 gem "rails", "~> 8"
+gem "propshaft"       # prevent undefined method assets...
 gem "mysql2", "~> 0.5"
 gem "puma", ">= 5.0"
 gem "turbo-rails"
