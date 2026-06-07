@@ -21,6 +21,15 @@ class Royalties::Lp::StatementsController < ApplicationController
     end
   end
 
+  def import
+    Lp::ImportRoyaltyJob.new.perform(@statement.id)
+
+    respond_to do |format|
+      format.html { redirect_to royalties_lp_statements_url(@statement), notice: "Import to PIP initiated" }
+    end
+  end
+
+
   # PATCH/PUT /uploads/1 or /uploads/1.json
   # def update
   #   respond_to do |format|
