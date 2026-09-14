@@ -253,7 +253,7 @@ module Royalties::Ips::ParseDetailLines
       if row.title.blank? || row.title.start_with?("Revision") || titles_similar(product.title, row.title)
         return sku.id
       end
-      raise("Title mismatch #{isbn}: #{product.title.inspect} " +
+      raise("Title mismatch #{row.ean}: #{product.title.inspect} " +
             "doesn't start with #{row.title.inspect} " +
             "(#{normalize(product.title)} vs. #{normalize(row.title)} )")
     else
