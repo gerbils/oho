@@ -165,7 +165,7 @@ module Royalties::Ips::ParseDetailLines
     def self.extract(row)
       description = "Disposition to hurts"
       ean      = row[5].cell_value
-      title    = row[6].cell_value
+      title    = row[8].cell_value
       quantity = row[10].value
       amount   = BigDecimal(row[-1].cell_value)
       Detail.new(ean:, description:, title:, quantity:, amount:, content_type: "misc_expense")
