@@ -154,6 +154,23 @@ module Royalties::Ips::ParseDetailLines
     end
   end
 
+  module Type8
+    # return of hurt
+    HEADINGS = [
+      "Year", "Period", "Boundary Identifier", "Event Date", 
+      "Event Description", "EAN", "Pub Name", "ISBN", "Title", "RSN Description",
+      "Item Count", "Pub #", "Pub Alpha Id", "Pub Alpha", "DC", "Remainder Category", 
+      "# of Categories", "Rate", "Amount"
+    ]
+    def self.extract(row)
+      description = "Disposition to hurts"
+      ean      = row[5].cell_value
+      title    = row[6].cell_value
+      quantity = row[10].value
+      amount   = BigDecimal(row[-1].cell_value)
+      Detail.new(ean:, description:, title:, quantity:, amount:, content_type: "misc_expense")
+    end
+  end
 
   module AllRevenues
 
@@ -174,7 +191,7 @@ module Royalties::Ips::ParseDetailLines
     end
   end
 
-  ALL_TYPES = [ Type1, Type2, Type3, Type4, Type5, Type6, Type7, AllRevenues ]
+  ALL_TYPES = [ Type1, Type2, Type3, Type4, Type5, Type6, Type7, Type8, AllRevenues ]
 
   def find_handler_module(headers)
     ALL_TYPES.find do |type|
