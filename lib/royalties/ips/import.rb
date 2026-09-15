@@ -219,6 +219,8 @@ module Royalties::Ips::Import
       "Distribution: Fees"
     when /lightning source/i
       "Printing costs"
+    when /warehouse charges/i
+      "Warehouse costs"
     when /other fees/i
       MARKETING_AND_MISC
     else
