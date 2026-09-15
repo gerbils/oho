@@ -173,5 +173,56 @@ class IpsPaymentReconcileTest < ActiveSupport::TestCase
     end
   end
 
+  def manual_setup(amounts, paid_amount)
+    statement = ips_statement!({ month_ending: "2025-02-28" })
+    statement.save!
+    details = amounts.map do |amount|
+      ips_statement_detail!({ ips_statement: statement, due_this_month: BigDecimal(amount) }).tap(&:save!)
+    end
+    advice = ips_payment_advice!
+    advice.save!
+    line = ips_payment_advice_line!({ ips_payment_advice: advice, invoice_date: "2025-03-31", paid_amount: BigDecimal(paid_amount) })
+    line.save!
+    [details, line, advice]
+  end
+
+  test "manually reconciles a line with details that total its amount" do
+    details, line, advice = manual_setup(%w[100.00 150.00 50.00], "250.00")
+    Royalties::Ips::ReconcilePayments.reconcile_with_details(line, details[0..1])
+
+    line.reload
+    assert line.reconciled?
+    assert_equal IpsPaymentAdviceLine::STATUS_RECONCILED, line.status
+    assert_equal details[0..1].map(&:id).sort, line.ips_statement_details.map(&:id).sort
+    assert details[0].reload.reconciled
+    refute details[2].reload.reconciled
+    assert_equal IpsPaymentAdvice::STATUS_RECONCILED, advice.reload.status
+  end
+
+  test "refuses a manual reconcile when the total doesn't match" do
+    details, line, _ = manual_setup(%w[100.00 150.00], "200.00")
+    assert_raises(Royalties::Ips::ReconcilePayments::ManualReconcileError) do
+      Royalties::Ips::ReconcilePayments.reconcile_with_details(line, details)
+    end
+    refute line.reload.reconciled?
+    refute details[0].reload.reconciled
+  end
+
+  test "refuses a manual reconcile using an already reconciled detail" do
+    details, line, _ = manual_setup(%w[100.00 150.00], "250.00")
+    details[0].update!(reconciled: true)
+    assert_raises(Royalties::Ips::ReconcilePayments::ManualReconcileError) do
+      Royalties::Ips::ReconcilePayments.reconcile_with_details(line, details)
+    end
+    refute line.reload.reconciled?
+  end
+
+  test "lists unreconciled details for the month" do
+    details, line, _ = manual_setup(%w[100.00 150.00], "250.00")
+    details[1].update!(reconciled: true)
+    assert_equal [details[0]], IpsStatementDetail.unreconciled_for_month(Date.new(2025, 2, 10)).to_a
+    assert_empty IpsStatementDetail.unreconciled_for_month(line.invoice_date).to_a
+  end
+
 
 end

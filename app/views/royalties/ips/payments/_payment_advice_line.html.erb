@@ -7,7 +7,7 @@
     <td class="text-end pe-4"><%= number_to_currency(line.gross_amount) %></td>
     <td class="text-end pe-4"><%= number_to_currency(line.discount_taken) %></td>
   <% end %>
-  <td class="text-end pe-4"><%= number_to_currency(line.gross_amount) %></td>
+  <td class="text-end pe-4"><%= number_to_currency(line.paid_amount) %></td>
 
   <% if line.reconciled? %>
     <td class="text-success text-left pe-4">
@@ -23,6 +23,17 @@
     <% end %>
     </td>
   <% else %>
-    <td class="text-secondary text-center pe-4"><i class="bi bi-x-circle" title="Not reconciled"></i></td>
+    <td class="text-secondary text-center pe-4">
+      <% if line.ips_payment_advice.status == IpsPaymentAdvice::STATUS_IMPORTED %>
+        <i class="bi bi-x-circle" title="Not reconciled"></i>
+      <% else %>
+        <%= link_to(match_line_royalties_ips_payment_path(line.ips_payment_advice, line_id: line.id),
+                    class: "btn btn-sm btn-outline-secondary",
+                    title: "Not reconciled: find matching transactions",
+                    data: { turbo_frame: "modal" }) do %>
+          <i class="bi bi-search"></i>
+        <% end %>
+      <% end %>
+    </td>
   <% end %>
 </tr>

@@ -10,6 +10,39 @@ module Royalties::Ips::ReconcilePayments
       reconcile_line(line) unless line.reconciled?
     end
 
+    update_advice_status(payment_advice)
+  end
+
+  class ManualReconcileError < StandardError; end
+
+  # Called when the user has picked the statement detail lines that make up
+  # a payment advice line by hand (typically because the payment was late, and
+  # the details are in an earlier statement).
+  def reconcile_with_details(line, detail_lines)
+    advice = line.ips_payment_advice
+    if advice.status == IpsPaymentAdvice::STATUS_IMPORTED
+      raise ManualReconcileError, "This payment has already been imported"
+    end
+    raise ManualReconcileError, "This line is already reconciled" if line.reconciled?
+    raise ManualReconcileError, "Select at least one transaction" if detail_lines.empty?
+    if detail_lines.any?(&:reconciled)
+      raise ManualReconcileError, "One or more of the selected transactions has already been reconciled"
+    end
+
+    total = detail_lines.sum(BigDecimal("0"), &:due_this_month)
+    unless total == line.paid_amount
+      raise ManualReconcileError, "The selected transactions total #{total.round(2).to_s("F")}, not #{line.paid_amount.to_s("F")}"
+    end
+
+    IpsPaymentAdviceLine.transaction do
+      mark_as_reconciled(line, detail_lines)
+      line.save!
+      OhoError.clear_errors(line)
+      update_advice_status(advice)
+    end
+  end
+
+  def update_advice_status(payment_advice)
     if payment_advice.all_reconciled?
       payment_advice.update!(status: IpsPaymentAdvice::STATUS_RECONCILED, status_message: nil)
     else

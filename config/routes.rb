@@ -48,6 +48,8 @@ Rails.application.routes.draw do
         get "focus_line/:focus_line", on: :member, to: "payments#show", as: :focus_line
         post "upload", on: :collection, to: "payments#create", as: :upload
         put "reconcile", on: :member, to: "payments#reconcile", as: :reconcile
+        get  "lines/:line_id/match", on: :member, to: "payments#match_line", as: :match_line
+        post "lines/:line_id/match", on: :member, to: "payments#apply_match", as: :apply_match
         put "import", on: :member
       end
     end

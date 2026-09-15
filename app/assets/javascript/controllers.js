@@ -14,3 +14,6 @@ application.register("file-upload", FileUploadController)
 
 import PopoverController from "./controllers/popover_controller"
 application.register("popover", PopoverController)
+
+import PaymentMatchController from "./controllers/payment_match_controller"
+application.register("payment-match", PaymentMatchController)

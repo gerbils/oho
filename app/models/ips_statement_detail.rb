@@ -90,6 +90,12 @@ class IpsStatementDetail < ActiveRecord::Base
     look_for_combinations(possibles, paid_amount)
   end
 
+  def self.unreconciled_for_month(date)
+    joins(:ips_statement)
+      .where(reconciled: false, ips_statements: { month_ending: date.beginning_of_month..date.end_of_month })
+      .order(:section, :subsection, :detail, :id)
+  end
+
   def self.look_for_combinations(possibles, paid_amount)
     results = []
     max_to_combine = [5, possibles.length].min

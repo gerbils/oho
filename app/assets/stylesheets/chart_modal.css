@@ -33,3 +33,11 @@
 .cancel-button:hover {
     background-color: #2640fe;
 }
+
+.payment-match-backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.d-contents {
+    display: contents;
+}

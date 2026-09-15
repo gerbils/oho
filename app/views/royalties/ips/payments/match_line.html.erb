@@ -1,0 +1,93 @@
+<%# rendered into the layout's "modal" turbo frame %>
+<% to_units = ->(amount) { (amount * 10_000).to_i } %>
+<%= turbo_frame_tag "modal" do %>
+  <div class="modal d-block payment-match-backdrop" tabindex="-1"
+       data-controller="payment-match"
+       data-payment-match-target-value="<%= to_units.(@line.paid_amount) %>"
+       data-action="keydown.esc@window->payment-match#close">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div>
+            <h5 class="modal-title">
+              Match <%= @line.invoice_number %> (<%= @line.invoice_date.strftime("%Y-%m-%d") %>)
+              for <%= number_to_currency(@line.paid_amount) %>
+            </h5>
+            <div class="d-flex gap-3 align-items-center mt-2">
+              <% if @earlier_month %>
+                <%= link_to "‹ #{@earlier_month.strftime("%b %Y")}",
+                      match_line_royalties_ips_payment_path(@payment, line_id: @line.id, month: @earlier_month),
+                      class: "btn btn-sm btn-outline-secondary" %>
+              <% end %>
+              <span class="fw-bold">Unreconciled transactions for <%= @month.strftime("%B %Y") %></span>
+              <% if @later_month %>
+                <%= link_to "#{@later_month.strftime("%b %Y")} ›",
+                      match_line_royalties_ips_payment_path(@payment, line_id: @line.id, month: @later_month),
+                      class: "btn btn-sm btn-outline-secondary" %>
+              <% end %>
+            </div>
+          </div>
+          <button type="button" class="btn-close" aria-label="Close"
+                  data-action="payment-match#close"></button>
+        </div>
+
+        <%= form_with url: apply_match_royalties_ips_payment_path(@payment, line_id: @line.id, month: @month),
+                      method: :post, class: "d-contents" do %>
+          <div class="modal-body">
+            <% if @error %>
+              <div class="alert alert-danger"><%= @error %></div>
+            <% end %>
+
+            <% if @details.empty? %>
+              <p class="text-secondary">There are no unreconciled transactions for this month.</p>
+            <% else %>
+              <table class="table table-sm table-hover align-middle">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Section</th>
+                    <th>Subsection</th>
+                    <th>Detail</th>
+                    <th>Month due</th>
+                    <th class="text-end">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @details.each do |detail| %>
+                    <tr>
+                      <td>
+                        <%= check_box_tag "detail_ids[]", detail.id, @selected_ids.include?(detail.id),
+                              id: dom_id(detail, :match),
+                              class: "form-check-input",
+                              data: { payment_match_target: "checkbox",
+                                      amount: to_units.(detail.due_this_month),
+                                      action: "payment-match#update" } %>
+                      </td>
+                      <td><label for="<%= dom_id(detail, :match) %>"><%= detail.section %></label></td>
+                      <td><%= detail.subsection %></td>
+                      <td><%= detail.detail %></td>
+                      <td><%= detail.month_due&.strftime("%b %Y") %></td>
+                      <td class="text-end"><%= number_to_currency(detail.due_this_month) %></td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            <% end %>
+          </div>
+
+          <div class="modal-footer justify-content-between">
+            <div>
+              Selected: <span class="fw-bold" data-payment-match-target="total"><%= number_to_currency(0) %></span>
+              of <%= number_to_currency(@line.paid_amount) %>
+            </div>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-secondary" data-action="payment-match#close">Cancel</button>
+              <%= button_tag "Apply", type: "submit", class: "btn btn-primary", disabled: true,
+                    data: { payment_match_target: "apply" } %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
